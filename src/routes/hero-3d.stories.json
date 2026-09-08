@@ -1,0 +1,5 @@
+{
+  "$schema": "https://forge.dev/schemas/stories.v3.json",
+  "name": "Hero 3D Lab",
+  "page": "/hero-3d"
+}

@@ -1,0 +1,33 @@
+/* Figures: one engraved graphic per bronze face, no glass sheet around it.
+ *
+ * The face carries a single diagram cut into the metal and a short inscription
+ * under it — no lists, no totals, no figures to read. Depth comes from the
+ * engraving itself: every trace, node, and bar is drawn twice, a dark cut
+ * beneath and the gold inlay on top, so the mark sits in the bronze rather
+ * than on it.
+ */
+.figure-panel {
+  width: 720px; padding: 0; border-radius: 0;
+  background: transparent; box-shadow: none; pointer-events: auto;
+  display: flex; flex-direction: column; align-items: center;
+}
+.figure-art { position: relative; width: 100%; flex: 1 1 auto; min-height: 0; }
+/* Baked to a texture, so nothing here costs anything per frame. The artwork
+ * still keeps few edges, wide dark bodies, flat fills and low-contrast
+ * hairlines: that is what resamples cleanly under the GPU's mipmaps. */
+.figure-art > svg { display: block; width: 100%; height: 100%; overflow: visible; }
+
+.figure-cut { fill: none; stroke: #05060480; stroke-linecap: round; stroke-linejoin: round; }
+.figure-trace { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.figure-shadow { fill: #050604; opacity: .62; }
+
+.figure-caption {
+  flex: 0 0 auto; margin: 14px 0 0; padding-bottom: 4px;
+  font: 400 34px/44px 'DM Sans', Arial, Helvetica, sans-serif;
+  letter-spacing: .1px; white-space: nowrap; text-align: center;
+  color: #cbb590;
+  background: linear-gradient(114deg, #9a7f56 0%, #e2cda7 26%, #c4a97e 48%, #dcc39a 72%, #9d8259);
+  background-size: 150% 100%; background-position: var(--glass-light, 24%) 0;
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 1.4px .5px #05040275) drop-shadow(0 -.7px .4px #ffe6b52e);
+}

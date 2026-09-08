@@ -1,0 +1,655 @@
+/* ------------------------------------------------------------------
+   Arch hero — HTML composition over the "financial arch" 3D plate.
+
+   The plate (public/arch-structure.png, 1672 x 941) is placed inside a
+   16:9 stage. Everything that must stay glued to the arch lives inside
+   .ah-plate and is positioned in PERCENTAGES OF THE PLATE, so the whole
+   composition scales as one. Plate placement itself is driven by the
+   --ah-plate-* vars, which the ?ref calibration panel writes to.
+   ------------------------------------------------------------------ */
+
+.arch-hero {
+  /* palette sampled off the reference render */
+  --ah-ink: #000000;
+  --ah-text: #f0ebe4;
+  --ah-muted: #9b9894;
+  --ah-gold: #dda94a;
+  --ah-gold-bright: #ffd98a;
+  --ah-gold-deep: #a8700f;
+  --ah-panel: #100e0b;
+  --ah-hairline: rgba(255, 226, 173, 0.16);
+
+  /* plate placement, % of the 16:9 stage */
+  --ah-plate-w: 74;
+  --ah-plate-x: 12.7;
+  --ah-plate-y: 25.5;
+
+  /* card placement, % of the plate */
+  --ah-card-w: 11.4;
+  --ah-card-x: 50.6;
+  --ah-card-y: 44.7;
+
+  /* arch-anchored slots, % of the plate */
+  --ah-span-x: 51.8;
+  --ah-left-x: 25.3;
+  --ah-right-x: 81.2;
+  --ah-label-y: 46;
+  --ah-panel-y: 66.5;
+  --ah-panel-w: 12.6;
+  --ah-panel-h: 27;
+  --ah-bar-w: 27;
+  --ah-bar-h: 5.6;
+
+  --ah-ref-opacity: 0;
+
+  position: relative;
+  min-height: max(100svh, 860px);
+  overflow: hidden;
+  color: var(--ah-text);
+  background: var(--ah-ink);
+  isolation: isolate;
+}
+
+/* ---------- ambience ---------- */
+
+.ah-ambience {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.ah-ambience::before {
+  /* warm bounce out of the arch opening */
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 2%;
+  width: min(1180px, 76vw);
+  height: 62vh;
+  translate: -50% 0;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 50% 60%, rgba(196, 122, 32, 0.3), rgba(120, 70, 16, 0.09) 46%, transparent 72%);
+  filter: blur(70px);
+}
+
+.ah-grain {
+  /* above the stage: covers plate and page alike, so there is no seam */
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+  opacity: 0.2;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.86' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.26'/%3E%3C/svg%3E");
+  mix-blend-mode: soft-light;
+}
+
+/* ---------- nav ---------- */
+
+.ah-nav {
+  position: relative;
+  z-index: 40;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  width: min(100% - 72px, 1880px);
+  height: 96px;
+  margin: 0 auto;
+}
+
+.ah-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--ah-text);
+  font-size: 21px;
+  font-weight: 700;
+  letter-spacing: -0.055em;
+}
+
+.ah-brand b {
+  padding: 1px 5px 2px;
+  border-radius: 3px;
+  color: #0b0a08;
+  background: var(--ah-text);
+  font-size: 0.86em;
+}
+
+.ah-nav__links {
+  display: flex;
+  gap: 42px;
+  justify-self: center;
+}
+
+.ah-nav__links a,
+.ah-nav__login {
+  color: rgba(240, 235, 228, 0.86);
+  font-size: 15px;
+  transition: color 0.18s ease;
+}
+
+.ah-nav__links a:hover,
+.ah-nav__login:hover { color: var(--ah-text); }
+
+.ah-nav__actions {
+  display: flex;
+  align-items: center;
+  gap: 26px;
+  justify-self: end;
+}
+
+/* ---------- buttons ---------- */
+
+/* Quick Action tiles from the design system. The spec's 16/24 inline
+   padding assumes a leading icon at the 10px gap; these are label-only, so
+   the padding is symmetrised — put it back to 16/24 when icons go in. */
+.ah-button {
+  box-sizing: border-box;
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: 48px;
+  padding: 12px 24px;
+  border: 0;
+  border-radius: 10px;
+  color: #17120a;
+  background: #e0a830;
+  font-size: 15px;
+  font-weight: 600;
+  transition: filter 0.18s ease, translate 0.18s ease;
+}
+
+.ah-button:hover { filter: brightness(1.07); translate: 0 -1px; }
+
+.ah-button--secondary {
+  color: var(--ah-text);
+  background: #312c20;
+}
+
+.ah-button--secondary:hover { filter: brightness(1.22); }
+
+.ah-button--small { height: 40px; padding: 10px 20px; font-size: 14px; }
+
+/* ---------- copy ---------- */
+
+.ah-copy {
+  position: relative;
+  z-index: 40;
+  width: min(100% - 48px, 980px);
+  margin: clamp(18px, 3.4vh, 46px) auto 0;
+  text-align: center;
+}
+
+.ah-eyebrow {
+  margin: 0;
+  color: var(--ah-gold);
+  font-size: clamp(10px, 0.72vw, 13px);
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+}
+
+.ah-copy h1 {
+  margin: clamp(14px, 1.8vh, 22px) 0 0;
+  font-size: clamp(38px, 4.05vw, 78px);
+  font-weight: 700;
+  line-height: 1.03;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+.ah-lede {
+  margin: clamp(14px, 1.9vh, 24px) auto 0;
+  max-width: 46ch;
+  color: var(--ah-muted);
+  font-size: clamp(15px, 1.12vw, 21px);
+  line-height: 1.48;
+}
+
+.ah-lede__break { display: inline; }
+
+.ah-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  justify-content: center;
+  margin-top: clamp(20px, 2.8vh, 34px);
+}
+
+/* ---------- stage + plate ---------- */
+
+.ah-stage {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  z-index: 10;
+  width: min(100%, 178vh);
+  aspect-ratio: 16 / 9;
+  translate: -50% 0;
+  pointer-events: none;
+}
+
+/* The three.js light-line floor. Deliberately wider and taller than the
+   plate so the fan can reach the full stage width. It sits ON TOP of the
+   render and is cut to the floor + the arch opening by an SVG mask
+   (FLOOR_MASK in ArchHero), screened so the lines add as light. */
+.ah-floor {
+  position: absolute;
+  bottom: -3%;
+  left: calc((1 - var(--ah-floor-k, 1.4)) * 50%);
+  width: calc(var(--ah-floor-k, 1.4) * 100%);
+  z-index: 2;
+  top: 30%;
+  mask-size: 100% 100%;
+  mask-repeat: no-repeat;
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+/* ?mask — paints the floor mask so its edges can be judged and adjusted */
+.ah-maskview {
+  z-index: 40;
+  /* drop Mask tint to 0 in the panel to keep the mask controls but hide the
+     overlay, so the lines can be judged unobstructed */
+  background: rgb(255 40 190 / calc(var(--ah-mask-tint, 45) / 100));
+  mix-blend-mode: normal;
+}
+
+.ah-floor__canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.ah-plate {
+  container-type: inline-size;
+  position: absolute;
+  left: calc(var(--ah-plate-x) * 1%);
+  top: calc(var(--ah-plate-y) * 1%);
+  z-index: 2;
+  width: calc(var(--ah-plate-w) * 1%);
+  aspect-ratio: 1672 / 941;
+}
+
+.ah-plate__img {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 100%;
+  user-select: none;
+  mask-image:
+    linear-gradient(to right, transparent 0, #000 6%, #000 94%, transparent 100%),
+    linear-gradient(to bottom, transparent 0, #000 5%, #000 92%, transparent 100%);
+  mask-composite: intersect;
+}
+
+/* pool of warm light on the floor under the opening */
+.ah-plate::after {
+  content: '';
+  position: absolute;
+  left: 50.6%;
+  top: 88%;
+  width: 46%;
+  height: 26%;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 50% 50%, rgba(214, 140, 40, 0.34), transparent 70%);
+  filter: blur(28px);
+  pointer-events: none;
+}
+
+/* ---------- inner arch light trace ---------- */
+
+.ah-glow {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.ah-glow path { fill: none; stroke-linecap: round; }
+
+.ah-glow__halo { filter: url(#ah-bloom); }
+.ah-glow__mid  { filter: url(#ah-bloom-tight); }
+.ah-glow__core { }
+
+/* ---------- arch-anchored UI ---------- */
+
+/* Everything printed on the arch lies on ONE plane — the render's front face.
+   So the panels share a single rotation, and the plate carries the
+   perspective; being off-centre then gives each panel its correct
+   differential foreshortening for free, rather than transforming each one by
+   hand. */
+.ah-plate {
+  perspective: calc(var(--ah-ui-persp, 150) * 1cqw);
+  perspective-origin: calc(var(--ah-ui-ox, 38) * 1%) calc(var(--ah-ui-oy, 118) * 1%);
+}
+
+.ah-slot {
+  position: absolute;
+  z-index: 4;
+  translate: -50% -50%;
+  transform: rotateY(calc(var(--ah-ui-ry, -7) * 1deg)) rotateX(calc(var(--ah-ui-rx, 2) * 1deg));
+  text-align: center;
+  pointer-events: auto;
+}
+
+.ah-slot--business { left: calc(var(--ah-span-x) * 1%); top: 25.6%; }
+.ah-slot--business-bar { left: calc(var(--ah-span-x) * 1%); top: 31.6%; }
+.ah-slot--personal { left: calc(var(--ah-left-x) * 1%); top: calc(var(--ah-label-y) * 1%); }
+.ah-slot--personal-panel { left: calc(var(--ah-left-x) * 1%); top: calc(var(--ah-panel-y) * 1%); }
+.ah-slot--payments { left: calc(var(--ah-right-x) * 1%); top: calc(var(--ah-label-y) * 1%); }
+.ah-slot--payments-panel { left: calc(var(--ah-right-x) * 1%); top: calc(var(--ah-panel-y) * 1%); }
+
+.ah-etch {
+  margin: 0;
+  /* cqw = 1% of the plate width, so plate type scales with the arch */
+  font-size: 1.24cqw;
+  color: rgba(228, 176, 92, 0.92);
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  text-shadow: 0 0 14px rgba(220, 150, 40, 0.45);
+  white-space: nowrap;
+}
+
+/* recessed dark panel, as if inset into the arch's face */
+.ah-face {
+  display: flex;
+  flex-direction: column;
+  width: calc(var(--ah-panel-w) * 1%);
+  height: calc(var(--ah-panel-h) * 1%);
+  padding: 1.7cqw 1.5cqw;
+  border: 1px solid rgba(255, 226, 173, 0.1);
+  border-radius: 1cqw;
+  color: rgba(243, 238, 230, 0.94);
+  background: linear-gradient(158deg, rgba(9, 8, 6, 0.98), rgba(22, 19, 15, 0.97) 62%);
+  /* sunk into the arch: the top-left inner edge shades, the opposite lip
+     catches the light */
+  box-shadow:
+    inset 0.42cqw 0.42cqw 1.1cqw rgba(0, 0, 0, 0.82),
+    inset 0.08cqw 0.08cqw 0.16cqw rgba(0, 0, 0, 0.9),
+    inset -0.12cqw -0.12cqw 0.4cqw rgba(255, 227, 176, 0.07);
+  text-align: left;
+}
+
+.ah-face__label {
+  margin: 0;
+  color: rgba(226, 219, 206, 0.52);
+  font-size: 0.78cqw;
+  letter-spacing: 0.01em;
+}
+
+.ah-face__figure {
+  margin: 0.22cqw 0 0;
+  font-size: 1.7cqw;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.ah-face__figure--sm { font-size: 1.32cqw; }
+
+.ah-rows {
+  margin: 0.95cqw 0 0;
+  padding: 0.95cqw 0 0;
+  border-top: 1px solid rgba(255, 226, 173, 0.1);
+  list-style: none;
+}
+
+.ah-rows li {
+  display: flex;
+  align-items: center;
+  gap: 0.55cqw;
+  padding: 0.34cqw 0;
+  font-size: 0.82cqw;
+}
+
+.ah-coin {
+  display: grid;
+  place-items: center;
+  width: 1.34cqw;
+  height: 1.34cqw;
+  flex: none;
+  border-radius: 50%;
+  color: #f4efe6;
+  font-size: 0.72cqw;
+}
+
+.ah-coin--eur { background: #2f4a7a; }
+.ah-coin--usd { background: #2f6a45; }
+.ah-coin--gbp { background: #4a3a70; }
+
+.ah-rows__code { color: rgba(232, 226, 214, 0.8); }
+.ah-rows__amt { margin-left: auto; font-variant-numeric: tabular-nums; }
+.ah-rows__chev { color: rgba(226, 219, 206, 0.4); font-size: 0.98cqw; }
+
+.ah-face__accepted {
+  display: flex;
+  align-items: center;
+  gap: 0.45cqw;
+  margin: 0;
+  font-size: 0.82cqw;
+}
+
+.ah-tick {
+  width: 1.16cqw;
+  height: 1.16cqw;
+  flex: none;
+  fill: none;
+  stroke: #58c98a;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.ah-face__credit {
+  margin: 0.26cqw 0 0;
+  color: #6fd39a;
+  font-size: 1.32cqw;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.ah-face__rule {
+  margin: 1.1cqw 0;
+  border: 0;
+  border-top: 1px solid rgba(255, 226, 173, 0.1);
+}
+
+.ah-volume {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.34cqw;
+  height: 3.7cqw;
+  margin-top: auto;
+}
+
+.ah-volume i {
+  flex: 1;
+  border-radius: 0.12cqw;
+  background: linear-gradient(180deg, #e0a830, #8a6524);
+}
+
+/* the wide approvals bar on the top span */
+.ah-face--bar {
+  flex-direction: row;
+  align-items: center;
+  gap: 1.1cqw;
+  width: calc(var(--ah-bar-w) * 1%);
+  height: calc(var(--ah-bar-h) * 1%);
+  padding: 0 0.85cqw 0 1.3cqw;
+  border-radius: 0.7cqw;
+}
+
+.ah-bar__name { font-size: 0.92cqw; white-space: nowrap; }
+
+.ah-avatars { display: flex; }
+
+.ah-avatars i {
+  display: grid;
+  place-items: center;
+  width: 1.5cqw;
+  height: 1.5cqw;
+  border: 1px solid rgba(20, 17, 13, 0.9);
+  border-radius: 50%;
+  background: linear-gradient(150deg, #6c6154, #423a30);
+  color: rgba(245, 240, 231, 0.85);
+  font-size: 0.58cqw;
+  font-style: normal;
+  letter-spacing: 0.02em;
+}
+
+.ah-avatars i + i { margin-left: -0.5cqw; }
+
+.ah-bar__cta {
+  margin-left: auto;
+  padding: 0.45cqw 0.95cqw;
+  border: 1px solid rgba(255, 226, 173, 0.22);
+  border-radius: 0.45cqw;
+  font-size: 0.8cqw;
+  white-space: nowrap;
+}
+
+/* ---------- the card ---------- */
+
+/* Contact shadow under the card. A separate blurred element rather than a
+   box-shadow, so it sits ABOVE the floor canvas and actually occludes the
+   light lines — a box-shadow would be painted with the card, above them but
+   clipped to its box. Its top follows the card's bottom edge: the card is
+   sized by width, so its height as a share of the plate is
+   cardW x (1672/941) x (312/155) = cardW x 3.5766. */
+.ah-card-shadow {
+  position: absolute;
+  left: calc(var(--ah-card-x) * 1%);
+  top: calc((var(--ah-card-y) + var(--ah-card-w) * 3.5766 + var(--ah-shadow-dy, -0.4)) * 1%);
+  z-index: 4;
+  width: calc(var(--ah-card-w) * var(--ah-shadow-w, 1.3) * 1%);
+  height: 1.15cqw;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: rgb(0 0 0 / var(--ah-shadow-o, 0.8));
+  filter: blur(calc(var(--ah-shadow-blur, 0.8) * 1cqw));
+  pointer-events: none;
+}
+
+
+.ah-card {
+  position: absolute;
+  left: calc(var(--ah-card-x) * 1%);
+  top: calc(var(--ah-card-y) * 1%);
+  z-index: 5;
+  width: calc(var(--ah-card-w) * 1%);
+  aspect-ratio: 155 / 312;
+  translate: -50% 0;
+  /* drop-shadow follows the artwork's alpha, so the gold halo hugs the
+     angled card instead of boxing it */
+  filter:
+    drop-shadow(0 0 3.4cqw rgba(229, 169, 64, 0.42))
+    drop-shadow(0 1.6cqw 3.4cqw rgba(0, 0, 0, 0.6));
+}
+
+.ah-card__art {
+  display: block;
+  width: 100%;
+  height: 100%;
+  user-select: none;
+}
+
+.ah-card__shine {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  background: linear-gradient(102deg, transparent 42%, rgba(255, 246, 214, 0.3) 50%, transparent 58%);
+  background-size: 260% 100%;
+  background-repeat: no-repeat;
+  /* clipped to the card's own silhouette */
+  mask-image: url('/utex-card.png');
+  mask-size: 100% 100%;
+  animation: ah-shine 7.5s ease-in-out infinite;
+}
+
+@keyframes ah-shine {
+  0%, 46% { background-position: 120% 0; opacity: 0; }
+  55% { opacity: 0.85; }
+  68%, 100% { background-position: -20% 0; opacity: 0; }
+}
+
+/* ---------- calibration overlay (?ref) ---------- */
+
+.ah-ref {
+  position: absolute;
+  inset: 0;
+  z-index: 60;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: calc(var(--ah-ref-opacity) / 100);
+  pointer-events: none;
+}
+
+.ah-tuner {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 80;
+  width: 290px;
+  padding: 12px 14px 14px;
+  border: 1px solid rgba(255, 226, 173, 0.18);
+  border-radius: 11px;
+  color: #efe9df;
+  background: rgba(12, 11, 9, 0.94);
+  backdrop-filter: blur(8px);
+  font-size: 12px;
+}
+
+.ah-tuner summary { cursor: pointer; font-weight: 600; letter-spacing: 0.04em; }
+.ah-tuner__row { display: grid; grid-template-columns: 74px 1fr 52px; align-items: center; gap: 8px; margin-top: 7px; }
+.ah-tuner__row span { color: rgba(239, 233, 223, 0.66); }
+.ah-tuner__row output { color: var(--ah-gold); font-variant-numeric: tabular-nums; text-align: right; }
+.ah-tuner input[type='range'] { width: 100%; accent-color: #dda94a; }
+.ah-tuner__actions { display: flex; gap: 8px; margin-top: 12px; }
+.ah-tuner__actions button {
+  flex: 1;
+  padding: 7px 0;
+  border: 1px solid rgba(255, 226, 173, 0.22);
+  border-radius: 6px;
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+}
+.ah-tuner__actions button:hover { border-color: rgba(255, 226, 173, 0.5); }
+
+/* ---------- responsive ---------- */
+
+@media (max-width: 1100px) {
+  .ah-nav { width: min(100% - 40px, 1880px); height: 84px; }
+  .ah-nav__links { gap: 28px; }
+}
+
+@media (max-width: 820px) {
+  .arch-hero { min-height: max(100svh, 720px); }
+  .ah-nav__links { display: none; }
+  .ah-nav { grid-template-columns: 1fr auto; }
+  .ah-copy { width: min(100% - 32px, 560px); }
+  .ah-copy h1 { font-size: clamp(34px, 8.4vw, 52px); }
+  .ah-lede__break { display: none; }
+  .ah-stage { width: 122%; }
+  .ah-tuner { display: none; }
+}
+
+@media (max-width: 560px) {
+  .ah-nav__login { display: none; }
+  .ah-ctas { flex-direction: column; align-items: stretch; }
+  .ah-button { width: 100%; }
+  .ah-stage { width: 132%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ah-card__shine { animation: none; }
+}

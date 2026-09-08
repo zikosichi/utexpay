@@ -1,0 +1,60 @@
+/* Alternative layouts use a 720 × 350 DOM surface; inlays have their own proportions. */
+.personal-panel:not(.personal-panel--classic) { padding: 6px; border-radius: 22px; box-shadow: 0 0 0 1px #060705, 0 1px 0 2px #aa906020, inset 0 2px 3px #000c; }
+.personal-panel:not(.personal-panel--classic) .personal-glass { border-radius: 16px; border-width: 1px; background: linear-gradient(133deg, #22221e, #141612 56%, #11130f) padding-box, linear-gradient(132deg, #998c7060, #363a3050 42%, #6f655055) border-box; }
+.pv-layout { position: relative; z-index: 1; height: 100%; font-family: 'DM Sans', Arial, sans-serif; font-weight: 400; font-variant-numeric: tabular-nums; color: #dedfd5; text-shadow: 0 1px 1px #0009; }
+.pv-layout p { margin: 0; }
+.pv-layout ul { list-style: none; padding: 0; margin: 0; }
+.pv-layout .pv-eyebrow { font: 400 16px/24px 'IBM Plex Mono', monospace; text-transform: uppercase; letter-spacing: 1.6px; color: #92988a; white-space: nowrap; }
+.pv-layout .pv-total { display: flex; align-items: baseline; margin-top: 13px; font-size: 58px; line-height: 1.15; letter-spacing: -2.6px; color: #ecede2; white-space: nowrap; }
+.pv-total > span:first-child { font-size: .59em; margin-right: 10px; letter-spacing: -1px; color: #bbbfae; }
+.pv-total .pv-cents { color: #aaaFA0; font-size: .76em; letter-spacing: -1.6px; }
+.pv-split { display: grid; grid-template-columns: 1fr 1fr; gap: 31px; padding: 38px 31px; }
+.pv-overview { display: flex; flex-direction: column; justify-content: center; min-width: 0; }
+.pv-split .pv-overview { padding-bottom: 5px; }
+.pv-account-note { display: flex; align-items: center; margin-top: 46px !important; font-size: 13px; line-height: 18px; color: #8b9380; white-space: nowrap; }
+.pv-status-dot { width: 5px; height: 5px; border-radius: 50%; background: #a9ad88; margin-right: 8px; box-shadow: 0 0 7px #aeaf7350; }
+.pv-note-divider { margin: 0 9px; color: #4a5043; }
+.pv-side-accounts { align-self: center; border-left: 1px solid #adac861f; padding-left: 26px; }
+.pv-side-accounts .pv-eyebrow { margin-bottom: 10px; font-size: 13px; letter-spacing: 1.2px; color: #7c8473; }
+.pv-side-accounts li { display: grid; grid-template-columns: 32px 1fr auto; align-items: center; gap: 10px; min-height: 65px; }
+.pv-side-accounts li + li { border-top: 1px solid #a09e7e13; }
+.pv-side-accounts .sheet-medallion { flex-basis: 32px; height: 32px; border-width: 1px; }
+.pv-side-accounts .sheet-medallion > span { font-size: 22px; }
+.pv-code { font-size: 18px; color: #aaaFA2; }
+.pv-amount { font-size: 23px; letter-spacing: -.6px; color: #dce0d3; white-space: nowrap; }
+
+.pv-activity { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; padding: 34px 30px; }
+.pv-activity .pv-overview { padding-bottom: 1px; }
+.pv-activity .pv-total { font-size: 57px; }
+.pv-currency-pills { display: flex; gap: 8px; margin-top: 36px; }
+.pv-currency-pills > span { border-radius: 5px; border: 1px solid #b2b5921c; background: #67725b0b; color: #949e87; padding: 6px 12px; font: 400 12px/17px 'IBM Plex Mono', monospace; letter-spacing: 1px; }
+.pv-feed { border-left: 1px solid #a4ac8920; padding-left: 24px; align-self: center; }
+.pv-feed .pv-eyebrow { font-size: 13px; letter-spacing: 1px; margin-bottom: 16px; }
+.pv-feed li { display: flex; align-items: center; gap: 10px; height: 75px; }
+.pv-feed li + li { border-top: 1px solid #a5ad8814; }
+.pv-transfer-icon { display: grid; place-items: center; flex: 0 0 28px; height: 30px; border-radius: 6px; color: #a8b19a; background: #84926912; border: 1px solid #91a07a1c; font-size: 18px; }
+.pv-feed li div { min-width: 0; }
+.pv-feed li p { font-size: 16px; line-height: 22px; color: #c8cfc0; white-space: nowrap; }
+.pv-feed li div > span { font-size: 12px; color: #77836a; }
+.pv-feed li strong { margin-left: auto; font-size: 19px; font-weight: 400; letter-spacing: -.5px; color: #d0d4c5; white-space: nowrap; }
+.pv-feed li strong.pv-positive { color: #b0c69a; }
+.pv-feed-footer { display: flex; justify-content: space-between; padding-top: 12px; margin-top: 6px !important; border-top: 1px solid #a5ad8814; font-size: 12px; color: #747f68; }
+.pv-feed-footer > span { color: #9ba689; }
+
+.personal-panel.personal-panel--engraved { padding: 0; background: transparent; box-shadow: none; border-radius: 0; }
+.personal-panel--engraved .personal-glass { border: 0 !important; border-radius: 0 !important; background: transparent !important; box-shadow: none; overflow: visible; }
+.personal-panel--engraved .personal-glass::after, .personal-panel--engraved .personal-glass-grain, .personal-panel--engraved .personal-glass-reflection { display: none; }
+.pv-engraved { padding: 22px 24px 16px; text-shadow: 1px 2px 1px #000b, 0 -1px 1px #f6e2b31c; }
+.pv-engraved .pv-eyebrow { font-size: 17px; letter-spacing: 2.4px; color: #b0a184; }
+.pv-engraved .pv-total { font-size: 94px; letter-spacing: -4.1px; margin-top: 9px; color: #e1d9c6; line-height: 1.2; }
+.pv-engraved .pv-total > span:first-child { color: #bdad8e; margin-right: 16px; }
+.pv-engraved .pv-cents { color: #b4a78b; font-size: .74em; }
+.pv-engraved ul { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid #bfa77945; padding-top: 23px; margin-top: 28px; }
+.pv-engraved li { display: flex; flex-direction: column; gap: 8px; }
+.pv-engraved li + li { border-left: 1px solid #c3ac7a28; padding-left: 24px; }
+.pv-engraved-code { font: 400 15px/21px 'IBM Plex Mono', monospace; letter-spacing: 2.1px; color: #ae9b7b; }
+.pv-engraved-amount { font-size: 30px; line-height: 36px; white-space: nowrap; letter-spacing: -.5px; color: #cfc6b2; }
+
+/* The figure direction: no bezel, the diagram sits in the bronze itself. */
+.personal-panel--figure { height: 350px; }
+.personal-panel--figure .figure-stack { padding: 2px 0 8px; }

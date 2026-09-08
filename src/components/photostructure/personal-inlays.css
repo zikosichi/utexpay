@@ -1,0 +1,32 @@
+/* The balance is on bronze; only the three currency windows have glass.
+ * Type and window material come from panel-kit.css. */
+.personal-panel.personal-panel--tiles {
+  height: 275px; padding: 0; border-radius: 0; background: transparent; box-shadow: none;
+}
+.personal-panel.personal-panel--tiles > .personal-glass {
+  border: 0; border-radius: 0; background: transparent; box-shadow: none; overflow: visible;
+}
+.personal-panel--tiles > .personal-glass::after,
+.personal-panel--tiles > .personal-glass > .personal-glass-grain,
+.personal-panel--tiles > .personal-glass > .personal-glass-reflection { display: none; }
+
+.personal-inlays { padding: 0; font-family: 'Space Grotesk', Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+
+/* Personal's face is the shortest of the three, so its hero sits looser than
+ * the shared 76px default to keep the windows on their calibrated line. */
+.personal-inlays .panel-hero { margin-top: -1px; line-height: 91px; }
+
+.personal-inlays .inlay-grid {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 27px;
+  margin: 8px 0 0; padding: 0;
+}
+.personal-inlays .panel-window { height: 143px; }
+.personal-inlays .panel-window-body { padding: 24px 23px 16px; }
+.inlay-heading { display: flex; align-items: center; gap: 18px; }
+.inlay-symbol {
+  display: grid; place-items: center; flex: 0 0 35px; height: 35px; border-radius: 50%;
+  border: 1.4px solid #c29452; color: #cca060; font: 400 23px/1 'Space Grotesk', Arial, sans-serif;
+  box-shadow: inset 0 .5px .5px #e0bb7620, 0 .7px 1px #0009;
+  text-shadow: 0 1px 1px #000c;
+}
+.personal-inlays .inlay-amount { margin-top: 14px; }

@@ -1,0 +1,500 @@
+/* Projected hero — HTML panels projected onto a pre-rendered 3D plate.
+   Ported from the standalone utex-pay-hero.html prototype; everything is
+   scoped under .phero so it can't leak into other pages. */
+
+.phero {
+  --gold: #e5b267;
+  --gold-soft: #c9a063;
+  --ink: #050505;
+  --paper: #f3eee6;
+  --muted: rgba(238, 232, 222, 0.6);
+  --line: rgba(226, 187, 120, 0.26);
+  --sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, sans-serif;
+
+  position: relative;
+  min-height: max(740px, 100vh);
+  overflow: hidden;
+  isolation: isolate;
+  color: var(--paper);
+  font-family: var(--sans);
+  -webkit-font-smoothing: antialiased;
+  background:
+    radial-gradient(120% 70% at 50% 8%, rgba(70, 48, 20, 0.2), transparent 62%),
+    #000;
+}
+
+/* ---------- 3D scene ---------- */
+.phero .world {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+.phero .stage {
+  --k: 0.8;
+  position: absolute;
+  left: 50%;
+  bottom: -13%;
+  width: min(100%, 150vh, 1900px);
+  min-width: 1150px;
+  aspect-ratio: 1672 / 941;
+  transform: translateX(-50%);
+}
+.phero .plate {
+  display: block;
+  width: 100%;
+  height: auto;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* light that follows the pointer, laid over the metal */
+.phero .sheen {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  opacity: 0.5;
+  background: radial-gradient(
+    420px 320px at var(--mx, 50%) var(--my, 45%),
+    rgba(255, 206, 140, 0.11),
+    rgba(255, 206, 140, 0.03) 45%,
+    transparent 72%
+  );
+}
+
+/* ---------- projected faces ---------- */
+/* Each face is a quad measured off the render: origin + top-edge slope + side-edge
+   slope. Inside a face, 1px == 1px of the source render, so content scales with --k. */
+.phero .face {
+  position: absolute;
+  transform-origin: 0 0;
+  overflow: hidden;
+  opacity: 0;
+  animation: phero-light-up 0.9s cubic-bezier(0.2, 0.7, 0.3, 1) forwards;
+}
+@keyframes phero-light-up {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.phero .f1 {
+  left: calc(var(--k) * 113.2px);
+  top: calc(var(--k) * 512.1px);
+  width: 497px;
+  height: 235px;
+  transform: scale(var(--k)) matrix(1, -0.0475, 0.004873, 1, 0, 0);
+  animation-delay: 0.15s;
+}
+.phero .f2 {
+  left: calc(var(--k) * 627.8px);
+  top: calc(var(--k) * 420.1px);
+  width: 462px;
+  height: 294px;
+  transform: scale(var(--k)) matrix(1, -0.05229, 0.008049, 1, 0, 0);
+  animation-delay: 0.3s;
+}
+.phero .f3 {
+  left: calc(var(--k) * 1107.4px);
+  top: calc(var(--k) * 348.6px);
+  width: 493px;
+  height: 335px;
+  transform: scale(var(--k)) matrix(1, -0.05969, 0.003991, 1, 0, 0);
+  animation-delay: 0.45s;
+}
+
+.phero .flabel {
+  text-align: center;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 6px;
+  color: var(--gold-soft);
+  padding-top: 15px;
+  text-shadow: 0 0 18px rgba(229, 178, 103, 0.35);
+}
+
+.phero .panel {
+  position: absolute;
+  left: 30px;
+  right: 30px;
+  top: 52px;
+  bottom: -60px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: linear-gradient(168deg, rgba(14, 12, 10, 0.8), rgba(6, 5, 4, 0.86));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 224, 178, 0.14),
+    0 0 34px rgba(190, 140, 70, 0.1);
+  padding: 20px 22px;
+  transform: translate(calc(var(--px, 0) * 5px), calc(var(--py, 0) * 4px));
+}
+.phero .f2 .panel {
+  left: 28px;
+  right: 28px;
+  top: 50px;
+}
+.phero .f1 .panel {
+  top: 46px;
+}
+.phero .f1 .big {
+  font-size: 32px;
+  margin-top: 7px;
+}
+.phero .f1 .rule {
+  margin: 12px 0 2px;
+}
+.phero .f1 .row {
+  padding: 7px 0;
+}
+
+.phero .plabel {
+  font-size: 11px;
+  letter-spacing: 2.6px;
+  font-weight: 500;
+  color: rgba(226, 214, 196, 0.52);
+}
+
+.phero .big {
+  font-size: 35px;
+  font-weight: 600;
+  letter-spacing: -0.6px;
+  margin-top: 9px;
+  color: #f4efe6;
+}
+.phero .rule {
+  height: 1px;
+  background: linear-gradient(90deg, rgba(226, 187, 120, 0.22), rgba(226, 187, 120, 0.05));
+  margin: 15px 0 4px;
+}
+
+.phero .row {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 9px 0;
+  font-size: 16px;
+}
+.phero .dot {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  flex: none;
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: #0b0a08;
+}
+.phero .eur {
+  background: linear-gradient(140deg, #5b7fd4, #3b5ba8);
+  color: #eaf0ff;
+}
+.phero .usd {
+  background: linear-gradient(140deg, #6e6e6e, #3e3e3e);
+  color: #f0f0f0;
+}
+.phero .gbp {
+  background: linear-gradient(140deg, #b98bc0, #7e5c8a);
+  color: #f6ebf8;
+}
+.phero .row .amt {
+  margin-left: auto;
+  color: #efe8dc;
+}
+.phero .row .chev {
+  color: rgba(226, 214, 196, 0.35);
+  font-size: 15px;
+  margin-left: 9px;
+}
+
+/* business panel */
+.phero .stat {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  margin-top: 14px;
+}
+.phero .stat .n {
+  margin-left: auto;
+  color: #f4efe6;
+  font-weight: 600;
+}
+.phero .avatars {
+  display: flex;
+  align-items: center;
+  margin-top: 13px;
+}
+.phero .av {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  margin-right: -8px;
+  border: 1px solid rgba(0, 0, 0, 0.55);
+}
+.phero .av:nth-child(1) {
+  background: linear-gradient(140deg, #7a6a56, #4a4036);
+}
+.phero .av:nth-child(2) {
+  background: linear-gradient(140deg, #8e7a5e, #57493a);
+}
+.phero .av:nth-child(3) {
+  background: linear-gradient(140deg, #a08762, #6a583f);
+}
+.phero .av:nth-child(4) {
+  background: linear-gradient(140deg, #b79a6e, #7b6647);
+}
+.phero .av:nth-child(5) {
+  background: linear-gradient(140deg, #d3b884, #957c55);
+}
+.phero .more {
+  margin-left: 16px;
+  font-size: 13px;
+  color: rgba(226, 214, 196, 0.6);
+  border: 1px solid rgba(226, 187, 120, 0.24);
+  border-radius: 999px;
+  padding: 3px 9px;
+}
+.phero .gold-amt {
+  color: var(--gold);
+  font-size: 19px;
+  font-weight: 600;
+  margin-top: 6px;
+}
+
+/* payments panel */
+.phero .ok {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  font-size: 16px;
+  color: #f1ebe0;
+}
+.phero .tick {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  flex: none;
+  display: grid;
+  place-items: center;
+  background: rgba(58, 150, 92, 0.22);
+  border: 1px solid rgba(88, 196, 128, 0.45);
+  color: #69d08e;
+  font-size: 12px;
+}
+.phero .sum {
+  margin-top: 12px;
+  font-size: 16px;
+  line-height: 1.45;
+  color: rgba(238, 232, 222, 0.82);
+}
+.phero .chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 52px;
+  margin-top: 12px;
+}
+.phero .chart i {
+  flex: 1;
+  border-radius: 2px 2px 0 0;
+  background: linear-gradient(180deg, var(--gold), rgba(180, 132, 66, 0.35));
+}
+
+/* ---------- page copy ---------- */
+.phero .chrome {
+  position: relative;
+  z-index: 3;
+}
+
+.phero .nav {
+  display: flex;
+  align-items: center;
+  gap: 34px;
+  padding: 26px clamp(20px, 3.4vw, 48px);
+}
+.phero .logo {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  font-size: 19px;
+}
+.phero .logo .u {
+  color: #fff;
+}
+.phero .logo .p {
+  background: #fff;
+  color: #000;
+  padding: 2px 8px 3px;
+  font-size: 16px;
+  clip-path: polygon(0 0, 100% 0, 100% 68%, 88% 100%, 0 100%);
+}
+.phero .links {
+  display: flex;
+  gap: 30px;
+  margin: 0 auto;
+  font-size: 15px;
+}
+.phero .links a {
+  color: rgba(240, 236, 230, 0.78);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.phero .links a:hover {
+  color: #fff;
+}
+.phero .navr {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  font-size: 15px;
+}
+.phero .navr a {
+  color: rgba(240, 236, 230, 0.85);
+  text-decoration: none;
+}
+.phero .btn {
+  border: 0;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 9px;
+  padding: 11px 20px;
+  text-decoration: none;
+  display: inline-block;
+}
+.phero .btn-gold {
+  background: linear-gradient(180deg, #efbf74, #d9a052);
+  color: #1a1206;
+}
+.phero .btn-ghost {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.26);
+  color: #f2ede4;
+}
+
+.phero .copy {
+  text-align: center;
+  padding: clamp(28px, 5vh, 64px) 24px 0;
+}
+.phero .eyebrow {
+  font-size: 13px;
+  letter-spacing: 0.36em;
+  color: var(--gold);
+  font-weight: 600;
+  margin-bottom: 22px;
+}
+.phero h1 {
+  font-size: clamp(34px, 5.1vw, 74px);
+  line-height: 1.03;
+  letter-spacing: -0.024em;
+  font-weight: 800;
+  color: #fbf8f3;
+  margin: 0;
+}
+.phero .sub {
+  margin: 22px auto 0;
+  max-width: 60ch;
+  font-size: clamp(15px, 1.15vw, 19px);
+  line-height: 1.55;
+  color: var(--muted);
+}
+.phero .cta {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  margin-top: 30px;
+  flex-wrap: wrap;
+}
+.phero .cta .btn {
+  padding: 14px 26px;
+}
+.phero .assur {
+  display: flex;
+  gap: 30px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 26px;
+  font-size: 15px;
+  color: rgba(240, 236, 230, 0.82);
+}
+.phero .assur span {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.phero .assur i {
+  color: #79c58f;
+  font-style: normal;
+}
+
+.phero a:focus-visible,
+.phero .btn:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* Compact copy for shorter windows — the bottom-anchored stage rises into
+   the copy block, so the text scales down before they can overlap. */
+@media (max-height: 940px) {
+  .phero .nav {
+    padding-top: 18px;
+    padding-bottom: 18px;
+  }
+  .phero .copy {
+    padding-top: clamp(14px, 3vh, 36px);
+  }
+  .phero .eyebrow {
+    font-size: 11px;
+    margin-bottom: 14px;
+  }
+  .phero h1 {
+    font-size: clamp(30px, 4.2vw, 54px);
+  }
+  .phero .sub {
+    font-size: clamp(14px, 1vw, 16px);
+    margin-top: 14px;
+  }
+  .phero .cta {
+    margin-top: 20px;
+  }
+  .phero .cta .btn {
+    padding: 12px 22px;
+    font-size: 14px;
+  }
+  .phero .assur {
+    margin-top: 18px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 860px) {
+  .phero .links,
+  .phero .navr a {
+    display: none;
+  }
+  .phero .stage {
+    bottom: -8%;
+  }
+  .phero .assur {
+    gap: 16px;
+    font-size: 13px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .phero .face {
+    animation: none;
+    opacity: 1;
+  }
+  .phero .world {
+    transition: none;
+  }
+}

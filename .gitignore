@@ -1,0 +1,13 @@
+node_modules
+dist
+dist-ssr
+.tanstack
+.nitro
+.output
+.vercel
+.vinxi
+.wrangler
+output
+.fitbackup
+*.log
+.DS_Store

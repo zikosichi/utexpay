@@ -1,0 +1,80 @@
+{
+  "$schema": "https://forge.dev/schemas/stories.v3.json",
+  "name": "Hero Section",
+  "component": "./HeroSection.tsx#HeroSection",
+  "canvas": {
+    "layout": "flow"
+  },
+  "sections": [
+    {
+      "title": null,
+      "controls": [
+        {
+          "prop": "accent",
+          "control": "segmented",
+          "label": "Scene accent",
+          "default": "gold",
+          "options": ["gold", "lime"]
+        },
+        {
+          "prop": "depth",
+          "control": "segmented",
+          "label": "3D depth",
+          "default": "dramatic",
+          "options": ["flat", "layered", "dramatic"]
+        },
+        {
+          "prop": "showProductNetwork",
+          "control": "switch",
+          "label": "Product network",
+          "default": true
+        },
+        {
+          "prop": "showTrustRow",
+          "control": "switch",
+          "label": "Trust signals",
+          "default": true
+        }
+      ]
+    },
+    {
+      "title": "Motion",
+      "collapsible": true,
+      "controls": [
+        {
+          "prop": "motionMode",
+          "control": "segmented",
+          "label": "Motion style",
+          "default": "expressive",
+          "options": ["off", "subtle", "expressive"]
+        },
+        {
+          "prop": "floatIntensity",
+          "control": "slider",
+          "label": "Float intensity",
+          "default": 12,
+          "min": 4,
+          "max": 24,
+          "step": 1,
+          "visibleWhen": {
+            "prop": "motionMode",
+            "equals": "expressive"
+          }
+        }
+      ]
+    }
+  ],
+  "values": {
+    "eyebrow": "From your first account to your whole business",
+    "headline": "The bank that grows with you.",
+    "description": "Start with banking. Add cards, transfers, and payment acceptance when you’re ready — all in one place.",
+    "primaryCtaLabel": "Sign up",
+    "secondaryCtaLabel": "Talk to sales",
+    "accent": "gold",
+    "depth": "dramatic",
+    "motionMode": "expressive",
+    "floatIntensity": 12,
+    "showProductNetwork": true,
+    "showTrustRow": true
+  }
+}

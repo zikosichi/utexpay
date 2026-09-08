@@ -1,0 +1,11 @@
+/* Business and Payments carry engraved figures from panel-figure.css. Only the
+ * face heights and the stack that fills them belong here. */
+.commerce-panel--business { height: 400px; }
+.commerce-panel--payments { height: 466px; }
+
+.figure-stack { display: flex; flex-direction: column; width: 100%; height: 100%; }
+
+/* The figures are the composition, so they take the face and the inscription
+ * sits under them. Padding keeps the diagram clear of the bronze edges. */
+.commerce-panel--business .figure-stack { padding: 6px 0 10px; }
+.commerce-panel--payments .figure-stack { padding: 20px 0 14px; }

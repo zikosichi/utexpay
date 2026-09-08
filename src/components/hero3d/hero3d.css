@@ -1,0 +1,530 @@
+/* Hero 3D — real-time three.js block structure behind the hero copy.
+   Everything is scoped under .h3d. */
+
+.h3d {
+  --gold: #e5b267;
+  --gold-soft: #c9a063;
+  --paper: #f3eee6;
+  --muted: rgba(238, 232, 222, 0.6);
+  --line: rgba(226, 187, 120, 0.26);
+  --sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, sans-serif;
+
+  position: relative;
+  min-height: max(740px, 100vh);
+  overflow: hidden;
+  isolation: isolate;
+  color: var(--paper);
+  font-family: var(--sans);
+  -webkit-font-smoothing: antialiased;
+  background: #020202;
+}
+
+/* ---------- canvas layer ---------- */
+.h3d-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+.h3d-canvas canvas {
+  display: block;
+}
+
+/* reference overlay for alignment / vibe checks */
+.h3d-overlay {
+  position: absolute;
+  z-index: 2;
+  left: 50%;
+  bottom: 0;
+  width: 100%;
+  transform: translateX(-50%);
+  pointer-events: none;
+  mix-blend-mode: normal;
+}
+
+/* ---------- HTML in 3D (drei <Html transform>) ---------- */
+.h3d-html {
+  opacity: 0;
+  transition: opacity 0.7s cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+.h3d-html.is-on {
+  opacity: 1;
+}
+
+.h3d-label {
+  font-size: 21px;
+  font-weight: 600;
+  letter-spacing: 7px;
+  padding-left: 7px;
+  color: #efc57c;
+  white-space: nowrap;
+  text-shadow:
+    0 1px 1px rgba(0, 0, 0, 0.6),
+    0 0 12px rgba(0, 0, 0, 0.35),
+    0 0 22px rgba(229, 178, 103, 0.25);
+}
+
+.h3d-screen {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  background:
+    radial-gradient(120% 90% at 50% -10%, rgba(255, 214, 160, 0.08), transparent 60%),
+    linear-gradient(168deg, rgba(20, 16, 12, 0.35), rgba(0, 0, 0, 0.1));
+  box-shadow: inset 0 1px 0 rgba(255, 224, 178, 0.1);
+}
+.h3d-p {
+  position: absolute;
+  inset: 0;
+  padding: 20px 22px;
+  font-size: 16px;
+  line-height: 1.3;
+  color: #efe8dc;
+}
+.h3d-p-label {
+  font-size: 11px;
+  letter-spacing: 2.6px;
+  font-weight: 500;
+  color: rgba(226, 214, 196, 0.52);
+}
+.h3d-p-big {
+  font-size: 32px;
+  font-weight: 600;
+  letter-spacing: -0.6px;
+  margin-top: 6px;
+  color: #f4efe6;
+}
+.h3d-p-rule {
+  height: 1px;
+  background: linear-gradient(90deg, rgba(226, 187, 120, 0.28), rgba(226, 187, 120, 0.05));
+  margin: 12px 0 3px;
+}
+.h3d-p-row {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 6px 0;
+  font-size: 16px;
+}
+.h3d-p-dot {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  flex: none;
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+  font-weight: 700;
+}
+.h3d-p-dot.eur {
+  background: linear-gradient(140deg, #5b7fd4, #3b5ba8);
+  color: #eaf0ff;
+}
+.h3d-p-dot.usd {
+  background: linear-gradient(140deg, #6e6e6e, #3e3e3e);
+  color: #f0f0f0;
+}
+.h3d-p-dot.gbp {
+  background: linear-gradient(140deg, #b98bc0, #7e5c8a);
+  color: #f6ebf8;
+}
+.h3d-p-amt {
+  margin-left: auto;
+}
+.h3d-p-chev {
+  color: rgba(226, 214, 196, 0.35);
+  font-size: 15px;
+  margin-left: 9px;
+}
+.h3d-p-stat {
+  display: flex;
+  align-items: center;
+  margin-top: 16px;
+}
+.h3d-p-n {
+  margin-left: auto;
+  color: #f4efe6;
+  font-weight: 600;
+}
+.h3d-p-avatars {
+  display: flex;
+  align-items: center;
+  margin-top: 13px;
+}
+.h3d-p-av {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  margin-right: -8px;
+  border: 1px solid rgba(0, 0, 0, 0.55);
+}
+.h3d-p-av:nth-child(1) {
+  background: linear-gradient(140deg, #7a6a56, #4a4036);
+}
+.h3d-p-av:nth-child(2) {
+  background: linear-gradient(140deg, #8e7a5e, #57493a);
+}
+.h3d-p-av:nth-child(3) {
+  background: linear-gradient(140deg, #a08762, #6a583f);
+}
+.h3d-p-av:nth-child(4) {
+  background: linear-gradient(140deg, #b79a6e, #7b6647);
+}
+.h3d-p-av:nth-child(5) {
+  background: linear-gradient(140deg, #d3b884, #957c55);
+}
+.h3d-p-more {
+  margin-left: 16px;
+  font-size: 13px;
+  color: rgba(226, 214, 196, 0.6);
+  border: 1px solid rgba(226, 187, 120, 0.24);
+  border-radius: 999px;
+  padding: 3px 9px;
+}
+.h3d-p-gold {
+  color: var(--gold);
+  font-size: 20px;
+  font-weight: 600;
+  margin-top: 6px;
+}
+.h3d-p-ok {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  font-size: 16px;
+  color: #f1ebe0;
+}
+.h3d-p-tick {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  flex: none;
+  display: grid;
+  place-items: center;
+  background: rgba(58, 150, 92, 0.22);
+  border: 1px solid rgba(88, 196, 128, 0.45);
+  color: #69d08e;
+  font-size: 12px;
+}
+.h3d-p-sum {
+  margin-top: 12px;
+  font-size: 16px;
+  line-height: 1.45;
+  color: rgba(238, 232, 222, 0.82);
+}
+.h3d-p-sum2 {
+  margin-top: 8px;
+}
+.h3d-p-muted {
+  color: rgba(238, 232, 222, 0.55);
+}
+.h3d-p-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 54px;
+  margin-top: 12px;
+}
+.h3d-p-chart i {
+  flex: 1;
+  border-radius: 2px 2px 0 0;
+  background: linear-gradient(180deg, var(--gold), rgba(180, 132, 66, 0.35));
+}
+
+/* card face (printed details only; the metal is the mesh underneath) */
+.h3d-cardface {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 20px 17px;
+  color: rgba(255, 244, 220, 0.9);
+}
+.h3d-cardface-chip {
+  width: 28px;
+  height: 22px;
+  border-radius: 6px;
+  border: 1px solid rgba(90, 65, 20, 0.55);
+  background: linear-gradient(160deg, rgba(255, 238, 200, 0.55), rgba(160, 120, 55, 0.5));
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.15);
+}
+.h3d-cardface-logo {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 44%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  font-weight: 800;
+  font-size: 17px;
+  letter-spacing: 0.5px;
+  color: rgba(255, 246, 225, 0.92);
+  text-shadow: 0 1px 0 rgba(90, 65, 20, 0.35);
+}
+.h3d-cardface-logo .p {
+  background: rgba(255, 246, 225, 0.92);
+  color: #6a4e1c;
+  padding: 1px 5px 2px;
+  font-size: 13px;
+  clip-path: polygon(0 0, 100% 0, 100% 68%, 88% 100%, 0 100%);
+}
+.h3d-cardface-foot {
+  position: absolute;
+  left: 17px;
+  right: 17px;
+  bottom: 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+.h3d-cardface-num {
+  font-size: 10px;
+  letter-spacing: 1.6px;
+  color: rgba(255, 244, 220, 0.75);
+}
+.h3d-cardface-name {
+  font-size: 10px;
+  margin-top: 4px;
+  color: rgba(255, 244, 220, 0.8);
+}
+.h3d-cardface-mc {
+  display: flex;
+}
+.h3d-cardface-mc i {
+  width: 19px;
+  height: 19px;
+  border-radius: 50%;
+  background: #eb001b;
+  opacity: 0.85;
+}
+.h3d-cardface-mc i + i {
+  margin-left: -8px;
+  background: #f79e1b;
+  mix-blend-mode: screen;
+}
+
+/* ---------- page copy ---------- */
+.h3d-chrome {
+  position: relative;
+  z-index: 3;
+  pointer-events: none;
+}
+.h3d-chrome a,
+.h3d-chrome button {
+  pointer-events: auto;
+}
+
+.h3d-nav {
+  display: flex;
+  align-items: center;
+  gap: 34px;
+  padding: 26px clamp(20px, 3.4vw, 48px);
+}
+.h3d-logo {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  font-size: 19px;
+}
+.h3d-logo .u {
+  color: #fff;
+}
+.h3d-logo .p {
+  background: #fff;
+  color: #000;
+  padding: 2px 8px 3px;
+  font-size: 16px;
+  clip-path: polygon(0 0, 100% 0, 100% 68%, 88% 100%, 0 100%);
+}
+.h3d-links {
+  display: flex;
+  gap: 30px;
+  margin: 0 auto;
+  font-size: 15px;
+}
+.h3d-links a {
+  color: rgba(240, 236, 230, 0.78);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.h3d-links a:hover {
+  color: #fff;
+}
+.h3d-navr {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  font-size: 15px;
+}
+.h3d-navr a {
+  color: rgba(240, 236, 230, 0.85);
+  text-decoration: none;
+}
+.h3d-btn {
+  border: 0;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 9px;
+  padding: 11px 20px;
+  text-decoration: none;
+  display: inline-block;
+}
+.h3d-btn-gold {
+  background: linear-gradient(180deg, #efbf74, #d9a052);
+  color: #1a1206;
+}
+.h3d-btn-ghost {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.26);
+  color: #f2ede4;
+}
+
+.h3d-copy {
+  text-align: center;
+  padding: clamp(28px, 5vh, 64px) 24px 0;
+  will-change: transform;
+}
+.h3d-eyebrow {
+  font-size: 13px;
+  letter-spacing: 0.36em;
+  color: var(--gold);
+  font-weight: 600;
+  margin-bottom: 22px;
+}
+.h3d h1 {
+  font-size: clamp(34px, 5.1vw, 74px);
+  line-height: 1.03;
+  letter-spacing: -0.024em;
+  font-weight: 800;
+  color: #fbf8f3;
+  margin: 0;
+}
+.h3d-sub {
+  margin: 22px auto 0;
+  max-width: 60ch;
+  font-size: clamp(15px, 1.15vw, 19px);
+  line-height: 1.55;
+  color: var(--muted);
+}
+.h3d-cta {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  margin-top: 30px;
+  flex-wrap: wrap;
+}
+.h3d-cta .h3d-btn {
+  padding: 14px 26px;
+}
+.h3d-assur {
+  display: flex;
+  gap: 30px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 26px;
+  font-size: 15px;
+  color: rgba(240, 236, 230, 0.82);
+}
+.h3d-assur span {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.h3d-assur i {
+  color: #79c58f;
+  font-style: normal;
+}
+
+/* ---------- lab ---------- */
+.h3d-lab {
+  position: fixed;
+  z-index: 50;
+  top: 12px;
+  right: 12px;
+  bottom: 12px;
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow-y: auto;
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  background: rgba(10, 8, 6, 0.88);
+  backdrop-filter: blur(14px);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  color: #d4d4d4;
+}
+.h3d-labtoggle {
+  position: fixed;
+  z-index: 50;
+  right: 12px;
+  bottom: 12px;
+  padding: 8px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  background: rgba(10, 8, 6, 0.85);
+  color: #e5b267;
+  font: 600 11px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+/* ---------- responsive copy (same rules as the projected hero) ---------- */
+@media (max-height: 940px) {
+  .h3d-nav {
+    padding-top: 18px;
+    padding-bottom: 18px;
+  }
+  .h3d-copy {
+    padding-top: clamp(14px, 3vh, 36px);
+  }
+  .h3d-eyebrow {
+    font-size: 11px;
+    margin-bottom: 14px;
+  }
+  .h3d h1 {
+    font-size: clamp(30px, 4.2vw, 54px);
+  }
+  .h3d-sub {
+    font-size: clamp(14px, 1vw, 16px);
+    margin-top: 14px;
+  }
+  .h3d-cta {
+    margin-top: 20px;
+  }
+  .h3d-cta .h3d-btn {
+    padding: 12px 22px;
+    font-size: 14px;
+  }
+  .h3d-assur {
+    margin-top: 18px;
+    font-size: 13px;
+  }
+}
+@media (max-width: 860px) {
+  .h3d-links,
+  .h3d-navr a:not(.h3d-btn) {
+    display: none;
+  }
+  .h3d-assur {
+    gap: 16px;
+    font-size: 13px;
+  }
+  .h3d-lab {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .h3d-html {
+    transition: none;
+  }
+}

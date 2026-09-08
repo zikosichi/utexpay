@@ -1,0 +1,49 @@
+/* Panel DOM exists only to be baked (panels.tsx → scripts/bake-panels.mjs); the
+ * hero draws the bakes as textures on the bronze. Every surface is authored at
+ * a fixed size and pinned to the top-left of its bake frame. */
+.personal-face { position: absolute; left: 0; top: 0; }
+.personal-title { width: 640px; height: 60px; display: grid; place-items: center; }
+.personal-title h2 {
+  margin: 0; padding-left: 8px; transform: translateY(11px);
+  font: 500 50px/60px 'Oxanium', 'Space Grotesk', sans-serif;
+  letter-spacing: 9px; text-transform: uppercase; white-space: nowrap;
+  color: #b79c72;
+  background: linear-gradient(116deg, #775c37 2%, #d6bb87 25%, #a68a60 40%, #d2b37e 55%, #92714a 80%, #c8ad7e);
+  background-size: 140% 100%; background-position: var(--title-light, 45%) 0;
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  filter: drop-shadow(-.65px -.7px .35px #f4d4a046) drop-shadow(1.4px 2px .55px #030302);
+}
+.personal-panel {
+  width: 720px; height: 350px; padding: 9px 10px 11px 9px; border-radius: 27px; pointer-events: auto;
+  background: linear-gradient(145deg, #020302 8%, #020302 75%, #080907);
+  box-shadow: 0 0 0 1.4px #070805, 0 0 0 2.4px #b297682c,
+    1.8px 3px 2px #d5bb821c, -1px -2px 3px #000c,
+    inset 1px 2px 2px #000, inset -2px -2px 2px #67583c4a;
+}
+.personal-glass {
+  position: relative; isolation: isolate; width: 100%; height: 100%; overflow: hidden; border-radius: 19px;
+  border: 1.7px solid transparent;
+  background: linear-gradient(144deg, #26251fee 0%, #171814 36%, #10110f 79%, #141410 100%) padding-box,
+    linear-gradient(140deg, #998c707a 0%, #4f4b3e 29%, #5b5340 62%, #aa957060 88%, #4b4535 100%) border-box;
+  box-shadow: inset 0 1.5px 1.5px #d2c2a027, inset 1.5px 0 1px #82715b12,
+    inset 0 -2px 2px #000b, 2px 1px 1.5px #000;
+}
+.personal-glass::after {
+  content: ''; position: absolute; z-index: 3; inset: 0; border-radius: inherit; pointer-events: none;
+  background: linear-gradient(180deg, #e6d6ad04, transparent 35%, #0000000a);
+  box-shadow: inset 0 0 25px #0000001a;
+}
+.personal-glass-grain {
+  position: absolute; z-index: 0; inset: 0; opacity: .075; pointer-events: none; mix-blend-mode: soft-light;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='grain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.84' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Cpath fill='%23b7aa90' filter='url(%23grain)' d='M0 0h220v220H0z'/%3E%3C/svg%3E");
+}
+.personal-glass-reflection {
+  position: absolute; z-index: 2; inset: 0; pointer-events: none;
+  background: radial-gradient(ellipse at var(--glass-light, 24%) -65%, #d9cfab20, transparent 73%),
+    linear-gradient(114deg, #e1d7b207, transparent 50%, #01020109);
+  opacity: var(--glass-response, .65);
+}
+/* Coin faces. The medallion body itself lives in panel-sheet.css. */
+.personal-coin--euro { background: radial-gradient(circle at 28% 20%, #254777, #122b51 57%, #0a1a34); }
+.personal-coin--dollar { background: radial-gradient(circle at 28% 20%, #696264, #4d4648 57%, #332d30); }
+.personal-coin--pound { background: radial-gradient(circle at 28% 20%, #795858, #5c3f41 57%, #3f2b2c); }

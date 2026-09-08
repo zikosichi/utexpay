@@ -1,0 +1,86 @@
+/* Shared kit for the three bronze panels.
+ *
+ * All three boxes obey one grammar: an eyebrow and a hero number sitting
+ * directly on the bronze, then a single strip of glass windows. Keeping the
+ * four type roles and the window material here is what stops Personal,
+ * Business, and Payments drifting into three different systems again.
+ */
+
+/* --- Type roles. Four sizes, no fifth. --- */
+.panel-eyebrow {
+  margin: 0; padding-left: 10px;
+  font: 500 18px/28px 'Oxanium', 'Space Grotesk', sans-serif;
+  letter-spacing: 3px; text-transform: uppercase; white-space: nowrap;
+  color: #c6ac82;
+  text-shadow: .7px 1px .6px #000b, 0 -.5px .4px #ffe3ad30;
+}
+
+/* Lit like the engraved title: the gradient tracks the camera. */
+.panel-hero {
+  margin: 0; padding-left: 10px;
+  font: 400 56px/76px 'Space Grotesk', Arial, sans-serif;
+  font-variant-numeric: lining-nums tabular-nums;
+  letter-spacing: -1.8px; white-space: nowrap;
+  color: #d8c29b; text-shadow: none;
+  background: linear-gradient(114deg, #c3a579 0%, #e0cba6 28%, #d9c39e 52%, #c8ab80 78%, #d8bf98);
+  background-size: 140% 100%; background-position: var(--glass-light, 24%) 0;
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  filter: drop-shadow(.65px 1.15px .45px #050402b0);
+}
+
+.panel-value {
+  margin: 0; color: #d3cbb9;
+  font: 400 31px/40px 'Space Grotesk', Arial, sans-serif;
+  font-variant-numeric: lining-nums tabular-nums;
+  letter-spacing: -1px; white-space: nowrap;
+  text-shadow: 0 1px 1px #000c, 0 -.4px .4px #fff4;
+}
+
+.panel-label {
+  margin: 0; color: #a89e88;
+  font: 400 20px/28px 'Oxanium', 'Space Grotesk', sans-serif;
+  letter-spacing: .8px; white-space: nowrap;
+  text-shadow: 0 1px 1px #000b;
+}
+
+/* --- Window material: a cut in the bronze, glazed.
+ *     The fill stays transparent so the projected texture continues
+ *     underneath; only the bevel and the glass catch light. --- */
+.panel-window {
+  position: relative; padding: 5px; border: 0; border-radius: 21px;
+  background: transparent; list-style: none;
+  box-shadow: 0 0 0 1px #090a08d9, 0 1.4px 1px #d0c7b21c,
+    0 -1px 2px #000b, inset 0 3px 3px #000b, inset 2px 0 2px #000b;
+}
+.panel-window-face {
+  position: relative; isolation: isolate; height: 100%; overflow: hidden;
+  border: 1px solid #11120fb8; border-radius: 16px;
+  background: transparent;
+  box-shadow: inset 0 1.2px 1.5px #e0d9c41a, inset 1px 0 1px #c8c2af0a,
+    inset -1px -2px 3px #0009, 0 0 1px #000;
+}
+/* Local light catches the glass bevel; there is no metallic trim around the cut. */
+.panel-window-face::before {
+  content: ''; position: absolute; z-index: 4; inset: 0; border-radius: inherit; padding: 1.2px; pointer-events: none;
+  background: radial-gradient(ellipse at var(--glass-light, 24%) -20%, #eee8d49c, #c4bdaa40 22%, transparent 58%),
+    radial-gradient(ellipse at 80% 120%, #c4bda133, transparent 52%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+  opacity: var(--glass-response, .65);
+}
+.panel-window-face::after {
+  content: ''; position: absolute; z-index: 3; inset: 0; border-radius: inherit; pointer-events: none;
+  box-shadow: inset 0 0 14px #0003; background: none;
+}
+.panel-window-grain {
+  position: absolute; z-index: 0; inset: 0; opacity: .055; mix-blend-mode: soft-light; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='grain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.86' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Cpath fill='%23b7aa90' filter='url(%23grain)' d='M0 0h180v180H0z'/%3E%3C/svg%3E");
+}
+.panel-window-sheen {
+  position: absolute; z-index: 2; inset: 0; pointer-events: none;
+  background: radial-gradient(ellipse at var(--glass-light, 24%) -45%, #dfd2ad23, transparent 77%),
+    linear-gradient(117deg, #e7dfbd05, transparent 58%);
+  opacity: var(--glass-response, .65);
+}
+.panel-window-body { position: relative; z-index: 1; height: 100%; }

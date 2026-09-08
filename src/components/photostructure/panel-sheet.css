@@ -1,0 +1,65 @@
+/* The sheet: one inset glass panel per bronze face, filled with hairline rows.
+ *
+ * This is the house pattern — a single flat container with a heading and rows,
+ * never a grid of one card per fact. Card-per-fact both crowds the face (two
+ * dense cards competing) and hollows it out (each card too thin to carry the
+ * slab). Personal, Business, and Payments all share these roles so the three
+ * faces stay one object.
+ */
+.sheet {
+  position: relative; z-index: 1;
+  padding: 21px 33px 12px;
+  font-family: 'DM Sans', Arial, Helvetica, sans-serif; font-weight: 400;
+  color: #d1d2c9; font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+}
+.sheet p, .sheet figure { margin: 0; }
+
+.sheet-label {
+  margin: 0 0 4px;
+  font: 400 22px/26px 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace;
+  letter-spacing: 1.9px; text-transform: uppercase; white-space: nowrap;
+  color: #989788;
+  text-shadow: 0 1.3px 1px #000, 0 -.4px .4px #eee5bd25;
+}
+
+.sheet-headline { display: flex; align-items: baseline; justify-content: space-between; gap: 20px; }
+.sheet-total {
+  margin: 0 0 6px; font-size: 60px; line-height: 66px; letter-spacing: -1.5px;
+  color: #e5e6dc; white-space: nowrap;
+  text-shadow: 0 1.5px 1px #030503, 0 0 1px #e7e9d929;
+}
+.sheet-total > span { font-size: 57px; }
+.sheet-trend {
+  font-size: 25px; line-height: 30px; white-space: nowrap; color: #b9a887;
+  text-shadow: 0 1px 1px #000;
+}
+
+.sheet-rows { margin: 0; padding: 0; list-style: none; }
+/* The hairline plus its dark underline is what makes a row read as a physical
+ * score in the glass rather than a drawn divider. */
+.sheet-row {
+  display: flex; align-items: center; height: 62px; gap: 17px;
+  border-top: 1.4px solid #b9ac8226; box-shadow: 0 -1px 0 #01020150;
+  text-shadow: 0 1px 1px #000;
+}
+.sheet-name { min-width: 0; font-size: 32px; line-height: 38px; color: #c4c8bf; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sheet-amount { margin-left: auto; font-size: 33px; letter-spacing: -.6px; white-space: nowrap; color: #d4d6cc; }
+.sheet-chevron {
+  width: 18px; margin-left: 5px; text-align: right;
+  font: 300 37px/1 Arial, sans-serif; color: #cfcec1; transform: translateY(-1px);
+}
+
+.sheet-medallion {
+  position: relative; display: grid; place-items: center; flex: 0 0 49px; height: 49px;
+  border-radius: 50%; border: 1.3px solid #adbcba34;
+  box-shadow: 1px 2px 3px #0008, inset 0 1px 1.5px #c4c8c526, inset 0 -2px 3px #0005;
+}
+.sheet-medallion::after {
+  content: ''; position: absolute; inset: 2.8px; border-radius: inherit;
+  border: 1px solid #dfdcc211; pointer-events: none;
+}
+.sheet-medallion > span {
+  font: 400 31px/1 Georgia, 'Times New Roman', serif; transform: translateY(-1px);
+  color: #d2d7d2; text-shadow: 0 1px 1px #0009, 0 -.4px .5px #fff5;
+}
