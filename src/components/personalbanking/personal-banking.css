@@ -1,0 +1,240 @@
+@import '../banking-container.css';
+
+.personal-banking {
+  --scene-x: 0;
+  --scene-y: 0;
+  --personal-text: #f0efe9;
+  --personal-muted: #a8a69f;
+  --personal-gold: #d7c398;
+  --personal-entry-space: clamp(32px, 3vw, 48px);
+  position: relative;
+  z-index: 0;
+  isolation: isolate;
+  overflow: clip;
+  padding-top: var(--personal-entry-space);
+  color: var(--personal-text);
+  font-family: 'Manrope', sans-serif;
+  scroll-margin-top: 88px;
+}
+
+.personal-banking__legacy-anchor { position: absolute; top: 0; scroll-margin-top: 88px; }
+
+.personal-banking__inner {
+  display: grid;
+  grid-template-columns: 46% minmax(0, 1fr);
+  align-items: center;
+  width: calc(100% - 2 * var(--banking-container-gutter));
+  max-width: var(--banking-container-width);
+  min-height: 960px;
+  margin-inline: auto;
+  padding-block: 96px 80px;
+}
+
+.personal-banking__version-bar { position: absolute; z-index: 5; top: calc(var(--personal-entry-space) + 32px); right: 0; }
+.personal-banking__versions { display: flex; flex-direction: column; gap: 2px; }
+.personal-banking__versions button { position: relative; display: grid; place-items: center; width: 32px; height: 32px; padding: 0; border: 0; color: #77736b; background: transparent; cursor: pointer; font: 9px/1 'JetBrains Mono', monospace; }
+.personal-banking__versions button::after { content: ''; position: absolute; right: 0; top: 10px; width: 2px; height: 12px; background: currentColor; opacity: 0; }
+.personal-banking__versions button:hover { color: #f1e8d5; }
+.personal-banking__versions button[aria-pressed='true'] { color: #cfb984; }
+.personal-banking__versions button[aria-pressed='true']::after { opacity: 1; }
+.personal-banking__version-name { position: absolute; right: calc(100% + 8px); top: 50%; transform: translateY(-50%); padding: 7px 10px; border: 1px solid #ffffff12; border-radius: 4px; background: var(--page-background); color: #c6bda9; font: 11px/16px 'Manrope', sans-serif; white-space: nowrap; opacity: 0; visibility: hidden; pointer-events: none; }
+.personal-banking__versions button:is(:hover, :focus-visible) .personal-banking__version-name { opacity: 1; visibility: visible; }
+.personal-banking .personal-banking__versions button:focus-visible { outline-offset: -3px; }
+.personal-banking[data-version='stack'] { background: var(--page-background); }
+
+.personal-banking__copy { position: relative; z-index: 2; padding-block: 24px; }
+
+.personal-banking__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 0 0 24px;
+  color: var(--personal-gold);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 20px;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+}
+
+.personal-banking__eyebrow::before { content: ''; width: 32px; height: 1px; background: currentColor; }
+
+.personal-banking__copy h2 {
+  margin: 0;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: clamp(44px, 4.167vw, 60px);
+  font-weight: 500;
+  line-height: 1.12;
+  letter-spacing: -.04em;
+}
+
+.personal-banking__copy h2 span { color: #c0b8a7; }
+
+.personal-banking__description {
+  max-width: 500px;
+  margin: 32px 0 0;
+  color: var(--personal-muted);
+  font-size: clamp(20px, 1.67vw, 25px);
+  line-height: 1.6;
+}
+
+.personal-banking__features {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  max-width: 550px;
+  gap: 24px;
+  margin: 48px 0 32px;
+  padding: 0;
+  list-style: none;
+}
+
+.personal-banking__features li { display: flex; flex-direction: column; gap: 16px; font-size: 17px; line-height: 27px; color: #cfcdc5; }
+.personal-banking__features svg { color: var(--personal-gold); flex: 0 0 auto; }
+
+.personal-banking__explore {
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 48px;
+  padding: 8px 0;
+  border: 0;
+  border-radius: 3px;
+  background: transparent;
+  color: var(--personal-gold);
+  font: 500 17px/26px 'Manrope', sans-serif;
+  cursor: pointer;
+  transition: color 180ms ease;
+}
+
+.personal-banking__explore svg { width: 18px; height: 18px; transition: transform 200ms ease; }
+.personal-banking__explore:hover { color: #fff0ce; }
+.personal-banking__explore:hover svg { transform: translate(2px, -2px); }
+.personal-banking button:focus-visible { outline: 2px solid var(--personal-gold); outline-offset: 6px; }
+
+.personal-banking__visual {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1.17;
+  margin: 0;
+  perspective: 1200px;
+}
+
+.personal-banking__scene {
+  position: absolute;
+  width: 100%;
+  top: 0;
+  mask-image: radial-gradient(ellipse 65% 62% at 50% 45%, #000 54%, transparent 83%);
+  transform: translate3d(calc(var(--scene-x) * 5px), calc(var(--scene-y) * 3px), 0) rotateY(calc(var(--scene-x) * 1deg));
+  transition: transform 650ms cubic-bezier(.2,.65,.3,1);
+}
+
+.personal-banking[data-version='concept'] .personal-banking__visual { aspect-ratio: 1; }
+
+.personal-banking__phone { display: block; width: 100%; height: auto; user-select: none; }
+
+.personal-banking__notification {
+  position: absolute;
+  z-index: 1;
+  left: 8%;
+  bottom: 22%;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 308px;
+  padding: 18px;
+  border: 1px solid #b59a6047;
+  border-radius: 14px;
+  background: linear-gradient(125deg, #373127ed, #1a1916ed 75%);
+  box-shadow: 0 16px 48px #0009, inset 0 1px 0 #f2dcac12;
+  backdrop-filter: blur(18px);
+  transform: translate3d(calc(var(--scene-x) * -10px), calc(var(--scene-y) * -7px), 0);
+  transition: transform 850ms cubic-bezier(.2,.65,.3,1);
+}
+
+.personal-banking__notification-icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 44px;
+  height: 44px;
+  border: 1px solid #ddbf7f29;
+  border-radius: 50%;
+  background: linear-gradient(140deg, #7563487a, #443b2b5c);
+  color: #e3d4b3;
+}
+
+.personal-banking__notification-copy { flex: 1; min-width: 0; }
+.personal-banking__notification-meta { display: flex; justify-content: space-between; gap: 12px; color: #b6b0a2; font-size: 11px; line-height: 18px; }
+.personal-banking__notification-meta > :last-child { color: #a49e92; font-size: 10px; }
+.personal-banking__notification p { display: flex; justify-content: space-between; gap: 16px; margin: 4px 0 0; color: #f1eee5; font-size: 15px; line-height: 24px; }
+.personal-banking__notification p span { font-weight: 600; font-variant-numeric: tabular-nums; }
+
+.personal-banking__preview {
+  position: fixed;
+  inset: 0;
+  width: min(900px, calc(100vw - 32px));
+  max-width: none;
+  max-height: calc(100dvh - 48px);
+  margin: auto;
+  padding: 0;
+  border: 1px solid #62553d;
+  border-radius: 20px;
+  background: #080807;
+  color: var(--personal-text);
+}
+
+.personal-banking__preview::backdrop { background: #000c; backdrop-filter: blur(12px); }
+.personal-banking__preview-content { position: relative; padding: 48px 48px 0; overflow: hidden; }
+.personal-banking__preview-intro { position: relative; z-index: 1; max-width: 520px; }
+.personal-banking__preview-intro h2 { font: 500 clamp(28px, 4vw, 40px)/1.2 'Plus Jakarta Sans', sans-serif; letter-spacing: -.04em; margin: 0 0 16px; }
+.personal-banking__preview-intro > p:last-child { color: var(--personal-muted); font-size: 16px; line-height: 26px; margin: 0; }
+.personal-banking__preview-content > img { display: block; width: 100%; max-width: 640px; height: auto; margin: -12px auto -32px; }
+.personal-banking__preview-close { position: absolute; z-index: 2; top: 16px; right: 16px; display: grid; place-items: center; width: 44px; height: 44px; border: 1px solid #ffffff26; border-radius: 50%; background: #24221dd9; color: #f1eee5; cursor: pointer; }
+.personal-banking__preview-close:hover { background: #3e382e; }
+.personal-banking__preview-content > .personal-banking__pad-preview { max-width: 800px; margin: 8px auto -32px; }
+
+@media (max-width: 1199px) {
+  .personal-banking__inner { min-height: 860px; }
+  .personal-banking__copy h2 { font-size: 44px; }
+  .personal-banking__features { gap: 20px; }
+  .personal-banking__features li { font-size: 15px; }
+  .personal-banking__description { max-width: 390px; font-size: 20px; }
+  .personal-banking__notification { width: 280px; padding: 16px; }
+}
+
+@media (max-width: 1049px) {
+  .personal-banking__inner { display: flex; flex-direction: column; align-items: stretch; min-height: 0; padding: 56px 0 40px; }
+  .personal-banking__copy { padding: 0; }
+  .personal-banking__copy h2 { font-size: clamp(44px, 6.2vw, 60px); }
+  .personal-banking__description { max-width: 480px; font-size: 22px; }
+  .personal-banking__features { max-width: 540px; }
+  .personal-banking__features li { font-size: 17px; }
+  .personal-banking__visual { width: min(820px, 100%); align-self: center; margin: 48px 0 0; }
+  .personal-banking__scene { top: 0; }
+  .personal-banking__notification { left: 13%; bottom: 28%; width: 308px; padding: 18px; }
+}
+
+@media (max-width: 599px) {
+  .personal-banking__inner { padding: 48px 0 24px; }
+  .personal-banking__versions button { width: 24px; }
+  .personal-banking__eyebrow { font-size: 11px; margin-bottom: 24px; gap: 12px; }
+  .personal-banking__eyebrow::before { width: 24px; }
+  .personal-banking__copy h2 { font-size: clamp(28px, 7.8vw, 44px); line-height: 1.18; }
+  .personal-banking__description { font-size: 18px; line-height: 29px; max-width: 350px; margin-top: 24px; }
+  .personal-banking__features { margin-block: 32px 24px; gap: 14px; }
+  .personal-banking__features li { font-size: 13px; line-height: 21px; gap: 12px; }
+  .personal-banking__features svg { width: 22px; height: 22px; }
+  .personal-banking__explore { font-size: 15px; }
+  .personal-banking__visual { margin-top: 24px; }
+  .personal-banking__scene { top: -8px; }
+  .personal-banking__notification { width: 250px; max-width: calc(100% - 32px); padding: 14px; left: 8%; bottom: 26%; gap: 12px; }
+  .personal-banking__notification-icon { flex-basis: 38px; height: 38px; }
+  .personal-banking__notification p { font-size: 14px; }
+  .personal-banking__preview-content { padding: 72px 24px 16px; }
+  .personal-banking__preview-content > img { width: calc(100% + 48px); max-width: none; margin: 8px -24px -16px; }
+  .personal-banking__preview-content > .personal-banking__pad-preview { max-width: none; margin: 8px -24px -16px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .personal-banking__scene, .personal-banking__notification, .personal-banking__explore svg { transform: none; transition: none; }
+}

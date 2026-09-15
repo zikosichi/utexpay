@@ -10,8 +10,11 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AccountsPanelBakeRouteImport } from './routes/accounts-panel-bake'
 import { Route as ArchHeroRouteImport } from './routes/arch-hero'
+import { Route as GlobeHorizonRouteImport } from './routes/globe-horizon'
 import { Route as Hero3dRouteImport } from './routes/hero-3d'
+import { Route as HeroAccountsRouteImport } from './routes/hero-accounts'
 import { Route as HeroDepthRouteImport } from './routes/hero-depth'
 import { Route as HeroProjectionRouteImport } from './routes/hero-projection'
 import { Route as HeroStudioRouteImport } from './routes/hero-studio'
@@ -19,10 +22,18 @@ import { Route as MagneticStackRouteImport } from './routes/magnetic-stack'
 import { Route as PanelBakeRouteImport } from './routes/panel-bake'
 import { Route as ProjectedHeroRouteImport } from './routes/projected-hero'
 import { Route as ProjectionLabRouteImport } from './routes/projection-lab'
+import { Route as SectionOptionsRouteImport } from './routes/section-options'
+import { Route as SectionStackRouteImport } from './routes/section-stack'
+import { Route as Version5RouteImport } from './routes/version-5'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AccountsPanelBakeRoute = AccountsPanelBakeRouteImport.update({
+  id: '/accounts-panel-bake',
+  path: '/accounts-panel-bake',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ArchHeroRoute = ArchHeroRouteImport.update({
@@ -30,9 +41,19 @@ const ArchHeroRoute = ArchHeroRouteImport.update({
   path: '/arch-hero',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GlobeHorizonRoute = GlobeHorizonRouteImport.update({
+  id: '/globe-horizon',
+  path: '/globe-horizon',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const Hero3dRoute = Hero3dRouteImport.update({
   id: '/hero-3d',
   path: '/hero-3d',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HeroAccountsRoute = HeroAccountsRouteImport.update({
+  id: '/hero-accounts',
+  path: '/hero-accounts',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HeroDepthRoute = HeroDepthRouteImport.update({
@@ -70,11 +91,29 @@ const ProjectionLabRoute = ProjectionLabRouteImport.update({
   path: '/projection-lab',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SectionOptionsRoute = SectionOptionsRouteImport.update({
+  id: '/section-options',
+  path: '/section-options',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SectionStackRoute = SectionStackRouteImport.update({
+  id: '/section-stack',
+  path: '/section-stack',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const Version5Route = Version5RouteImport.update({
+  id: '/version-5',
+  path: '/version-5',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/accounts-panel-bake': typeof AccountsPanelBakeRoute
   '/arch-hero': typeof ArchHeroRoute
+  '/globe-horizon': typeof GlobeHorizonRoute
   '/hero-3d': typeof Hero3dRoute
+  '/hero-accounts': typeof HeroAccountsRoute
   '/hero-depth': typeof HeroDepthRoute
   '/hero-projection': typeof HeroProjectionRoute
   '/hero-studio': typeof HeroStudioRoute
@@ -82,11 +121,17 @@ export interface FileRoutesByFullPath {
   '/panel-bake': typeof PanelBakeRoute
   '/projected-hero': typeof ProjectedHeroRoute
   '/projection-lab': typeof ProjectionLabRoute
+  '/section-options': typeof SectionOptionsRoute
+  '/section-stack': typeof SectionStackRoute
+  '/version-5': typeof Version5Route
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/accounts-panel-bake': typeof AccountsPanelBakeRoute
   '/arch-hero': typeof ArchHeroRoute
+  '/globe-horizon': typeof GlobeHorizonRoute
   '/hero-3d': typeof Hero3dRoute
+  '/hero-accounts': typeof HeroAccountsRoute
   '/hero-depth': typeof HeroDepthRoute
   '/hero-projection': typeof HeroProjectionRoute
   '/hero-studio': typeof HeroStudioRoute
@@ -94,12 +139,18 @@ export interface FileRoutesByTo {
   '/panel-bake': typeof PanelBakeRoute
   '/projected-hero': typeof ProjectedHeroRoute
   '/projection-lab': typeof ProjectionLabRoute
+  '/section-options': typeof SectionOptionsRoute
+  '/section-stack': typeof SectionStackRoute
+  '/version-5': typeof Version5Route
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/accounts-panel-bake': typeof AccountsPanelBakeRoute
   '/arch-hero': typeof ArchHeroRoute
+  '/globe-horizon': typeof GlobeHorizonRoute
   '/hero-3d': typeof Hero3dRoute
+  '/hero-accounts': typeof HeroAccountsRoute
   '/hero-depth': typeof HeroDepthRoute
   '/hero-projection': typeof HeroProjectionRoute
   '/hero-studio': typeof HeroStudioRoute
@@ -107,13 +158,19 @@ export interface FileRoutesById {
   '/panel-bake': typeof PanelBakeRoute
   '/projected-hero': typeof ProjectedHeroRoute
   '/projection-lab': typeof ProjectionLabRoute
+  '/section-options': typeof SectionOptionsRoute
+  '/section-stack': typeof SectionStackRoute
+  '/version-5': typeof Version5Route
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/accounts-panel-bake'
     | '/arch-hero'
+    | '/globe-horizon'
     | '/hero-3d'
+    | '/hero-accounts'
     | '/hero-depth'
     | '/hero-projection'
     | '/hero-studio'
@@ -121,11 +178,17 @@ export interface FileRouteTypes {
     | '/panel-bake'
     | '/projected-hero'
     | '/projection-lab'
+    | '/section-options'
+    | '/section-stack'
+    | '/version-5'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/accounts-panel-bake'
     | '/arch-hero'
+    | '/globe-horizon'
     | '/hero-3d'
+    | '/hero-accounts'
     | '/hero-depth'
     | '/hero-projection'
     | '/hero-studio'
@@ -133,11 +196,17 @@ export interface FileRouteTypes {
     | '/panel-bake'
     | '/projected-hero'
     | '/projection-lab'
+    | '/section-options'
+    | '/section-stack'
+    | '/version-5'
   id:
     | '__root__'
     | '/'
+    | '/accounts-panel-bake'
     | '/arch-hero'
+    | '/globe-horizon'
     | '/hero-3d'
+    | '/hero-accounts'
     | '/hero-depth'
     | '/hero-projection'
     | '/hero-studio'
@@ -145,12 +214,18 @@ export interface FileRouteTypes {
     | '/panel-bake'
     | '/projected-hero'
     | '/projection-lab'
+    | '/section-options'
+    | '/section-stack'
+    | '/version-5'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AccountsPanelBakeRoute: typeof AccountsPanelBakeRoute
   ArchHeroRoute: typeof ArchHeroRoute
+  GlobeHorizonRoute: typeof GlobeHorizonRoute
   Hero3dRoute: typeof Hero3dRoute
+  HeroAccountsRoute: typeof HeroAccountsRoute
   HeroDepthRoute: typeof HeroDepthRoute
   HeroProjectionRoute: typeof HeroProjectionRoute
   HeroStudioRoute: typeof HeroStudioRoute
@@ -158,6 +233,9 @@ export interface RootRouteChildren {
   PanelBakeRoute: typeof PanelBakeRoute
   ProjectedHeroRoute: typeof ProjectedHeroRoute
   ProjectionLabRoute: typeof ProjectionLabRoute
+  SectionOptionsRoute: typeof SectionOptionsRoute
+  SectionStackRoute: typeof SectionStackRoute
+  Version5Route: typeof Version5Route
 }
 
 declare module '@tanstack/react-router' {
@@ -169,6 +247,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/accounts-panel-bake': {
+      id: '/accounts-panel-bake'
+      path: '/accounts-panel-bake'
+      fullPath: '/accounts-panel-bake'
+      preLoaderRoute: typeof AccountsPanelBakeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/arch-hero': {
       id: '/arch-hero'
       path: '/arch-hero'
@@ -176,11 +261,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ArchHeroRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/globe-horizon': {
+      id: '/globe-horizon'
+      path: '/globe-horizon'
+      fullPath: '/globe-horizon'
+      preLoaderRoute: typeof GlobeHorizonRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/hero-3d': {
       id: '/hero-3d'
       path: '/hero-3d'
       fullPath: '/hero-3d'
       preLoaderRoute: typeof Hero3dRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/hero-accounts': {
+      id: '/hero-accounts'
+      path: '/hero-accounts'
+      fullPath: '/hero-accounts'
+      preLoaderRoute: typeof HeroAccountsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/hero-depth': {
@@ -232,13 +331,37 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProjectionLabRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/section-options': {
+      id: '/section-options'
+      path: '/section-options'
+      fullPath: '/section-options'
+      preLoaderRoute: typeof SectionOptionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/section-stack': {
+      id: '/section-stack'
+      path: '/section-stack'
+      fullPath: '/section-stack'
+      preLoaderRoute: typeof SectionStackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/version-5': {
+      id: '/version-5'
+      path: '/version-5'
+      fullPath: '/version-5'
+      preLoaderRoute: typeof Version5RouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AccountsPanelBakeRoute: AccountsPanelBakeRoute,
   ArchHeroRoute: ArchHeroRoute,
+  GlobeHorizonRoute: GlobeHorizonRoute,
   Hero3dRoute: Hero3dRoute,
+  HeroAccountsRoute: HeroAccountsRoute,
   HeroDepthRoute: HeroDepthRoute,
   HeroProjectionRoute: HeroProjectionRoute,
   HeroStudioRoute: HeroStudioRoute,
@@ -246,6 +369,9 @@ const rootRouteChildren: RootRouteChildren = {
   PanelBakeRoute: PanelBakeRoute,
   ProjectedHeroRoute: ProjectedHeroRoute,
   ProjectionLabRoute: ProjectionLabRoute,
+  SectionOptionsRoute: SectionOptionsRoute,
+  SectionStackRoute: SectionStackRoute,
+  Version5Route: Version5Route,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

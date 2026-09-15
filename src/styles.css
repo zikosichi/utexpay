@@ -10,14 +10,15 @@
   }
 
   html {
+    --page-background: #0d0d0f;
     scroll-behavior: smooth;
-    background: #080807;
+    background: var(--page-background);
   }
 
   body {
     margin: 0;
     min-width: 320px;
-    background: #080807;
+    background: var(--page-background);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
   }

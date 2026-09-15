@@ -27,6 +27,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       <body>
         {children}
         <Scripts />
+        <script src="/figma-capture-v5.js" />
       </body>
     </html>
   )

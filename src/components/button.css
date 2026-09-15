@@ -80,7 +80,7 @@
 
 @media (hover: hover) {
   .utex-button.utex-button--primary:where(:hover:not(:disabled)) { --button-fill: #f5c542; --button-edge-start: #fffbeb; }
-  .utex-button.utex-button--secondary:where(:hover:not(:disabled)) { --button-fill: #7a756f; --button-rim: #9a9690; }
+  .utex-button.utex-button--secondary:where(:hover:not(:disabled)) { --button-fill: #4a4742; --button-rim: #6e6960; }
   .utex-button.utex-button--ghost:where(:hover:not(:disabled)) { --button-fill: #24221e; }
   .utex-button.utex-button--danger:where(:hover:not(:disabled)) { --button-fill: #e87461; }
 }

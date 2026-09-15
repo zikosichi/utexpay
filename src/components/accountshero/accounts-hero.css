@@ -1,0 +1,45 @@
+@import '../photostructure/photostructure.css';
+
+/* The hero's own bottom padding, tightened from the shared `.photo-hero` value so the plinth's
+   fade runs into the next section instead of a long dark gap. The section below adds its own
+   entry space, so the two together still read as a clear break. Other hero routes keep theirs. */
+.accounts-hero { padding-bottom: clamp(24px, 2.5vw, 44px); background: var(--page-background); }
+/* Let the studio floor disappear gradually into the shared page surface. */
+.accounts-hero::after {
+  content: '';
+  position: absolute;
+  z-index: 3;
+  inset: auto 0 0;
+  height: clamp(180px, 24vw, 420px);
+  background: linear-gradient(to bottom, #0d0d0f00 0%, #0d0d0f40 30%, #0d0d0fb3 65%, var(--page-background) 100%);
+  pointer-events: none;
+}
+.accounts-hero .photo-stage { aspect-ratio: 2.25; width: min(100%, 1880px); }
+.accounts-hero .photo-stage--detail { aspect-ratio: 1.75; max-width: 1100px; }
+.accounts-hero .photo-fallback { object-fit: contain; object-position: center; }
+.accounts-hero .photo-fallback.is-visible { opacity: 1; }
+.accounts-controls { width: 300px; max-width: calc(100vw - 32px); }
+.accounts-hero .studio-controls :focus-visible { outline-offset: 2px; }
+@media (max-width: 760px) {
+  .accounts-hero .photo-stage { aspect-ratio: 1.75; margin-top: 24px; }
+  .accounts-hero .photo-stage--detail { aspect-ratio: 1.1; }
+}
+
+.ah-live-layer { position: absolute; inset: 0; z-index: 2; visibility: hidden; pointer-events: none; overflow: hidden; }
+.ah-live-panel { position: absolute; top: 0; left: 0; transform-origin: 0 0; pointer-events: auto; }
+
+.ah-live-layer.is-fallback { position: relative; inset: auto; visibility: visible !important; clip-path: none !important; overflow: visible; width: min(calc(100% - 48px), 560px); margin: 24px auto 40px; display: grid; gap: 24px; }
+.ah-live-layer.is-fallback .ah-live-panel { --ah-unit: min(.777778px, calc((100vw - 48px) / 720)) !important; position: relative; width: 100% !important; height: auto !important; transform: none !important; }
+.ah-live-layer.is-fallback [data-live-panel=personal] { aspect-ratio: 720 / 392; }
+.ah-live-layer.is-fallback [data-live-panel=business] { aspect-ratio: 720 / 508; }
+.ah-live-layer.is-fallback [data-live-panel=payments] { aspect-ratio: 720 / 588; }
+
+/* The card's own controls, grouped like the starting-view fieldset. */
+.accounts-card-settings { border: 1px solid #a08c592b; border-radius: 7px; margin: 18px 0 14px; padding: 2px 12px 6px; }
+.accounts-card-settings legend { padding: 0 5px; color: #dac99f; font-size: 11px; }
+.accounts-card-settings .studio-range { margin: 14px 0; }
+.accounts-card-settings small { display: block; margin: -4px 0 12px; color: #928b79; font: 10px/1.5 'DM Sans', sans-serif; }
+.accounts-card-settings .studio-restore { margin: 6px auto 4px; }
+.accounts-card-settings:disabled { opacity: .45; }
+.accounts-hint-settings .studio-view-switch { margin-bottom: 4px; }
+.accounts-hint-settings small { margin-top: 8px; }

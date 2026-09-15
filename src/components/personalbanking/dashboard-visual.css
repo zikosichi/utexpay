@@ -1,0 +1,38 @@
+.dashboard-scene {
+  position: absolute;
+  top: -2%;
+  left: 50%;
+  width: 100%;
+  margin-left: -50%;
+  aspect-ratio: 1122 / 1402;
+  mask-image: linear-gradient(90deg, transparent, #000 15%, #000 90%, transparent), linear-gradient(to bottom, transparent, #000 10%, #000 90%, transparent);
+  mask-composite: intersect;
+  transform: translate3d(calc(var(--scene-x) * 5px), calc(var(--scene-y) * 3px), 0);
+  transition: transform 650ms cubic-bezier(.2,.65,.3,1);
+}
+
+.dashboard-scene__image { display: block; width: 100%; height: auto; user-select: none; }
+
+.dashboard-scene--concept { top: 0; width: 100%; margin-left: -50%; aspect-ratio: 1; overflow: clip; }
+
+/* Use the render's black margins to enlarge the panel within the existing fade. */
+.dashboard-scene--concept .dashboard-scene__image { width: 110%; max-width: none; margin: -5%; }
+
+/* Fade the studio perimeter without dimming the screen or its thin metal edge. */
+.dashboard-scene--concept,
+.personal-banking__pad-preview[data-variant='concept'] {
+  mask-image:
+    linear-gradient(90deg, transparent, #0003 4%, #000b 9%, #000 16%, #000 84%, #000b 91%, #0003 96%, transparent),
+    linear-gradient(to bottom, transparent, #0004 1%, #000c 3%, #000 5%, #000 86%, #000c 90%, #0005 96%, transparent);
+  mask-composite: intersect;
+}
+
+.personal-banking__preview-content > .personal-banking__pad-preview[data-variant='concept'] { margin-bottom: 0; }
+
+@media (max-width: 599px) {
+  .dashboard-scene { width: 100%; margin-left: -50%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dashboard-scene { transform: none; transition: none; }
+}

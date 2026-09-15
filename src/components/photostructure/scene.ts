@@ -1,14 +1,15 @@
 import * as THREE from 'three'
 import { createProjector, createStructureGeometry, imagePoint } from './geometry'
 import { photographicMaterial } from './material'
-import { DEFAULT_OPTIONS } from './config'
+import { DEFAULT_OPTIONS, ILLUMINATED_SOURCE } from './config'
 import type { PhotoScene } from './config'
 import type { PersonalVariant } from './personalVariants'
 import { createDecal, paintDecal, prepareDecalTexture } from './decals'
 import { PANEL_SURFACES, PERSONAL_SURFACES, panelImage, personalPanel } from './surfaces'
 import type { PanelName } from './surfaces'
+import { createPhotoEnvironment } from './environment'
 
-export async function createPhotoScene(canvas: HTMLCanvasElement, source: HTMLImageElement, signal: AbortSignal): Promise<PhotoScene> {
+export async function createPhotoScene(canvas: HTMLCanvasElement, source: HTMLImageElement, stage: HTMLElement, signal: AbortSignal): Promise<PhotoScene> {
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' })
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2))
   renderer.setClearColor('#000000', 0)
@@ -49,7 +50,16 @@ export async function createPhotoScene(canvas: HTMLCanvasElement, source: HTMLIm
   try {
     const initialPanels = (['personal-title', 'business-title', 'business-panel', 'payments-title', 'payments-panel', personalPanel(DEFAULT_OPTIONS.layout)] as PanelName[])
       .map((name) => loadPanel(name).then((texture) => [name, texture] as const))
-    await source.decode()
+    const [, illuminated] = await Promise.all([
+      source.decode(),
+      loader.loadAsync(ILLUMINATED_SOURCE).then((texture) => {
+        if (disposed) { texture.dispose(); throw new DOMException('Scene disposed', 'AbortError') }
+        resources.push(texture)
+        texture.colorSpace = THREE.SRGBColorSpace
+        texture.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy())
+        return texture
+      }),
+    ])
     const image = new THREE.Texture(source)
     image.needsUpdate = true
     resources.push(image)
@@ -57,13 +67,17 @@ export async function createPhotoScene(canvas: HTMLCanvasElement, source: HTMLIm
     image.colorSpace = THREE.SRGBColorSpace
     image.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy())
     const projector = createProjector(), camera = projector.clone()
-    const material = photographicMaterial(image, projector)
-    resources.push(material)
+    const environment = createPhotoEnvironment(projector)
+    resources.push(environment)
+    scene.add(environment.group)
+    const material = photographicMaterial(image, illuminated, projector)
+    const foundationMaterial = photographicMaterial(image, illuminated, projector, environment.floorPlane)
+    resources.push(material, foundationMaterial)
     const sculpture = new THREE.Group()
     scene.add(sculpture)
     const geometries = createStructureGeometry(projector)
     resources.push(...geometries)
-    const blocks = geometries.map((geometry) => new THREE.Mesh(geometry, material))
+    const blocks = geometries.map((geometry) => new THREE.Mesh(geometry, geometry.name === 'Foundation' ? foundationMaterial : material))
     sculpture.add(...blocks)
     // One decal per calibrated surface. Personal has two panel profiles because
     // the Currency-inlays layout takes a wider patch of the face.
@@ -111,6 +125,12 @@ export async function createPhotoScene(canvas: HTMLCanvasElement, source: HTMLIm
       business: imagePoint([865, 541], 0, projector),
       payments: imagePoint([1354, 498], 0, projector),
     }
+    // Stable reference framing places the overhead source above the headline.
+    // It follows responsive layout, not pointer motion or studio close-ups.
+    const lightingCamera = projector.clone()
+    lightingCamera.position.add(focusPoints.full)
+    lightingCamera.lookAt(focusPoints.full)
+    lightingCamera.updateMatrixWorld()
     const focus = focusPoints[DEFAULT_OPTIONS.focus].clone()
     const baseYaw = THREE.MathUtils.degToRad(-12), basePitch = THREE.MathUtils.degToRad(16)
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)')
@@ -123,6 +143,7 @@ export async function createPhotoScene(canvas: HTMLCanvasElement, source: HTMLIm
     const entranceProgress = () => reduced.matches ? 1 : introEase(introTime / introDuration)
     let options = { ...DEFAULT_OPTIONS }, targetX = 0, targetY = 0, x = 0, y = 0
     let visible = !document.hidden, initialized = false, viewportWidth = 1, viewportHeight = 1
+    const sculptureViewport = new THREE.Vector4()
     let detailMix = DEFAULT_OPTIONS.focus === 'full' ? 0 : 1
     function framing() {
       const aspect = viewportWidth / viewportHeight
@@ -165,19 +186,57 @@ export async function createPhotoScene(canvas: HTMLCanvasElement, source: HTMLIm
       const pitch = basePitch + y * THREE.MathUtils.degToRad(options.range * .36) + THREE.MathUtils.degToRad(3.5) * introTurn
       pose(yaw, pitch)
       camera.getWorldDirection(material.uniforms.uView.value).negate()
+      foundationMaterial.uniforms.uView.value.copy(material.uniforms.uView.value)
+      if (environment.group.visible && options.floorReflection > 0) {
+        Object.values(decals).forEach((decal) => { decal.material.uniforms.uLinearOutput.value = 1 })
+        try { environment.capture(renderer, scene, camera) }
+        finally { Object.values(decals).forEach((decal) => { decal.material.uniforms.uLinearOutput.value = 0 }) }
+      }
+      // Draw the room over the whole hero, then preserve the sculpture's
+      // original top/side crop even when a studio close-up is selected.
+      const showSculpture = sculpture.visible, showSource = sourcePlane.visible
+      sculpture.visible = false; sourcePlane.visible = false
       renderer.render(scene, camera)
+      const showEnvironment = environment.group.visible
+      environment.group.visible = false
+      sculpture.visible = showSculpture; sourcePlane.visible = showSource
+      renderer.autoClear = false
+      renderer.setScissor(sculptureViewport)
+      renderer.setScissorTest(true)
+      renderer.render(scene, camera)
+      renderer.setScissorTest(false)
+      renderer.autoClear = true
+      environment.group.visible = showEnvironment
       canvas.dataset.yaw = THREE.MathUtils.radToDeg(yaw - baseYaw).toFixed(3)
       canvas.dataset.pitch = THREE.MathUtils.radToDeg(pitch - basePitch).toFixed(3)
       canvas.dataset.mode = options.mode
       canvas.dataset.framing = options.focus
       canvas.dataset.motion = reduced.matches ? 'reduced' : options.motion ? 'enabled' : 'paused'
       canvas.dataset.intro = introTime >= introDuration ? 'complete' : 'playing'
+      canvas.dataset.environment = environment.group.visible ? 'studio' : 'hidden'
+      canvas.dataset.lighting = options.lighting
+      canvas.dataset.objectLight = String(material.uniforms.uLighting.value)
+      canvas.dataset.backgroundLight = String(options.backgroundLight)
+      canvas.dataset.lightSpread = String(options.lightSpread)
+      canvas.dataset.floorReflection = String(options.floorReflection)
+      canvas.dataset.overheadLight = String(options.lighting === 'illuminated' ? options.overheadLight : 0)
       if (introTime < introDuration || Math.abs(tx - x) + Math.abs(ty - y) + Math.abs(detailTarget - detailMix) + focus.distanceTo(focusTarget) > .00005) invalidate()
     }
     function resize() {
-      const { width, height } = canvas.getBoundingClientRect()
-      viewportWidth = Math.max(1, width); viewportHeight = Math.max(1, height)
-      renderer.setSize(Math.max(1, width), Math.max(1, height), false)
+      const bounds = canvas.getBoundingClientRect(), stageBounds = stage.getBoundingClientRect()
+      viewportWidth = Math.max(1, stageBounds.width); viewportHeight = Math.max(1, stageBounds.height)
+      const width = Math.max(1, bounds.width), height = Math.max(1, bounds.height)
+      renderer.setSize(width, height, false)
+      sculptureViewport.set(stageBounds.left - bounds.left, 0, stageBounds.width, Math.max(1, bounds.bottom - stageBounds.top))
+      // Extend the canvas over the whole hero while preserving the original
+      // stage's exact composition, scale and responsive camera framing.
+      camera.setViewOffset(viewportWidth, viewportHeight, bounds.left - stageBounds.left, bounds.top - stageBounds.top, width, height)
+      const fullWidth = Math.max(19.7, 8.6 * viewportWidth / viewportHeight)
+      lightingCamera.left = -fullWidth / 2; lightingCamera.right = fullWidth / 2
+      lightingCamera.top = fullWidth * viewportHeight / viewportWidth / 2; lightingCamera.bottom = -lightingCamera.top
+      lightingCamera.setViewOffset(viewportWidth, viewportHeight, bounds.left - stageBounds.left, bounds.top - stageBounds.top, width, height)
+      environment.frameOverhead(lightingCamera)
+      environment.resize(width, height)
       framing()
       invalidate()
     }
@@ -195,6 +254,9 @@ export async function createPhotoScene(canvas: HTMLCanvasElement, source: HTMLIm
     }
     resizeObserver = new ResizeObserver(resize)
     resizeObserver.observe(canvas)
+    resizeObserver.observe(stage)
+    // A font swap can move the stage without changing its width or height.
+    void document.fonts.ready.then(() => { if (!disposed) resize() })
     resize()
     pose(baseYaw, basePitch)
     for (const settled of await Promise.allSettled(initialPanels)) {
@@ -217,6 +279,11 @@ export async function createPhotoScene(canvas: HTMLCanvasElement, source: HTMLIm
         options = next
         material.uniforms.uGeometry.value = next.mode === 'mesh' ? 1 : 0
         material.uniforms.uResponse.value = next.response
+        material.uniforms.uLighting.value = next.lighting === 'illuminated' ? next.backgroundLight : 0
+        foundationMaterial.uniforms.uGeometry.value = material.uniforms.uGeometry.value
+        foundationMaterial.uniforms.uResponse.value = next.response
+        foundationMaterial.uniforms.uLighting.value = material.uniforms.uLighting.value
+        environment.update(next)
         sculpture.visible = next.mode !== 'source'
         sourcePlane.visible = next.mode === 'source'
         decoration.visible = next.mode === 'photo'

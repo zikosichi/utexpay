@@ -1,0 +1,115 @@
+@import '../banking-container.css';
+
+.stack-alternative .accounts-hero .studio-tools { position: absolute; }
+
+.dashboard-stack {
+  --ds-text: #f5f4ef;
+  --ds-muted: #9a9690;
+  --ds-gold: #f5c542;
+  --ds-width: var(--banking-container-width);
+  --ds-window-background: rgb(13 13 15 / 58%);
+  --ds-slide-duration: 8s;
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+  padding: 41px var(--banking-container-gutter) 24px;
+  color: var(--ds-text);
+  background: var(--page-background);
+  font-family: 'Mona Sans', 'Manrope', sans-serif;
+  scroll-margin-top: 86px;
+}
+.ds-anchor { position: absolute; top: 0; scroll-margin-top: 86px; }
+.ds-intro { max-width: 800px; }
+.ds-stage { position: relative; max-width: var(--ds-width); margin: 64px auto 0; }
+.ds-ambient {
+  position: absolute;
+  z-index: -1;
+  width: 100vw;
+  max-width: none;
+  height: 116%;
+  left: calc(50% - 50vw);
+  top: -8%;
+  object-fit: cover;
+  filter: blur(14px);
+  opacity: .85;
+  mask-image:
+    linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent),
+    linear-gradient(to bottom, transparent, #000 16%, #000 70%, transparent);
+  mask-composite: intersect;
+  pointer-events: none;
+}
+.ds-stack { position: relative; padding-top: 4.7%; aspect-ratio: 1280 / 890; }
+.ds-frame { --ds-edge-opacity: 1; position: absolute; inset: 6.75% 0 0; border: 1px solid transparent; border-radius: 12px; background: linear-gradient(135deg, #ffffff08, #ffffff02 55%), var(--ds-window-background); -webkit-backdrop-filter: blur(28px); backdrop-filter: blur(28px); transform-origin: center top; transition: transform 750ms cubic-bezier(.22,.8,.22,1); overflow: hidden; }
+/* A masked ring lights only the glass edge, leaving the dashboard image clear. */
+.ds-frame::before {
+  content: '';
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  padding: 1px;
+  border-radius: inherit;
+  background: linear-gradient(180deg, #f3edde66 0%, #dfd9ce3d 35%, #cbc6bc29 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: var(--ds-edge-opacity);
+  transition: opacity 750ms cubic-bezier(.22,.8,.22,1);
+  pointer-events: none;
+}
+.ds-frame[data-depth='0'] { z-index: 3; transform: translateY(0) scale(1); box-shadow: 0 24px 65px #0005, inset 0 1px 0 #ffffff05; }
+.ds-frame[data-depth='1'] { --ds-edge-opacity: .7; z-index: 2; transform: translateY(-4.1%) scale(.957); }
+.ds-frame[data-depth='2'] { --ds-edge-opacity: .45; z-index: 1; transform: translateY(-7.2%) scale(.915); }
+.ds-frame[data-depth='1'], .ds-frame[data-depth='2'] { clip-path: inset(0 0 92% 0); }
+.ds-frame-content { height: 100%; opacity: 0; transition: opacity 260ms ease; }
+.ds-frame[data-depth='0'] .ds-frame-content { opacity: 1; transition: opacity 600ms 140ms ease; }
+/* Keep the supplied transparent dashboard separate from the live glass window. */
+.ds-dashboard-image { position: absolute; top: 4.3%; left: 13.7%; display: block; width: 73%; height: auto; max-width: none; }
+.ds-frame:focus-visible { outline: 2px solid var(--ds-gold); outline-offset: 5px; }
+.ds-feature-navigation { position: relative; z-index: 4; max-width: var(--ds-width); margin: 72px auto 0; }
+.ds-playback { position: absolute; right: -4px; top: -30px; display: grid; place-items: center; width: 24px; height: 24px; padding: 0; border: 0; border-radius: 3px; background: transparent; color: #8f8a83; cursor: pointer; }
+.ds-playback:hover { color: var(--ds-text); }
+.ds-playback:focus-visible { outline: 2px solid var(--ds-gold); outline-offset: 3px; }
+.ds-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
+.ds-tabs > button { display: flex; flex-direction: column; appearance: none; min-width: 0; padding: 0; border: 0; color: var(--ds-muted); background: transparent; text-align: left; font: inherit; cursor: pointer; }
+.ds-tab-track { width: 100%; height: 2px; border-radius: 2px; background: #7a756f; overflow: hidden; }
+.ds-tab-track > span { display: block; width: 100%; height: 100%; background: var(--ds-gold); transform: scaleX(0); transform-origin: left; }
+.ds-tab-label { display: flex; align-items: center; gap: 10px; margin: 20px 0 12px; font-size: 20px; font-weight: 500; line-height: 26px; letter-spacing: -.24px; transition: color 250ms; }
+.ds-tab-label img { width: 8px; height: 8px; }
+.ds-tab-description { color: #8f8a83; font-size: 15px; line-height: 24px; letter-spacing: -.1px; transition: color 250ms; }
+.ds-tabs > button[aria-selected='true'] .ds-tab-track > span { animation: ds-tab-progress var(--ds-slide-duration) linear forwards; animation-play-state: paused; }
+.dashboard-stack[data-autoplay='running'] .ds-tabs > button[aria-selected='true'] .ds-tab-track > span { animation-play-state: running; }
+.dashboard-stack[data-reduced-motion='true'] .ds-tabs > button[aria-selected='true'] .ds-tab-track > span { animation: none; transform: scaleX(1); }
+@keyframes ds-tab-progress { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+.ds-tabs > button[aria-selected='true'] .ds-tab-label { color: #f5f3ee; font-weight: 600; }
+.ds-tabs > button[aria-selected='true'] .ds-tab-description { color: #b5afa8; }
+.ds-tabs > button:hover .ds-tab-label { color: var(--ds-text); }
+.ds-tabs > button:focus-visible { outline: 2px solid var(--ds-gold); outline-offset: 8px; border-radius: 2px; }
+.ds-mobile-description { display: none; }
+
+@media (max-width: 900px) {
+  .dashboard-stack { padding: 56px var(--banking-container-gutter); }
+  .ds-stage { margin-top: 56px; }
+  .ds-feature-navigation { margin-top: 56px; }
+  .ds-tabs { gap: 22px; }
+  .ds-tab-description { font-size: 13px; line-height: 21px; }
+  .ds-tab-label { margin-top: 16px; font-size: 18px; }
+}
+@media (max-width: 620px) {
+  .dashboard-stack { padding: 48px var(--banking-container-gutter) 42px; }
+  .ds-stage { margin-top: 40px; }
+  .ds-stack { aspect-ratio: 731 / 870; }
+  .ds-frame { inset: 6.5% 0 0; border-radius: 8px; }
+  .ds-dashboard-image { top: 4.3%; left: -25.75%; width: 125.75%; }
+  .ds-ambient { height: 130%; top: -10%; filter: blur(8px); opacity: .75; }
+  .ds-feature-navigation { margin-top: 48px; }
+  .ds-tabs { gap: 16px; }
+  .ds-tab-label { margin: 15px 0 10px; gap: 7px; font-size: 16px; white-space: nowrap; }
+  .ds-tab-label img { width: 6px; height: 6px; }
+  .ds-tab-description { display: none; }
+  .ds-mobile-description { display: block; min-height: 96px; margin: 14px 0 0; color: #b5afa8; font-size: 15px; line-height: 24px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ds-frame, .ds-frame::before, .ds-frame-content, .ds-frame[data-depth='0'] .ds-frame-content, .ds-tab-track > span, .ds-tab-label, .ds-tab-description { transition: none; }
+  .ds-tabs > button[aria-selected='true'] .ds-tab-track > span { animation: none; transform: scaleX(1); }
+}

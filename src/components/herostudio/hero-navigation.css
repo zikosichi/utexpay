@@ -1,17 +1,25 @@
+/* Top navigation.
+   The bar stays transparent until the hero's own button has passed underneath it;
+   at that moment the frosted surface, hairline and gold button all arrive together. */
 .studio-nav {
+  --nav-ease: cubic-bezier(.22, .72, .18, 1);
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: 5;
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 24px;
   width: 100%;
   min-height: 88px;
   margin: 0;
   padding: 16px clamp(24px, 4.2vw, 80px);
+  background: linear-gradient(180deg, #16161300, #0d0d0c00);
+  transition: background .4s var(--nav-ease), -webkit-backdrop-filter .4s var(--nav-ease), backdrop-filter .4s var(--nav-ease);
+}
+.studio-nav[data-raised=true] {
   background: linear-gradient(180deg, #161613e8, #0d0d0cda);
   -webkit-backdrop-filter: blur(20px) saturate(115%);
   backdrop-filter: blur(20px) saturate(115%);
@@ -24,50 +32,81 @@
   right: 0;
   height: 1px;
   background: linear-gradient(90deg, #ffffff05, #d6c8a530 30%, #ffffff12 70%, #ffffff05);
+  opacity: 0;
+  transition: opacity .4s var(--nav-ease);
   pointer-events: none;
 }
-.studio-mobile-menu::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  padding: 1px;
-  border-radius: inherit;
-  background: linear-gradient(130deg, #d6c8a54d, #ffffff0a 42%, #ffffff08 65%, #b4a58933);
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  pointer-events: none;
-}
+.studio-nav[data-raised=true]::before { opacity: 1; }
+
 .studio-brand { display: inline-flex; width: fit-content; flex-shrink: 0; border-radius: 3px; }
+.studio-nav-right { display: flex; align-items: center; gap: 14px; min-width: 0; }
+.studio-nav-divider { width: 1px; height: 18px; background: linear-gradient(180deg, #ffffff00, #d6c8a545 30%, #d6c8a545 70%, #ffffff00); flex-shrink: 0; }
 .studio-brand img { display: block; width: 152px; height: auto; }
-.studio-nav-links { display: flex; align-items: center; gap: 8px; }
+
+/* Section links read as ghost buttons: nothing at rest, and on hover the secondary
+   button's flat background. One highlight slides between the links rather than each
+   link painting its own. */
+.studio-nav-links { position: relative; display: flex; align-items: center; gap: 2px; }
 .studio-nav .studio-nav-link {
   position: relative;
-  padding: 11px 18px;
+  z-index: 1;
+  padding: 9px 14px;
   border-radius: 8px;
-  color: #c8c5bc;
-  font-family: 'Manrope', 'DM Sans', sans-serif;
-  font-size: 15px;
+  color: #c9c4b8;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14.5px;
   font-weight: 500;
-  letter-spacing: -.15px;
+  letter-spacing: -.012em;
   line-height: 22px;
-  transition: color .18s ease, background-color .18s ease;
+  transition: color .2s var(--nav-ease);
 }
-.studio-nav-link::after {
-  content: '';
+.studio-nav .studio-nav-link:hover, .studio-nav .studio-nav-link:focus-visible { color: #e8e4df; }
+.studio-nav .studio-nav-link:focus-visible { outline-offset: -2px; }
+.studio-nav-spot {
   position: absolute;
-  bottom: 5px;
-  left: 18px;
-  right: 18px;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, #e0b46099, transparent);
+  top: 0;
+  bottom: 0;
+  left: 0;
+  border-radius: 8px;
+  background: #3a3834;
   opacity: 0;
-  transition: opacity .18s ease;
+  transition: transform .34s var(--nav-ease), width .34s var(--nav-ease), opacity .18s ease;
+  pointer-events: none;
 }
-.studio-nav .studio-nav-link:hover, .studio-nav .studio-nav-link:focus-visible { color: #f5f3ee; background: #ffffff05; }
-.studio-nav-link:hover::after, .studio-nav-link:focus-visible::after { opacity: 1; }
+.studio-nav-spot[data-on=true] { opacity: 1; }
+
+/* Right side: a quiet Log in, then the hero's own button once it is off screen. */
 .studio-nav-account { display: flex; align-items: center; justify-self: end; gap: 8px; }
+.studio-nav-action {
+  display: grid;
+  grid-template-columns: 0fr;
+  transition: grid-template-columns .55s var(--nav-ease);
+}
+/* The button is anchored to the left edge of a box that grows leftwards, so it
+   travels in from the right edge into place while it fades and sharpens. */
+.studio-nav-action > div {
+  display: flex;
+  justify-content: flex-start;
+  min-width: 0;
+  padding-left: 0;
+  opacity: 0;
+  filter: blur(5px);
+  transform: translateX(22px);
+  transform-origin: 100% 50%;
+  pointer-events: none;
+  transition: opacity .3s ease, filter .38s ease, transform .5s var(--nav-ease), padding-left .55s var(--nav-ease);
+}
+.studio-nav-action[data-show=true] { grid-template-columns: 1fr; }
+.studio-nav-action[data-show=true] > div {
+  opacity: 1;
+  filter: blur(0);
+  transform: none;
+  padding-left: 4px;
+  pointer-events: auto;
+  transition: opacity .38s ease .14s, filter .45s ease .12s, transform .55s var(--nav-ease) .1s, padding-left .55s var(--nav-ease);
+}
+.studio-nav-action .utex-button { margin: 1px; }
+
 .studio .studio-nav-toggle {
   display: none;
   align-items: center;
@@ -86,16 +125,30 @@
 .studio-nav-toggle[aria-expanded=true] i:first-child { transform: translateY(3px) rotate(45deg); }
 .studio-nav-toggle[aria-expanded=true] i:last-child { transform: translateY(-3px) rotate(-45deg); }
 .studio-mobile-menu { display: none; }
+.studio-mobile-menu::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  border-radius: inherit;
+  background: linear-gradient(130deg, #d6c8a54d, #ffffff0a 42%, #ffffff08 65%, #b4a58933);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
 
 @media (max-width: 1100px) and (min-width: 901px) {
   .studio-nav { gap: 12px; padding-inline: 24px; }
   .studio-brand img { width: 126px; }
-  .studio-nav-links { gap: 4px; }
+  .studio-nav-right { gap: 10px; }
+  .studio-nav-links { gap: 0; }
   .studio-nav .studio-nav-link { padding-inline: 11px; }
 }
 @media (max-width: 900px) {
   .studio-nav { display: flex; justify-content: space-between; min-height: 76px; padding: 16px 24px; gap: 16px; }
-  .studio-nav-links, .studio-nav-account .studio-nav-login { display: none; }
+  .studio-nav-links, .studio-nav-divider, .studio-nav-account .studio-nav-login { display: none; }
   .studio .studio-nav-toggle { display: inline-flex; }
   .studio-mobile-menu:not([hidden]) {
     position: absolute;
@@ -118,4 +171,8 @@
 @media (max-width: 480px) {
   .studio-nav { min-height: 72px; padding: 16px; gap: 10px; }
   .studio-brand img { width: 122px; }
+  .studio-nav-action .utex-button { --button-height: 40px; --button-padding: 12px; --button-font-size: 13px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .studio-nav, .studio-nav::before, .studio-nav-spot, .studio-nav-action, .studio-nav-action > div, .studio-nav .studio-nav-link, .studio-nav .studio-nav-login { transition: none; }
 }

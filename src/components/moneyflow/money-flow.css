@@ -1,0 +1,231 @@
+.money-flow {
+  --flow-ink: #0f0e0d;
+  --flow-text: #e8e4df;
+  --flow-secondary: #b5afa8;
+  --flow-muted: #9a9690;
+  --flow-gold: #d4941c;
+  --flow-display: 'Plus Jakarta Sans', 'Manrope', sans-serif;
+  --flow-body: 'Manrope', 'DM Sans', sans-serif;
+  --flow-mono: 'JetBrains Mono', 'IBM Plex Mono', monospace;
+  position: relative;
+  padding: clamp(5rem, 7vw, 7rem) clamp(24px, 6.6667vw, 96px) 120px;
+  scroll-margin-top: 88px;
+  background: linear-gradient(180deg, #000 0, #030303 140px, #080807 340px, var(--flow-ink) 560px);
+  color: var(--flow-text);
+  font-family: var(--flow-body);
+  font-weight: 400;
+}
+
+.money-flow::before {
+  content: '';
+  position: absolute;
+  inset: -96px 0 auto;
+  height: 96px;
+  background: linear-gradient(180deg, transparent, #000);
+  pointer-events: none;
+}
+
+.money-flow__inner { max-width: 1248px; margin-inline: auto; }
+.money-flow :where(h2, h3, p, ul, ol, figure) { margin: 0; }
+.money-flow :where(ul, ol) { padding: 0; list-style: none; }
+.money-flow__intro { text-align: center; }
+.money-flow__intro h2 {
+  max-width: 1200px;
+  margin-inline: auto;
+  font: 600 clamp(34px, 3.0556vw, 44px)/1.2273 var(--flow-display);
+  letter-spacing: -.035em;
+  text-wrap: balance;
+}
+.money-flow__description { margin-top: 32px; color: var(--flow-secondary); font-size: 18px; line-height: 28px; text-wrap: balance; }
+
+/* The Paper scene is 1248 × 488. Container units keep its connecting points
+   registered with the live HTML cards as the desktop composition scales. */
+.money-flow__stage { --flow-cycle: 6s; position: relative; width: 100%; aspect-ratio: 1248 / 488; margin-block: 40px 48px; container-type: inline-size; }
+.money-flow__connections { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.money-flow__mobile-connection { display: none; }
+.money-flow__beam { --beam-delay: 0s; fill: none; stroke-linecap: round; }
+.money-flow__beam--out { --beam-delay: 3s; }
+.money-flow__beam > path {
+  stroke-dasharray: .22 1;
+  stroke-dashoffset: .22;
+  opacity: 0;
+  animation: money-flow-current var(--flow-cycle) linear infinite;
+  animation-delay: var(--beam-delay);
+  animation-play-state: paused;
+}
+.money-flow__stage[data-flow-active='true'] .money-flow__beam > path,
+.money-flow__stage[data-flow-active='true'] .money-flow__account-light { animation-play-state: running; }
+.money-flow__beam .money-flow__beam-halo { stroke: #e7b86b; stroke-width: 6; stroke-opacity: .45; filter: blur(2px); }
+.money-flow__beam .money-flow__beam-tail { stroke: #e2b46e; stroke-width: 2; stroke-opacity: .75; stroke-dasharray: 0 .08 .14 1; }
+.money-flow__beam .money-flow__beam-head { stroke: #fff0cb; stroke-width: 1.5; stroke-dasharray: 0 .16 .06 1; }
+@keyframes money-flow-current {
+  0% { stroke-dashoffset: .22; opacity: 0; }
+  3% { stroke-dashoffset: .22; opacity: 1; }
+  30% { stroke-dashoffset: -1; opacity: 1; }
+  31%, 100% { stroke-dashoffset: -1; opacity: 0; }
+}
+.money-flow__lane { position: absolute; top: 6.89103cqw; width: 20.19231%; }
+.money-flow__lane--in { left: 0; }
+.money-flow__lane--out { right: 0; }
+.money-flow__lane h3, .money-flow__bank > h3 { font: 600 1.92308cqw/2.40385cqw var(--flow-display); letter-spacing: -.02em; }
+.money-flow__lane--out h3 { text-align: right; }
+.money-flow__transactions { display: flex; flex-direction: column; gap: 1.28205cqw; margin-top: 6.41026cqw !important; }
+.money-flow__transaction {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: .48077cqw;
+  height: 7.69231cqw;
+  padding: 1.28205cqw 1.44231cqw 1.28205cqw 4.96795cqw;
+  border: 1px solid transparent;
+  border-radius: 1.12179cqw;
+  background:
+    linear-gradient(125deg, #27241f, #1a1815) padding-box,
+    linear-gradient(180deg, #d2c3a78c 0%, #ad96764d 36%, #ad96761a 72%, #ad967608 100%) border-box;
+  box-shadow: inset 0 1px 0 #bda77c12, 0 10px 22px #00000030;
+}
+.money-flow__icon { position: absolute; left: 1.44231cqw; top: 1.60256cqw; display: grid; place-items: center; width: 2.40385cqw; height: 2.40385cqw; border: 1px solid #6c5e4440; border-radius: .64103cqw; background: #b59a6510; color: #cab58e; }
+.money-flow__icon svg { width: 1.44231cqw; height: 1.44231cqw; }
+.money-flow__transaction-label { color: var(--flow-secondary); font-size: clamp(11px, .96154cqw, 12px); line-height: 1.44231cqw; white-space: nowrap; }
+.money-flow__amount { font-size: 1.76282cqw; line-height: 2.40385cqw; letter-spacing: -.02em; font-weight: 500; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.money-flow__lane--in .money-flow__amount { color: #c8cebc; }
+
+.money-flow__bank { position: absolute; left: 32.85256%; top: 6.89103cqw; width: 34.29487%; }
+.money-flow__bank > h3 { text-align: center; }
+.money-flow__account {
+  position: relative;
+  height: 20.19231cqw;
+  margin-top: 4.64744cqw;
+  padding: 1px;
+  border-radius: 1.44231cqw;
+  background: linear-gradient(135deg, #c8b698 0%, #8c785a 18%, #483c2b 39%, #3b3226 68%, #6e6049 85%, #a39477 100%);
+  box-shadow: 0 24px 44px #00000070;
+}
+.money-flow__account-face {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 1.60256cqw;
+  height: 100%;
+  padding: 2.48397cqw 2.64423cqw;
+  border-radius: calc(1.44231cqw - 1px);
+  background:
+    linear-gradient(120deg, transparent 8%, #f1ddba0b 20%, #f1ddba03 37%, transparent 54%),
+    linear-gradient(155deg, #3d372c 0%, #24201b 26%, #1b1814 58%, #151411 100%);
+}
+.money-flow__account-face > :not(.money-flow__account-light) { position: relative; z-index: 1; }
+.money-flow__account-light {
+  position: absolute;
+  z-index: 0;
+  left: 0;
+  top: -20%;
+  width: 74%;
+  height: 140%;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, #efce9842 0%, #d8a34d24 28%, #d8a34d0b 47%, transparent 68%);
+  filter: blur(22px);
+  mix-blend-mode: screen;
+  opacity: 0;
+  transform: translate3d(-95%, 0, 0);
+  animation: money-flow-through-account var(--flow-cycle) linear infinite;
+  animation-play-state: paused;
+}
+/* The incoming pulse reaches the left edge around 1.5s. Its diffused light
+   crosses the face, then meets the outgoing pulse at roughly 3s. */
+@keyframes money-flow-through-account {
+  0%, 22% { transform: translate3d(-95%, 0, 0); opacity: 0; }
+  27% { transform: translate3d(-55%, 0, 0); opacity: .38; }
+  38% { transform: translate3d(18%, 0, 0); opacity: .62; }
+  49% { transform: translate3d(93%, 0, 0); opacity: .38; }
+  56%, 100% { transform: translate3d(140%, 0, 0); opacity: 0; }
+}
+@keyframes money-flow-through-account-vertical {
+  0%, 22% { transform: translate3d(0, -95%, 0); opacity: 0; }
+  27% { transform: translate3d(0, -55%, 0); opacity: .38; }
+  38% { transform: translate3d(0, 18%, 0); opacity: .62; }
+  49% { transform: translate3d(0, 93%, 0); opacity: .38; }
+  56%, 100% { transform: translate3d(0, 140%, 0); opacity: 0; }
+}
+.money-flow__account-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 1.60256cqw; color: #d1ba90; font: 400 .96154cqw/1.28205cqw var(--flow-mono); letter-spacing: .12em; text-transform: uppercase; }
+.money-flow__account-heading svg { width: 1.60256cqw; height: 1.60256cqw; flex-shrink: 0; }
+.money-flow__balance { display: flex; flex-direction: column; gap: .96154cqw; }
+.money-flow__balance-value { color: var(--flow-text); font: 500 3.52564cqw/4.32692cqw var(--flow-display); letter-spacing: -.035em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.money-flow__account-note { color: #b2a899; font-size: 1.04167cqw; line-height: 1.60256cqw; }
+.money-flow__currencies { display: flex; align-items: center; gap: .64103cqw; padding-top: .64103cqw !important; border-top: 1px solid #d5bd8e24; color: #9f9585; font: 400 .96154cqw/1.28205cqw var(--flow-mono); letter-spacing: .08em; }
+.money-flow__currencies li { display: flex; align-items: center; gap: .64103cqw; }
+.money-flow__currencies li:first-child { color: #d1c5ad; }
+.money-flow__currencies li + li::before { content: ''; width: 3px; height: 3px; border-radius: 50%; background: #8c7b5d; }
+.money-flow__caption { margin-top: 2.24359cqw !important; color: var(--flow-muted); font: 400 .80128cqw/1.28205cqw var(--flow-mono); letter-spacing: .15em; text-align: center; text-transform: uppercase; }
+
+.money-flow__benefits { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 48px; padding-top: 40px !important; border-top: 1px solid #3a342b; }
+.money-flow__benefits > li { display: flex; gap: 18px; }
+.money-flow__benefit-number { width: 24px; flex-shrink: 0; color: var(--flow-gold); font: 400 12px/28px var(--flow-mono); }
+.money-flow__benefits h3 { font: 600 20px/28px var(--flow-display); }
+.money-flow__benefits p { margin-top: 10px; color: var(--flow-secondary); font-size: 15px; line-height: 24px; }
+
+@media (max-width: 1100px) {
+  .money-flow { padding: 5rem 32px 88px; }
+  .money-flow__intro h2 { max-width: 760px; font-size: 36px; }
+  .money-flow__desktop-break { display: none; }
+  .money-flow__description { max-width: 620px; margin-inline: auto; font-size: 17px; }
+  .money-flow__stage { display: flex; flex-direction: column; align-items: center; gap: 0; aspect-ratio: auto; max-width: 640px; margin: 64px auto 56px !important; container-type: normal; }
+  .money-flow__connections { display: none; }
+  .money-flow__mobile-connection { display: block; flex-shrink: 0; margin-block: 8px; }
+  .money-flow__lane, .money-flow__bank { position: relative; top: auto; left: auto; right: auto; width: 100%; }
+  .money-flow__lane h3, .money-flow__bank > h3 { font-size: 22px; line-height: 30px; text-align: center; }
+  .money-flow__transactions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 20px !important; }
+  .money-flow__transaction { height: 96px; gap: 6px; padding: 16px 18px 16px 62px; border-radius: 14px; }
+  .money-flow__icon { left: 18px; top: 20px; width: 30px; height: 30px; border-radius: 8px; }
+  .money-flow__icon svg { width: 18px; height: 18px; }
+  .money-flow__transaction-label { font-size: 12px; line-height: 18px; }
+  .money-flow__amount { font-size: 22px; line-height: 30px; }
+  .money-flow__bank { max-width: 428px; }
+  .money-flow__account { height: 252px; margin-top: 20px; border-radius: 18px; }
+  .money-flow__account-face { gap: 20px; padding: 31px 33px; border-radius: 17px; }
+  .money-flow__account-light { left: -20%; top: 0; width: 140%; height: 74%; transform: translate3d(0, -95%, 0); animation-name: money-flow-through-account-vertical; }
+  .money-flow__account-heading { min-height: 20px; font-size: 12px; line-height: 16px; }
+  .money-flow__account-heading svg { width: 20px; height: 20px; }
+  .money-flow__balance { gap: 12px; }
+  .money-flow__balance-value { font-size: 44px; line-height: 54px; }
+  .money-flow__account-note { font-size: 13px; line-height: 20px; }
+  .money-flow__currencies { gap: 8px; padding-top: 8px !important; font-size: 12px; line-height: 16px; }
+  .money-flow__currencies li { gap: 8px; }
+  .money-flow__caption { margin-top: 32px !important; font-size: 10px; line-height: 16px; }
+  .money-flow__benefits { gap: 24px; }
+  .money-flow__benefits > li { gap: 12px; }
+}
+
+@media (max-width: 600px) {
+  .money-flow { padding: 4rem 24px 72px; scroll-margin-top: 72px; }
+  .money-flow__intro h2 { font-size: 30px; line-height: 1.25; letter-spacing: -.035em; }
+  .money-flow__description { margin-top: 24px; font-size: 15px; line-height: 25px; }
+  .money-flow__lane h3, .money-flow__bank > h3 { font-size: 20px; line-height: 28px; }
+  .money-flow__transactions { gap: 12px; margin-top: 16px !important; }
+  .money-flow__transaction { height: 132px; padding: 52px 12px 14px; gap: 6px; border-radius: 12px; }
+  .money-flow__icon { left: 12px; top: 12px; width: 28px; height: 28px; }
+  .money-flow__transaction-label { font-size: 11px; line-height: 18px; white-space: normal; }
+  .money-flow__amount { margin-top: auto; font-size: 20px; line-height: 26px; }
+  .money-flow__account { height: 238px; }
+  .money-flow__account-face { padding: 29px 27px; gap: 20px; }
+  .money-flow__account-heading { font-size: 10px; }
+  .money-flow__balance-value { font-size: clamp(30px, 9.5vw, 40px); line-height: 48px; }
+  .money-flow__benefits { grid-template-columns: 1fr; gap: 28px; padding-top: 32px !important; }
+  .money-flow__benefits > li { gap: 16px; }
+  .money-flow__benefits h3 { font-size: 18px; line-height: 26px; }
+  .money-flow__benefits p { margin-top: 6px; font-size: 14px; line-height: 23px; }
+}
+
+@media (max-width: 359px) {
+  .money-flow { padding-inline: 16px; }
+  .money-flow__intro h2 { font-size: 28px; }
+  .money-flow__amount { font-size: 18px; }
+  .money-flow__account-face { padding-inline: 23px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .money-flow__beam, .money-flow__account-light { display: none; }
+  .money-flow__beam > path, .money-flow__account-light { animation: none; }
+}

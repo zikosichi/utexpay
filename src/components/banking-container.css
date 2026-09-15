@@ -1,0 +1,15 @@
+.personal-banking,
+.dashboard-stack {
+  --banking-container-width: 1280px;
+  --banking-container-gutter: 48px;
+}
+
+@media (max-width: 900px) {
+  .personal-banking,
+  .dashboard-stack { --banking-container-gutter: 28px; }
+}
+
+@media (max-width: 620px) {
+  .personal-banking,
+  .dashboard-stack { --banking-container-gutter: 20px; }
+}

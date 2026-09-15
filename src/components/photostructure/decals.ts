@@ -12,16 +12,23 @@ import type { SurfaceSpec } from './surfaces'
  */
 export function decalMaterial() {
   return new THREE.ShaderMaterial({
-    uniforms: { uMap: { value: null as THREE.Texture | null }, uOpacity: { value: 1 } },
+    uniforms: { uMap: { value: null as THREE.Texture | null }, uOpacity: { value: 1 }, uLinearOutput: { value: 0 } },
     vertexShader: /* glsl */ `
       varying vec2 vUv;
       void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.); }
     `,
     fragmentShader: /* glsl */ `
       uniform sampler2D uMap;
-      uniform float uOpacity;
+      uniform float uOpacity, uLinearOutput;
       varying vec2 vUv;
-      void main() { gl_FragColor = texture2D(uMap, vUv) * uOpacity; }
+      void main() {
+        gl_FragColor = texture2D(uMap, vUv) * uOpacity;
+        // The mirror target is linear; the main view keeps its original bake.
+        if (uLinearOutput > .5) {
+          float alpha = gl_FragColor.a;
+          gl_FragColor.rgb = sRGBTransferEOTF(vec4(gl_FragColor.rgb / max(alpha, .0001), 1.)).rgb * alpha;
+        }
+      }
     `,
     transparent: true, depthWrite: false, side: THREE.DoubleSide,
     blending: THREE.CustomBlending, blendEquation: THREE.AddEquation,

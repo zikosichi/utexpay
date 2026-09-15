@@ -1,0 +1,46 @@
+.globe-horizon {
+  --gh-gold: #c9a567;
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  height: clamp(760px, 56vw, 1040px);
+  overflow: hidden;
+  color: #f3f2ee;
+  font-family: 'Manrope', sans-serif;
+}
+.personal-banking + .globe-horizon { margin-top: clamp(96px, 9vw, 180px); }
+.gh-art { position: absolute; inset: clamp(235px, 18vw, 340px) 0 0; background: radial-gradient(ellipse at 50% 92%, #b3924920 0%, #91734208 34%, transparent 67%); mask-image: linear-gradient(180deg, #000 60%, #0002 100%); }
+.gh-canvas { display: block; width: 100%; height: 100%; opacity: 0; cursor: default; touch-action: pan-y; }
+.gh-canvas:focus-visible { outline: 1px solid #c9a56780; outline-offset: -8px; }
+[data-scene='ready'] .gh-canvas { opacity: 1; }
+.gh-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+.gh-heading { padding: clamp(58px, 4.5vw, 90px) 24px 0; }
+.gh-settings { position: absolute; z-index: 5; bottom: 22px; left: 24px; color: #c5c3b9; }
+.gh-settings summary { min-height: 40px; display: flex; align-items: center; gap: 8px; padding: 0 12px; border: 1px solid #c9a56726; border-radius: 22px; background: #10110eec; cursor: pointer; list-style: none; font-size: 11px; user-select: none; }
+.gh-settings summary::-webkit-details-marker { display: none; }
+.gh-settings summary:hover, .gh-settings[open] summary { border-color: #c9a56765; color: #f1d7a6; }
+.gh-settings summary:focus-visible, .gh-setting input:focus-visible { outline: 2px solid #e0c48b; outline-offset: 5px; }
+.gh-settings summary svg { width: 16px; height: 16px; }
+.gh-settings summary .gh-settings-chevron { width: 12px; margin-left: 3px; }
+.gh-settings[open] .gh-settings-chevron { transform: rotate(180deg); }
+.gh-settings-panel { position: absolute; left: 0; bottom: calc(100% + 10px); width: 260px; padding: 20px; border: 1px solid #c9a56730; border-radius: 16px; background: #141510f5; box-shadow: 0 12px 44px #0009; backdrop-filter: blur(20px); }
+.gh-settings-title { display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; color: #eeede6; font-size: 13px; font-weight: 500; }
+.gh-settings-live { display: flex; align-items: center; gap: 5px; color: #a9b69a; font-size: 10px; font-weight: 400; }
+.gh-settings-live::before { content: ''; width: 4px; height: 4px; border-radius: 50%; background: #adbd8b; box-shadow: 0 0 6px #adbd8b60; }
+.gh-setting + .gh-setting { margin-top: 20px; }
+.gh-setting-label { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2px; font-size: 12px; }
+.gh-setting output { font: 400 11px/1 'JetBrains Mono', monospace; color: #e0c48b; }
+.gh-setting input { appearance: none; display: block; width: 100%; height: 28px; margin: 0; border: 0; border-radius: 4px; background: linear-gradient(#c8ad76, #c8ad76), linear-gradient(#ffffff18, #ffffff18); background-repeat: no-repeat; background-position: left center; cursor: pointer; touch-action: pan-y; }
+.gh-setting input::-webkit-slider-thumb { appearance: none; width: 14px; height: 14px; border: 2px solid #e8d8b7; border-radius: 50%; background: #d7bb84; box-shadow: 0 0 0 4px #d7bb8412; }
+.gh-setting input::-moz-range-thumb { width: 10px; height: 10px; border: 2px solid #e8d8b7; border-radius: 50%; background: #d7bb84; }
+.gh-setting-scale { display: flex; justify-content: space-between; margin-top: 0; color: #828579; font-size: 10px; }
+.gh-settings-note { margin: 20px 0 0; padding-top: 14px; border-top: 1px solid #ffffff0c; font-size: 9px; color: #83867a; white-space: nowrap; }
+@media (max-width: 900px) { .gh-heading { padding-top: 64px; } .gh-art { top: 280px; } }
+@media (max-width: 600px) {
+  .globe-horizon { height: 760px; }
+  .gh-art { top: 290px; }
+  .gh-heading { padding: 64px 22px 0; }
+  .gh-settings { left: 16px; bottom: 20px; }
+  .gh-settings summary { min-height: 44px; padding: 0 10px; gap: 6px; font-size: 10px; }
+  .gh-settings-panel { width: min(260px, calc(100vw - 32px)); }
+}

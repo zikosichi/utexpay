@@ -1,10 +1,14 @@
 # Photographic hero
 
-Route: `/hero-projection`. The photographic sculpture now sits in the complete landing-page hero. `HeroContent.tsx` shares the navigation, brand, headline, description, calls to action, and assurances with `/hero-studio`; the two routes retain their own 3D scenes.
+Routes: `/hero-projection` and `/hero-accounts` (the previous home-page hero, preserved after the interactive Accounts hero moved to `/`). The photographic sculpture now sits in the complete landing-page hero. `HeroContent.tsx` shares the navigation, brand, headline, description, calls to action, and assurances with `/hero-studio`; the two routes retain their own 3D scenes.
 
 The study header, layout toolbar, framing buttons, and caption footer are removed from the hero. A discreet Studio controls button at the bottom right opens the retained configuration panel. Comparison modes, close-up framing, motion, reflection strength, and the earlier Personal layouts remain available there. The default view shows all three populated bronze blocks. The sculpture uses a wide 2.5:1 stage in the hero, with taller framing when inspecting individual boxes.
 
-The source is the user's clean, generated bronze structure image, preserved at its supplied 2004 × 1128 resolution in `public/photostructure/bronze-source.webp`. A quality-96 WebP keeps the photographic appearance while reducing the transfer from 1.7 MB to 106 KB. No new image generation was needed: this is the appearance the experiment is meant to preserve.
+Laptop-height viewports (1024–1799px wide, up to 1000px high) use a more compact vertical rhythm: 32–52px above the headline, slightly tighter description/action gaps, and a 20–40px smaller gap before the full sculpture. Typography, buttons, sculpture scale, and close-up stage spacing are unchanged. Wider monitors, taller windows, and phone layouts keep their original spacing. These overrides are scoped to this hero, not the shared studio styles.
+
+The original source is the user's clean, generated bronze structure image, preserved at its supplied 2004 × 1128 resolution in `public/photostructure/bronze-source.webp`. A quality-96 WebP keeps the photographic appearance while reducing the transfer from 1.7 MB to 106 KB. It remains untouched and selectable.
+
+`bronze-source-illuminated-v1.webp` is a separate amber-relit alternative (1672 × 941, quality 95, 107 KB), generated with the built-in image editor from the clean source and the user's lighting reference. Its PNG master and exact generation prompt are retained; see `relight-prompt.md`. Only the blank bronze was regenerated: the panel artwork, calibrated geometry, and original texture are preserved. Both textures load once and use the same projected UVs. A linear-light shader blend switches between them without rebuilding the renderer; the intensity slider controls the added baked light in Full lighting mode. This is a baked photographic relight, not a physically relightable PBR material.
 
 ## Editing and re-baking panels
 
@@ -29,6 +33,20 @@ The shelf plane fixes the small reflected gold lines separating from the block f
 Camera projection is baked into per-vertex UVs. The image stays attached to the surfaces while an orthographic viewing camera orbits the assembly. Front faces, crown, rounded corners, fine gold edges, and baked shadows retain their original image detail. Back-facing surfaces use bounded interior texture coordinates. The source has no information about unseen surfaces, so this is calibrated for a small viewing envelope, not a 360-degree reconstruction or a fully relightable asset.
 
 The material preserves baked lighting and adds only a small difference between the reference-view and current-view softbox reflection. At the reference angle that difference is zero. This avoids applying a second set of lights over the photographed metal. Color textures use sRGB; shader calculations use linear color.
+
+## Studio environment
+
+`environment.ts` adds a curved wall and satin floor to the same Three.js scene. Warm light wraps around their junction, with cool ambient light near the sides and a soft contact shadow under the pedestal. The floor sits 1.05 world units below the calibrated crown; the photographed foundation fades into that contact before its rectangular source-image cutoff. The original treatment remains available as Backdrop only. Full lighting applies the new bronze photograph, including its brighter crown reflections, and the mirrored floor automatically captures that appearance.
+
+The canvas covers the full hero. An orthographic view offset retains the original stage framing, and a scissor keeps close-up sculpture views out of the copy. The room draws across the whole canvas, so it has no CSS-gradient/canvas seam. Font loading and stage/canvas resizing refresh the view offset.
+
+Full lighting also includes a faint champagne overhead source and two broad, feathered shafts falling toward the bronze crowns. They are evaluated in the existing room shader, with no added textures, geometry, animation, or render pass. A reference camera anchors the source above the headline on desktop and mobile; pointer rotation does not drag it around. The light blends into the lower studio glow and never overlays the sculpture or copy. Overhead rays has its own 0–100% control (default 55%) and also follows the main intensity. Setting it to zero removes the source and rays; Backdrop only and No lighting retain their earlier appearances without them.
+
+A mirrored camera captures the sculpture into a render target capped at 960 pixels per side and 65% of CSS resolution. Trilinear mip levels soften reflections with distance using five floor samples, with no post-processing blur or shadow map. The receiving room is excluded from its own capture. Baked panel colors are converted to linear only for that pass. Rendering remains demand-driven and pauses when settled or hidden; the mirror capture is skipped at zero reflection. All environment geometry, materials, and targets are disposed with the scene.
+
+The floor combines the tight footprint contact with a broad forward cast shadow from the rear light. It begins at the pedestal's calibrated front contact (`z ≈ 2.15`), spans its full width, and widens/softens toward the viewer. Reflection fill is occluded most strongly at that contact and progressively less farther out, so it cannot repaint a bright seam at the base; the distant gold reflection remains. Both shadows are analytic in the same floor shader, without additional geometry, shadow maps, or render passes.
+
+Studio controls offer three lighting presets: No lighting (original bronze against black, no room or floor reflection), Backdrop only (original bronze with the retained room), and Full lighting (relit bronze and room, the default). Switching presets preserves the lighting adjustments. Light intensity (0–200%) controls the room and, in Full lighting, the bronze's added light together. Light spread (70–150%) and Floor reflection (0–85%) remain separate. Restore defaults returns to Full lighting with 85% intensity, 75% spread, and 40% reflection. No lighting disables the adjustment sliders and skips the mirror capture; Original and Geometry comparison modes also hide the environment. Original always shows the untouched source image.
 
 ## Figures
 
@@ -69,5 +87,7 @@ Run `node --experimental-strip-types scripts/verify-photo-contacts.mjs`, `node_m
 `node --experimental-strip-types scripts/verify-personal-html.mjs` verifies panel-to-mesh registration for seven surface profiles across all three blocks and 45 camera/viewport combinations. It also raycasts triangle interiors and edges across 17 poses to catch images intersecting the bronze.
 
 Browser checks covered the source comparison, solid geometry view, both pointer directions, keyboard rotation, range adjustment, pause/reset, and a 390 × 844 mobile viewport with no horizontal overflow. No shader errors were reported.
+
+The illuminated variant was checked in the full scene and Personal close-up, during keyboard rotation, at 0% and 200% intensity, and across all three lighting presets on desktop and mobile. The preset updates the existing scene without recreating its canvas; No lighting keeps the slider values but hides the room and selects the original photograph. Production build/static-page verification and the feature-scoped strict TypeScript check pass. The project-wide TypeScript check still reports the pre-existing `resolve.tsconfigPaths` option mismatch in `vite.config.ts` under Vite 7.
 
 The Forge documentation tool was unavailable in this session. The route's `.stories.json` follows the existing repository convention.
