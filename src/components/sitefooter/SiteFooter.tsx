@@ -58,10 +58,13 @@ const COMPANY = [
   { label: 'Log in', href: '/#login' },
 ]
 
+// Legal pages don't exist yet. Hash anchors (like every other placeholder link
+// here) keep the prerender crawler from following them into a 404, which fails
+// the build on Vercel (`failOnError`).
 const LEGAL = [
-  { label: 'Privacy', href: '/privacy' },
-  { label: 'Terms', href: '/terms' },
-  { label: 'Security', href: '/security' },
+  { label: 'Privacy', href: '/#privacy' },
+  { label: 'Terms', href: '/#terms' },
+  { label: 'Security', href: '/#security' },
 ]
 
 export function SiteFooter() {
