@@ -1,0 +1,304 @@
+/* See where your money goes — one live chart, then the inventory. Typography and colour follow the
+   landing page (Plus Jakarta Sans headings, Manrope text, JetBrains Mono eyebrows, the feature
+   grid's gold/text/muted trio); bar geometry and the hover reading follow the app's Hero Graph. */
+.money-insight {
+  --mi-gold: #d6b77b;
+  --mi-gold-2: #e9c15e;
+  --mi-gold-3: #fbeba3;
+  --mi-bar: #dbaa45;
+  --mi-bar-deep: #90702c;
+  --mi-red: #e07564;
+  --mi-grey: #7a756f;
+  --mi-dim: #5a5650;
+  --mi-after-up: #5a5650;
+  --mi-after-down: #3a3834;
+  /* Keep the original amber/coral character, with just a little depth in the fill. */
+  --mi-fill-in: linear-gradient(180deg, #e3b85c 0%, var(--mi-bar) 48%, #d2a13f 100%);
+  --mi-fill-declined: linear-gradient(180deg, #e78270 0%, var(--mi-red) 48%, #d77261 100%);
+  --mi-fill-cancelled: linear-gradient(180deg, #827c74 0%, var(--mi-grey) 48%, #736e68 100%);
+  --mi-fill-spending: linear-gradient(180deg, #9b7a36 0%, var(--mi-bar-deep) 48%, #876925 100%);
+  --mi-rule: #2e2b26;
+  --mi-rule-strong: #5a5650;
+  --mi-text: #f3f0e9;
+  --mi-text-2: #e8e4df;
+  --mi-muted: #ada89f;
+  --mi-muted-2: #9a9690;
+  --mi-tooltip: #24221e;
+  --mi-body: 'Manrope', sans-serif;
+  --mi-display: 'Plus Jakarta Sans', sans-serif;
+  --mi-mono: 'JetBrains Mono', monospace;
+  --mi-gutter: 48px;
+  --mi-width: 1400px;
+  position: relative;
+  z-index: 1;
+  padding: clamp(88px, 8vw, 128px) 0 clamp(64px, 6vw, 96px);
+  color: var(--mi-text);
+  font-family: var(--mi-body);
+  -webkit-font-smoothing: antialiased;
+}
+.money-insight + .globe-horizon { margin-top: clamp(40px, 5vw, 96px); }
+.mi-inner { width: calc(100% - 2 * var(--mi-gutter)); max-width: var(--mi-width); margin: 0 auto; }
+.mi-heading { padding: 0 24px; }
+.mi-heading .section-heading__description { max-width: 600px; }
+.mi-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+
+/* Chart geometry. Figma draws the Hero Graph at 71px per €100 with 18px bars; --mi-k scales that
+   to the landing page, and every height below is a Figma pixel value times --mi-k. Each view gets
+   its own factor so the two add up to the same plot height: processing is 149 up + 53 down, banking
+   149 up + 149 down, and 202 × 2.14 ≈ 298 × 1.45. The container never changes height. */
+.mi-chart {
+  --mi-k-scale: 1;
+  --mi-k-base: 2.14;
+  --mi-k: calc(var(--mi-k-base) * var(--mi-k-scale));
+  --mi-cols: 24;
+  --mi-up: calc(149px * var(--mi-k));
+  --mi-down: calc(var(--mi-down-px, 53) * 1px * var(--mi-k));
+  --mi-gap: clamp(5px, 1.3vw, 19px);
+  --mi-bar-w: 38px;
+  position: relative;
+  margin: clamp(56px, 5vw, 80px) 0 0;
+  padding: 0;
+}
+/* Offset amber, bronze and champagne light gives the section a soft, uneven atmosphere.
+   Anchor it to the chart and feather every edge into the page. */
+.mi-chart::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: -140px calc(-1 * var(--mi-gutter)) -100px;
+  background:
+    radial-gradient(ellipse 44% 48% at 29% 43%, #c7974529 0%, #c7974510 46%, #c7974500 100%),
+    radial-gradient(ellipse 42% 50% at 76% 62%, #ac704429 0%, #ac704410 44%, #ac704400 100%),
+    radial-gradient(ellipse 56% 23% at 48% 72%, #d9bd7417 0%, #d9bd7408 48%, #d9bd7400 100%);
+  mask-image: linear-gradient(to right, transparent, #000 14%, #000 86%, transparent), linear-gradient(to bottom, transparent, #000 16%, #000 84%, transparent);
+  mask-composite: intersect;
+  pointer-events: none;
+}
+.mi-chart[data-mode='banking'] { --mi-k-base: 1.45; }
+.mi-chart-head { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 28px; padding-left: 44px; }
+.mi-legend { display: flex; gap: 18px; font-size: 12px; color: var(--mi-muted); }
+/* Banking / Processing switch, the same segmented control the app keeps in its sidebar. */
+.mi-toggle { display: inline-flex; padding: 3px; border: 1px solid #ffffff14; border-radius: 10px; background: #ffffff08; }
+.mi-toggle button { display: inline-flex; align-items: center; gap: 7px; padding: 7px 12px; border: 0; border-radius: 7px; background: transparent; color: var(--mi-muted); font: 500 13px/1 var(--mi-body); cursor: pointer; transition: color .2s ease, background .2s ease; }
+.mi-toggle button svg { width: 15px; height: 15px; }
+.mi-toggle button:hover { color: var(--mi-text-2); }
+.mi-toggle button[aria-pressed='true'] { background: #2e2b26; color: #f5c542; box-shadow: 0 1px 2px #0006; }
+.mi-toggle button:focus-visible { outline: 2px solid #e0c48b; outline-offset: 2px; }
+.mi-legend span { display: inline-flex; align-items: center; gap: 7px; }
+.mi-swatch { display: inline-block; width: 10px; height: 10px; border-radius: 3px; background: var(--mi-fill-in); }
+.mi-swatch--declined { background: var(--mi-fill-declined); }
+.mi-swatch--cancelled { background: var(--mi-fill-cancelled); }
+.mi-swatch--spending { background: var(--mi-fill-spending); }
+
+.mi-grid-area { position: relative; display: flex; gap: 12px; }
+.mi-ylabels { position: relative; align-self: stretch; width: 32px; flex-shrink: 0; font-size: 11px; color: var(--mi-muted-2); text-align: right; }
+.mi-ylabels span { position: absolute; right: 0; bottom: calc(var(--mi-down) + 5px + var(--y) * 71px * var(--mi-k)); transform: translateY(50%); transition: bottom .34s cubic-bezier(.2, .7, .2, 1), opacity .34s ease; }
+.mi-ylabels span i { font-style: normal; }
+.mi-ylabels span.is-off { opacity: 0; }
+.mi-plot { position: relative; flex: 1; min-width: 0; touch-action: pan-y; cursor: crosshair; }
+.mi-gridline { position: absolute; left: 0; right: 0; bottom: calc(var(--mi-down) + 5px + var(--y) * 71px * var(--mi-k)); height: 1px; background: #ffffff12; transition: bottom .34s cubic-bezier(.2, .7, .2, 1), opacity .34s ease; }
+.mi-gridline.is-off { opacity: 0; }
+.mi-bars { position: relative; display: grid; grid-template-columns: repeat(var(--mi-cols), minmax(0, 1fr)); column-gap: var(--mi-gap); }
+.mi-bars--up { align-items: end; height: var(--mi-up); transition: height .34s cubic-bezier(.2, .7, .2, 1); }
+.mi-bars--down { align-items: start; height: var(--mi-down); margin-top: 2px; transition: height .34s cubic-bezier(.2, .7, .2, 1); }
+.mi-baseline { height: 1px; margin-top: 2px; background: #ffffff26; }
+.mi-bar {
+  display: block;
+  width: 100%;
+  max-width: var(--mi-bar-w);
+  min-width: 3px;
+  height: calc(var(--h) * 1px * var(--mi-k));
+  justify-self: center;
+  position: relative;
+  background: var(--mi-fill-in);
+}
+/* Restore the crisp white-to-grey gradient stroke, brightest at each bar's outer end. */
+.mi-bar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(var(--mi-stroke-dir, to bottom), #fff, #999);
+  opacity: var(--mi-stroke-alpha, .7);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+.mi-bars--up .mi-bar { border-radius: 6px 6px 0 0; transform-origin: 50% 100%; }
+.mi-bars--down .mi-bar { --mi-stroke-dir: to top; --mi-stroke-alpha: .3; }
+.mi-stack { display: flex; flex-direction: column; align-items: center; justify-self: stretch; }
+.mi-bars--down .mi-bar { width: 100%; border-radius: 0 0 6px 6px; transform-origin: 50% 0; }
+.mi-bar--declined { background: var(--mi-fill-declined); }
+.mi-bar--declined.has-next { border-radius: 0; }
+.mi-bar--cancelled { background: var(--mi-fill-cancelled); }
+.mi-bar--spending { background: var(--mi-fill-spending); }
+.mi-bar.is-empty { visibility: hidden; }
+.mi-bars--up .mi-bar.is-hover { box-shadow: 0 0 24px 0 #dbaa4566; }
+.mi-bars--up .mi-bar.is-after { background: linear-gradient(180deg, #686259, var(--mi-after-up)); }
+.mi-stack.is-after .mi-bar { background: linear-gradient(180deg, #46423c, var(--mi-after-down)); }
+
+/* The reading: dashed line through the hovered hour, the time pill on the axis, the ledger. All three
+   exist only while a pointer is over the plot; otherwise the chart is just the chart. */
+.mi-chart:not([data-pointing]) :is(.mi-hover-line, .mi-pill, .mi-tooltip) { opacity: 0; visibility: hidden; transition: opacity .2s ease, visibility 0s linear .2s; }
+.mi-chart[data-pointing] :is(.mi-hover-line, .mi-pill, .mi-tooltip) { opacity: 1; visibility: visible; transition: opacity .25s ease; }
+.mi-chart { --mi-glide: .42s cubic-bezier(.22, 1, .36, 1); }
+.mi-hover-line { position: absolute; left: var(--mi-center); top: -8px; bottom: -6px; width: 0; border-left: 1px dashed #ffffff59; transform: translateX(-.5px); transition: left var(--mi-glide); }
+.mi-axis { position: relative; height: 40px; margin-top: 8px; font-size: 11px; color: var(--mi-muted-2); }
+.mi-axis > span:not(.mi-pill) { position: absolute; top: 4px; white-space: nowrap; left: calc(44px + (100% - 44px) * (var(--col) + .5) / var(--mi-cols)); transform: translateX(-50%); transition: opacity .3s ease; }
+.mi-axis > span.is-after { opacity: .5; }
+.mi-pill {
+  position: absolute;
+  top: -4px;
+  left: calc(44px + (100% - 44px) * (var(--mi-index) + .5) / var(--mi-cols));
+  transform: translateX(-50%);
+  padding: 3px 10px 4px;
+  border: 1px solid #ffffff24;
+  border-radius: 999px;
+  background: #2e2b26;
+  box-shadow: 0 4px 12px #0006;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 16px;
+  color: #fff;
+  transition: left var(--mi-glide), opacity .25s ease;
+}
+.mi-tooltip {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  left: var(--mi-tip, 0px);
+  width: 280px;
+  padding: 14px 16px 16px;
+  border: 1px solid #ffffff1a;
+  border-radius: 12px;
+  background: var(--mi-tooltip);
+  box-shadow: 0 2px 6px #0000004d, 0 16px 40px -4px #00000073;
+  pointer-events: none;
+  will-change: left;
+  transition: opacity .25s ease;
+}
+.mi-tooltip-title { margin: 0 0 12px; padding-bottom: 12px; border-bottom: 1px solid #ffffff14; font-weight: 600; font-size: 14px; line-height: 20px; color: #fff; }
+.mi-tooltip-rows { display: flex; flex-direction: column; gap: 12px; margin: 0; }
+.mi-tooltip-rows--total { margin-top: 12px; padding-top: 12px; border-top: 1px solid #ffffff14; gap: 8px; }
+.mi-tooltip-rows div { display: flex; justify-content: space-between; align-items: center; }
+.mi-tooltip-rows dt { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; line-height: 20px; color: var(--mi-text-2); }
+.mi-tooltip-rows dd { margin: 0; font-weight: 600; font-size: 14px; line-height: 20px; color: #fff; font-variant-numeric: tabular-nums; }
+.mi-tooltip-rows .is-total dt { font-weight: 600; color: #fff; }
+.mi-tooltip-rows .is-minor dt { font-size: 13px; line-height: 18px; color: var(--mi-muted); }
+.mi-tooltip-rows .is-minor dd { font-size: 12px; line-height: 16px; }
+
+/* What else you can track */
+.mi-track { margin-top: 52px; padding: 44px 24px 0; border-top: 1px solid var(--mi-rule); }
+.mi-track-head { display: flex; justify-content: space-between; align-items: baseline; gap: 24px; flex-wrap: wrap; }
+.mi-track-eyebrow { margin: 0; font: 400 10px/1.5 var(--mi-mono); letter-spacing: .18em; text-transform: uppercase; color: var(--mi-gold); }
+.mi-track-note { margin: 0; font-size: 14px; color: var(--mi-muted-2); }
+.mi-track-list { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 36px 32px; margin: 36px 0 0; padding: 0; list-style: none; }
+.mi-track-list li { display: flex; align-items: center; gap: 18px; padding: 6px 0; border-radius: 8px; outline: none; cursor: default; }
+.mi-track-list li:focus-visible { outline: 2px solid #e0c48b; outline-offset: 6px; }
+.mi-mark { flex-shrink: 0; width: 48px; height: 28px; }
+.mi-mark svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.mi-track-text { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.mi-track-text strong { font: 500 17px/1.3 var(--mi-display); letter-spacing: -.02em; color: var(--mi-text); }
+.mi-track-text span { font-size: 14px; line-height: 1.45; color: var(--mi-muted); }
+
+/* Mark hover: each mark replays its own little motion when its row is hovered or focused. */
+.mi-mark .mi-draw { stroke-dasharray: 1; stroke-dashoffset: 0; }
+.mi-mark .mi-dot, .mi-mark .mi-rank, .mi-mark .mi-card, .mi-mark .mi-chip, .mi-mark .mi-settle, .mi-mark .mi-flow { transform-box: fill-box; }
+.mi-mark .mi-card { transform-origin: 50% 100%; }
+/* The middle card sits on top of the two behind it; a soft shadow lifts it off them. */
+.mi-mark .mi-card--c:not(.mi-chip) { filter: drop-shadow(0 1.5px 2.5px #00000099) drop-shadow(0 0 1px #0000004d); }
+.mi-mark .mi-card--l { transform: translateX(-9px) rotate(-16deg); }
+.mi-mark .mi-card--r { transform: translateX(9px) rotate(16deg); }
+.mi-mark .mi-dot { transform-origin: center; }
+.mi-mark .mi-rank { transform-origin: left center; }
+.mi-mark .mi-flow--up { transform-origin: center bottom; }
+.mi-mark .mi-flow--down { transform-origin: center top; }
+@media (prefers-reduced-motion: no-preference) {
+  .mi-track-list li:is(:hover, :focus-visible) .mi-draw { animation: mi-draw .9s cubic-bezier(.4, 0, .2, 1) both; }
+  .mi-track-list li:is(:hover, :focus-visible) .mi-draw--late { animation-delay: .15s; }
+  .mi-track-list li:is(:hover, :focus-visible) .mi-seg { animation: mi-seg .55s cubic-bezier(.4, 0, .2, 1) calc(var(--n) * .3s) both; }
+  .mi-track-list li:is(:hover, :focus-visible) .mi-dot { animation: mi-pop .7s ease-out both; }
+  .mi-track-list li:is(:hover, :focus-visible) .mi-dot:nth-child(2) { animation-delay: .06s; }
+  .mi-track-list li:is(:hover, :focus-visible) .mi-dot:nth-child(3) { animation-delay: .12s; }
+  .mi-track-list li:is(:hover, :focus-visible) .mi-dot:nth-child(4) { animation-delay: .18s; }
+  .mi-track-list li:is(:hover, :focus-visible) .mi-dot:nth-child(n + 5) { animation-delay: .26s; }
+  .mi-track-list li:is(:hover, :focus-visible) .mi-rank { animation: mi-grow-x .7s cubic-bezier(.2, .7, .2, 1) both; }
+  .mi-track-list li:is(:hover, :focus-visible) .mi-rank:nth-child(2) { animation-delay: .08s; }
+  .mi-track-list li:is(:hover, :focus-visible) .mi-rank:nth-child(3) { animation-delay: .16s; }
+  .mi-track-list li:is(:hover, :focus-visible) .mi-card--l { animation: mi-fan-l .8s cubic-bezier(.34, 1.45, .64, 1) both; }
+  .mi-track-list li:is(:hover, :focus-visible) .mi-card--r { animation: mi-fan-r .8s cubic-bezier(.34, 1.45, .64, 1) .06s both; }
+  .mi-track-list li:is(:hover, :focus-visible) .mi-card--c { animation: mi-fan-c .8s cubic-bezier(.34, 1.45, .64, 1) both; }
+  .mi-track-list li:is(:hover, :focus-visible) .mi-settle { animation: mi-settle .9s cubic-bezier(.2, .7, .2, 1) both; }
+  .mi-track-list li:is(:hover, :focus-visible) .mi-flow { animation: mi-grow-y .6s cubic-bezier(.2, .7, .2, 1) both; }
+  .mi-track-list li:is(:hover, :focus-visible) .mi-flow:nth-child(3), .mi-track-list li:is(:hover, :focus-visible) .mi-flow:nth-child(4) { animation-delay: .07s; }
+  .mi-track-list li:is(:hover, :focus-visible) .mi-flow:nth-child(5), .mi-track-list li:is(:hover, :focus-visible) .mi-flow:nth-child(6) { animation-delay: .14s; }
+  .mi-track-list li:is(:hover, :focus-visible) .mi-flow:nth-child(7), .mi-track-list li:is(:hover, :focus-visible) .mi-flow:nth-child(8) { animation-delay: .21s; }
+}
+@keyframes mi-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+@keyframes mi-seg { from { stroke-dasharray: 0 100; } to { stroke-dasharray: var(--seg) 100; } }
+@keyframes mi-pop { 0% { transform: scale(.4); opacity: .3; } 60% { transform: scale(1.35); opacity: 1; } 100% { transform: scale(1); } }
+@keyframes mi-grow-x { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes mi-fan-l { 0% { transform: translateX(0) rotate(0); } 100% { transform: translateX(-9px) rotate(-16deg); } }
+@keyframes mi-fan-r { 0% { transform: translateX(0) rotate(0); } 100% { transform: translateX(9px) rotate(16deg); } }
+@keyframes mi-fan-c { 0% { transform: none; } 45% { transform: translateY(-2.5px); } 100% { transform: none; } }
+@keyframes mi-settle { from { transform: translateX(-36px); } to { transform: none; } }
+@keyframes mi-grow-y { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+
+/* Switching views: every bar folds to the baseline left to right; the incoming view's bars then
+   grow with the same stagger (they remount, so the entrance keyframe replays). Labels crossfade. */
+@media (prefers-reduced-motion: no-preference) {
+  .mi-chart.is-switching .mi-bar { animation: mi-fold .3s cubic-bezier(.4, 0, .6, 1) calc(var(--i, 0) * 6ms) both !important; }
+  .mi-chart.is-switching .mi-stack .mi-bar { animation-delay: calc(var(--i, 0) * 6ms + 30ms) !important; }
+  .mi-chart.is-switching :is(.mi-legend, .mi-axis) { opacity: 0; transition: opacity .2s ease; }
+  .money-insight.has-entered .mi-chart:not(.is-switching) :is(.mi-legend, .mi-axis) { animation: mi-fade-in .4s ease .15s both; }
+  .mi-ylabels span i { animation: mi-fade-in .35s ease both; }
+}
+@keyframes mi-fold { to { opacity: 0; transform: scaleY(0); } }
+@keyframes mi-fade-in { from { opacity: 0; } to { opacity: 1; } }
+
+/* Entrance: bars grow, then the inventory ticks in — played once. */
+@media (prefers-reduced-motion: no-preference) {
+  .money-insight[data-motion]:not(.has-entered) :is(.mi-bar, .mi-track-list li) { opacity: 0; }
+  .money-insight[data-motion]:not(.has-entered) .mi-bar { transform: scaleY(0); }
+  .money-insight.has-entered .mi-bars--up .mi-bar { animation: mi-grow .7s cubic-bezier(.2, .7, .2, 1) calc(var(--i) * 32ms) both; }
+  .money-insight.has-entered .mi-stack .mi-bar { animation: mi-grow .7s cubic-bezier(.2, .7, .2, 1) calc(var(--i) * 32ms + .1s) both; }
+  .money-insight.has-entered .mi-track-list li { animation: mi-rise .6s cubic-bezier(.2, .7, .2, 1) calc(1s + var(--i) * 80ms) both; }
+}
+@keyframes mi-grow { from { opacity: 0; transform: scaleY(0); } to { opacity: 1; transform: scaleY(1); } }
+@keyframes mi-rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+@media (max-width: 1100px) {
+  .mi-chart { --mi-k-scale: .82; }
+  .mi-track-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 900px) {
+  .money-insight { --mi-gutter: 28px; }
+  .mi-heading { padding: 0 8px; }
+  .mi-chart { --mi-k-scale: .7; --mi-bar-w: 26px; }
+  .mi-chart-head { flex-wrap: wrap; }
+  .mi-tooltip { width: 240px; }
+}
+@media (max-width: 620px) {
+  .money-insight { --mi-gutter: 20px; }
+  .mi-chart { --mi-k-scale: .56; --mi-bar-w: 14px; --mi-gap: 3px; margin-top: 48px; }
+  .mi-chart-head { padding-left: 36px; gap: 12px; }
+  .mi-toggle button { padding: 7px 10px; font-size: 12px; }
+  .mi-legend { gap: 12px; }
+  .mi-ylabels { width: 26px; }
+  .mi-grid-area { gap: 10px; }
+  .mi-axis > span:not(.mi-pill) { left: calc(36px + (100% - 36px) * (var(--col) + .5) / var(--mi-cols)); }
+  .mi-axis > span:not(.mi-pill):nth-child(even) { display: none; }
+  .mi-pill { left: calc(36px + (100% - 36px) * (var(--mi-index) + .5) / var(--mi-cols)); }
+  /* On a phone the ledger would cover the bars, so it sits under the axis instead and the figure
+     reserves the room. Both flip states collapse to the same full-width block. */
+  .mi-chart { transition: padding-bottom .3s ease; }
+  .mi-chart[data-pointing] { padding-bottom: 236px; }
+  .mi-tooltip { top: calc(100% + 56px); left: 0 !important; right: 0; width: auto; padding: 12px 14px; }
+  .mi-tooltip-rows { gap: 8px; }
+  .mi-tooltip-rows dt, .mi-tooltip-rows dd { font-size: 13px; }
+  .mi-track { padding: 36px 4px 0; }
+  .mi-track-list { grid-template-columns: 1fr; gap: 24px; }
+}

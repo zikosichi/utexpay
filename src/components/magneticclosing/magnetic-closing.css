@@ -1,0 +1,120 @@
+.magnetic-closing {
+  --mc-width: min(940px, 94vw);
+  --mc-scene-height: calc(var(--mc-width) * 650 / 1635);
+  --mc-tile-gap: calc(var(--mc-width) * .18);
+  --mc-tile-height: calc(var(--mc-width) * 560 / 1635);
+  --mc-tile-start: 46svh;
+  --mc-exit-clearance: min(26svh, 188px);
+  --mc-tile-end: calc(var(--mc-tile-start) + 2 * var(--mc-tile-gap) + var(--mc-tile-height));
+  position: relative;
+  isolation: isolate;
+  overflow-x: clip;
+  margin-top: 0;
+  color: #f3f2ee;
+  background: var(--page-background, #0d0d0f);
+  scroll-margin-top: 24svh;
+}
+.mc-journey {
+  position: relative;
+  /* Release as the last tile clears the card; the closing copy follows without an empty hold. */
+  height: calc(var(--mc-tile-end) + 50svh + var(--mc-scene-height) / 2 - var(--mc-exit-clearance));
+}
+.mc-card-sticky {
+  position: sticky;
+  top: calc(50svh - var(--mc-scene-height) / 2);
+  z-index: 2;
+  width: var(--mc-width);
+  height: var(--mc-scene-height);
+  margin-inline: auto;
+  pointer-events: none;
+}
+.mc-card-scene { display: block; width: 100%; height: 100%; overflow: visible; }
+.mc-tile {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: var(--mc-width);
+  height: var(--mc-tile-height);
+  overflow: visible;
+  pointer-events: none;
+}
+.mc-tile--back { z-index: 1; }
+.mc-tile--front { z-index: 3; }
+.mc-clear-marker { position: absolute; top: var(--mc-tile-end); width: 1px; height: 1px; pointer-events: none; }
+.mc-tile svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.mc-engraving { font-family: 'Onest', sans-serif; }
+.mc-tile-name { fill: inherit; font-size: 34px; letter-spacing: 2px; }
+.mc-tile-value { fill: inherit; font-size: 32px; font-weight: 500; }
+.mc-tile-detail { fill: inherit; opacity: .72; font-size: 22px; }
+.mc-closing-copy { position: relative; z-index: 4; margin-top: calc(var(--mc-width) * -.02); padding: 20px 24px clamp(40px, 4vw, 64px); text-align: center; }
+.magnetic-closing .section-heading { max-width: 1000px; }
+.magnetic-closing .section-heading__title { font-size: clamp(32px, 3.6vw, 56px); }
+.magnetic-closing .section-heading__eyebrow { margin-bottom: 16px; }
+.magnetic-closing .section-heading__description { margin-top: 16px; max-width: 640px; font-size: 16px; }
+.mc-actions { display: flex; justify-content: center; gap: 12px; margin-top: 28px; }
+.mc-products { color: #88877e; font: 400 12px/1.5 'Onest', sans-serif; letter-spacing: .04em; margin: 20px 0 0; }
+.mc-products span { margin: 0 12px; color: #bc9c66; }
+.magnetic-closing + .site-footer { margin-top: 0; }
+@media (max-width: 600px) {
+  .magnetic-closing { --mc-width: 94vw; --mc-tile-gap: 26vw; --mc-tile-start: 30svh; --mc-exit-clearance: min(38svh, 320px); }
+  .mc-card-scene { transform: scale(1.25); transform-origin: center; }
+  .mc-card-sticky { overflow-x: clip; }
+  .mc-closing-copy { padding-inline: 20px; }
+  .magnetic-closing .section-heading__title { font-size: clamp(30px, 8.5vw, 42px); max-width: 360px; margin-inline: auto; }
+  .magnetic-closing .section-heading__description { max-width: 320px; font-size: 14px; }
+  .mc-tile-name { font-size: 44px; }
+  .mc-tile-value { font-size: 40px; }
+  .mc-tile-detail { display: none; }
+  .mc-actions { gap: 8px; }
+  .mc-products { margin-top: 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mc-journey { height: auto; }
+  .mc-closing-copy { margin-top: 0; }
+  .mc-card-sticky { position: relative; top: 0; margin-bottom: 32px; }
+  .mc-tile, .mc-clear-marker { display: none; }
+}
+
+/* All four lights are painted on ONE oversized surface. There are no per-column
+   boxes or masks that can clip a blurred halo into a rectangular edge. */
+.mc-atmosphere {
+  --mc-light-one: 22%;
+  --mc-light-two: 41%;
+  --mc-light-three: 61%;
+  --mc-light-four: 80%;
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 65% 42% at 50% 42%, #a872302b, transparent 78%),
+    radial-gradient(ellipse 60% 36% at 50% 78%, #82662c1c, transparent 80%);
+  mask-image: linear-gradient(to bottom, transparent, #000 12%, #000 83%, transparent);
+}
+.mc-atmosphere::before {
+  --mc-light-falloff: #e8c98b3b 0%, #e0bc7837 12%, #d6ab622b 28%, #c89a4e19 44%, #b889410b 62%, #ad7f3803 80%, #ad7f3800 100%;
+  content: '';
+  position: absolute;
+  inset: -40px;
+  background:
+    radial-gradient(ellipse 8% 53% at var(--mc-light-one) 42%, var(--mc-light-falloff)),
+    radial-gradient(ellipse 8% 53% at var(--mc-light-two) 52%, var(--mc-light-falloff)),
+    radial-gradient(ellipse 8% 53% at var(--mc-light-three) 46%, var(--mc-light-falloff)),
+    radial-gradient(ellipse 8% 53% at var(--mc-light-four) 55%, var(--mc-light-falloff));
+  filter: blur(16px);
+}
+@media (max-width: 600px) {
+  .mc-atmosphere { --mc-light-one: 14%; --mc-light-two: 38%; --mc-light-three: 62%; --mc-light-four: 86%; }
+  .mc-atmosphere::before { filter: blur(10px); }
+}
+.mc-atmosphere::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: .075;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.86' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.24'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+  mix-blend-mode: normal;
+}
+.mc-card-art { filter: drop-shadow(0 10px 16px #0005); }

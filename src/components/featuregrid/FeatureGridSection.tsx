@@ -1,4 +1,4 @@
-import { useId } from 'react'
+import { useEffect, useId, useRef } from 'react'
 import { SectionHeading } from '#/components/SectionHeading'
 import { BusinessTiles } from './BusinessTiles'
 import { CheckoutScene } from './CheckoutScene'
@@ -6,10 +6,32 @@ import { TotalBalancePanel } from './TotalBalancePanel'
 import { CoffeeSteam } from './CoffeeSteam'
 import './feature-grid.css'
 
+/* Motion is opt-in from the client: `data-motion` on the grid enables the hidden pre-entry state,
+   so prerendered HTML and no-JS readers see every tile. Each chapter gets `has-entered` once (the
+   entrance stagger and one-shot moments) and `is-in` while on screen (the loops, so nothing ticks
+   off-screen). Reduced motion is handled in CSS, where the hidden state is never applied. */
+function useChapterMotion(grid: React.RefObject<HTMLDivElement | null>) {
+  useEffect(() => {
+    const root = grid.current
+    if (!root || typeof IntersectionObserver === 'undefined') return
+    root.dataset.motion = ''
+    const observer = new IntersectionObserver((entries) => {
+      for (const { target, isIntersecting } of entries) {
+        target.classList.toggle('is-in', isIntersecting)
+        if (isIntersecting) target.classList.add('has-entered')
+      }
+    }, { threshold: .2 })
+    for (const chapter of root.querySelectorAll('.fg-chapter')) observer.observe(chapter)
+    return () => { observer.disconnect(); delete root.dataset.motion }
+  }, [grid])
+}
+
 export function FeatureGridSection() {
   const id = useId()
+  const grid = useRef<HTMLDivElement>(null)
+  useChapterMotion(grid)
 
-  return <div className="feature-grid" aria-labelledby={`${id}-title`}>
+  return <div className="feature-grid" ref={grid} aria-labelledby={`${id}-title`}>
     <SectionHeading id={`${id}-title`} eyebrow="Banking & payments" description="For your everyday, your business and the customers you serve.">
       One place.<br />More possibilities.
     </SectionHeading>

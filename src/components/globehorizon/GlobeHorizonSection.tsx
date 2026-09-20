@@ -2,8 +2,59 @@ import { useEffect, useId, useRef, useState } from 'react'
 import type { GlobeScene } from './scene'
 import { GlobeControls } from './GlobeControls'
 import { SectionHeading } from '#/components/SectionHeading'
-import { appearanceStorageKey, previousAppearanceStorageKey, legacyAppearanceStorageKey, defaultAppearance, normalizeAppearance, type GlobeAppearance } from './appearance'
+import { appearanceStorageKey, defaultAppearance, normalizeAppearance, type GlobeAppearance } from './appearance'
 import './globe-horizon.css'
+
+// Capability numbers, not usage numbers (pre-launch). 150+ and 30+ were confirmed in the Aug 25 sync;
+// top-up methods and the licence wording are still to confirm with Sandro (Landing/03-messaging-pillars).
+const stats = [
+  ['150+', 'countries you can get paid from'],
+  ['30+', 'currencies held in one balance'],
+  ['3', 'ways to top up: cards, iDEAL and SEPA'],
+  ['Licensed', 'EMI, with customer funds safeguarded'],
+] as const
+const countDuration = 1400, countStagger = 260
+
+/** The numbers count up one after another the first time the row scrolls into view. */
+function StatsRow() {
+  const row = useRef<HTMLDListElement>(null)
+  // 0 until the row is seen, then the eased 0–1 progress of each stat's own count.
+  const [progress, setProgress] = useState<number[] | null>(null)
+  useEffect(() => {
+    const element = row.current!
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    let raf = 0
+    const observer = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting) return
+      observer.disconnect()
+      const started = performance.now()
+      const tick = (now: number) => {
+        const next = stats.map((_, index) => {
+          const t = Math.min(1, Math.max(0, (now - started - index * countStagger) / countDuration))
+          return 1 - Math.pow(1 - t, 3)
+        })
+        setProgress(next)
+        if (next[next.length - 1] < 1) raf = requestAnimationFrame(tick)
+      }
+      raf = requestAnimationFrame(tick)
+    }, { threshold: .4 })
+    // Hold at zero while the row is still below the fold; server markup carries the final values.
+    if (element.getBoundingClientRect().top > innerHeight) setProgress(stats.map(() => 0))
+    observer.observe(element)
+    return () => { observer.disconnect(); cancelAnimationFrame(raf) }
+  }, [])
+  return <dl ref={row} className="gh-stats" aria-label="What the account covers">
+    {stats.map(([value, label], index) => {
+      const numeric = /^(\d+)(.*)$/.exec(value)
+      const t = progress?.[index] ?? 1
+      const shown = numeric ? `${Math.round(Number(numeric[1]) * t)}${numeric[2]}` : value
+      return <div className={`gh-stat${t > 0 ? ' is-in' : ''}`} key={label}>
+        <dt>{label}</dt>
+        <dd aria-label={value} data-text={numeric ? undefined : ''}>{shown}</dd>
+      </div>
+    })}
+  </dl>
+}
 
 /** A self-contained international payments chapter with an interactive globe. */
 export function GlobeHorizonSection() {
@@ -19,13 +70,7 @@ export function GlobeHorizonSection() {
 
   useEffect(() => {
     try {
-      const current = localStorage.getItem(appearanceStorageKey)
-      const previous = localStorage.getItem(previousAppearanceStorageKey) ?? localStorage.getItem('utexpay.globe.appearance.v2')
-      const saved = current !== null
-        ? normalizeAppearance(JSON.parse(current))
-        : previous !== null
-          ? { ...normalizeAppearance(JSON.parse(previous)), radius: defaultAppearance.radius }
-          : { ...normalizeAppearance(JSON.parse(localStorage.getItem(legacyAppearanceStorageKey) ?? 'null')), size: defaultAppearance.size, radius: defaultAppearance.radius }
+      const saved = normalizeAppearance(JSON.parse(localStorage.getItem(appearanceStorageKey) ?? 'null'))
       appearanceRef.current = saved
       setAppearance(saved)
       localStorage.setItem(appearanceStorageKey, JSON.stringify(saved))
@@ -75,9 +120,10 @@ export function GlobeHorizonSection() {
         role="img" aria-label="Interactive dotted globe" aria-describedby={helpId} />
     </div>
     <p id={helpId} className="gh-sr-only">Drag to rotate the globe. Use the arrow keys to rotate, or Home to reset the view.</p>
-    <SectionHeading className="gh-heading" id={titleId} eyebrow="International payments" description="Send money abroad from your personal or business account.">
-      A little closer.<br />Even across borders.
+    <SectionHeading className="gh-heading" id={titleId} description="For family abroad, the team you're building, the supplier who keeps you going. Sent from the same account you use every day.">
+      Across borders.<br />From one account.
     </SectionHeading>
+    <StatsRow />
     {status === 'ready' && <GlobeControls value={appearance} onChange={changeAppearance} />}
   </section>
 }

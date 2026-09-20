@@ -1,0 +1,147 @@
+/* Approved hybrid: bronze doorway cover + Paper C's FAQ and settings card.
+   Share the landing's heading scale, warm palette and 48 / 28 / 20px gutters. */
+.trust-faq {
+  --tf-text: #f3f0e9;
+  --tf-muted: #ada89f;
+  --tf-gold: #d6b77b;
+  --tf-line: #3a3834;
+  /* Same 30% white → grey inside stroke as the Figma-derived business tiles. */
+  --tf-stroke: linear-gradient(#ffffff4d, #9999994d);
+  --tf-gutter: 48px;
+  --tf-duration: 420ms;
+  --tf-ease: cubic-bezier(.22, 1, .36, 1);
+  --tf-top-space: calc(clamp(88px, 8vw, 128px) + 40px);
+  position: relative;
+  z-index: 1;
+  padding: var(--tf-top-space) 0 clamp(80px, 7vw, 112px);
+  color: var(--tf-text);
+  font-family: 'Manrope', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  scroll-margin-top: 88px;
+}
+.tf-inner { width: calc(100% - 2 * var(--tf-gutter)); max-width: 1400px; margin-inline: auto; }
+.tf-header { position: relative; isolation: isolate; display: flex; align-items: center; min-height: clamp(440px, 35vw, 510px); overflow: hidden; border: 1px solid transparent; border-radius: 20px; background: #100e0c; }
+.tf-header::before, .tf-example-card::after { content: ''; position: absolute; z-index: 2; inset: 0; padding: 1px; border-radius: inherit; background: var(--tf-stroke); mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); mask-composite: exclude; pointer-events: none; }
+/* Keep the cover stroke inside its clipped artwork frame. */
+.tf-header::before { inset: 0; }
+.tf-example-card::after { inset: -1px; }
+.tf-cover { position: absolute; z-index: -2; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; pointer-events: none; user-select: none; }
+.tf-header::after { content: ''; position: absolute; z-index: -1; inset: 0; background: linear-gradient(90deg, #08080850 0%, #08080824 38%, transparent 65%); pointer-events: none; }
+.tf-cover-copy { width: 65%; padding: clamp(40px, 4.8vw, 72px); padding-right: 24px; }
+.tf-heading .section-heading__title { text-wrap: initial; }
+.tf-intro { max-width: 480px; margin-top: 26px; }
+.tf-intro p { margin: 0; color: var(--tf-muted); font-size: clamp(16px, 1.2vw, 20px); line-height: 1.6; }
+.trust-faq button:focus-visible { outline: 2px solid var(--tf-gold); outline-offset: 5px; }
+.tf-panel { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); gap: clamp(48px, 5.5vw, 80px); align-items: start; padding-top: 48px; min-height: 448px; }
+.tf-question { border-top: 1px solid var(--tf-line); }
+.tf-question:first-child { border-top: 0; }
+.tf-question h3 { margin: 0; }
+.tf-question h3 button { display: flex; justify-content: space-between; align-items: center; gap: 24px; width: 100%; padding: 24px 0; border: 0; background: none; color: var(--tf-text); text-align: left; font: 400 18px/28px 'Manrope', sans-serif; letter-spacing: 0; cursor: pointer; transition: font-size var(--tf-duration) var(--tf-ease), line-height var(--tf-duration) var(--tf-ease), letter-spacing var(--tf-duration) var(--tf-ease), color 200ms ease; }
+.tf-question:first-child h3 button { padding-top: 0; }
+.tf-question h3 button:hover { color: var(--tf-gold); }
+.tf-question[data-open='true'] h3 button { font-size: 24px; line-height: 34px; letter-spacing: -.025em; }
+.tf-plus { width: 24px; height: 24px; flex-shrink: 0; stroke: var(--tf-muted); stroke-width: 1.5; }
+.tf-plus-vertical { transform-origin: center; transition: transform var(--tf-duration) var(--tf-ease), opacity var(--tf-duration) var(--tf-ease); }
+.tf-question[data-open='true'] .tf-plus-vertical { transform: rotate(90deg); opacity: 0; }
+/* Grid interpolation keeps both directions fluid, including rapid reversals.
+   Content stays mounted for intrinsic height; inert/aria-hidden hide collapsed answers from interaction. */
+.tf-answer-reveal { display: grid; grid-template-rows: 0fr; opacity: 0; visibility: hidden; transition: grid-template-rows var(--tf-duration) var(--tf-ease), opacity 260ms ease, visibility 0s linear var(--tf-duration); }
+.tf-question[data-open='true'] .tf-answer-reveal { grid-template-rows: 1fr; opacity: 1; visibility: visible; transition-delay: 0s; }
+.tf-answer { min-height: 0; overflow: hidden; }
+.tf-answer-content { padding: 0 56px 32px 0; transform: translateY(-6px); transition: transform var(--tf-duration) var(--tf-ease); }
+.tf-question[data-open='true'] .tf-answer-content { transform: translateY(0); }
+.tf-answer p { margin: 0; color: var(--tf-muted); font-size: 16px; line-height: 26px; }
+.tf-example { margin: 0; }
+.tf-example-card { position: relative; padding: 28px; border: 1px solid transparent; border-radius: 16px; background: #1f1d1a; }
+.tf-example-heading { display: flex; align-items: center; gap: 14px; }
+.tf-example-heading svg { flex-shrink: 0; width: 32px; height: 36px; stroke: var(--tf-gold); stroke-width: 1.5; }
+.tf-mark-detail { stroke: var(--tf-text); }
+.tf-example-heading h3 { margin: 0; font: 500 18px/26px 'Plus Jakarta Sans', sans-serif; letter-spacing: -.02em; }
+.tf-example dl { margin: 24px 0; }
+.tf-example dl > div { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--tf-line); }
+.tf-example dt { font-size: 15px; line-height: 22px; }
+.tf-example dd { margin: 0; width: 88px; flex-shrink: 0; text-align: right; color: var(--tf-muted); font-size: 13px; line-height: 20px; }
+.tf-example-card > p { margin: 0; color: var(--tf-muted); font-size: 14px; line-height: 22px; white-space: pre-line; }
+.tf-example figcaption { margin-top: 20px; color: #9a9690; font: 400 11px/20px 'JetBrains Mono', monospace; letter-spacing: .04em; text-transform: uppercase; }
+@media (max-width: 1100px) {
+  .tf-cover-copy { width: 68%; padding: 40px; padding-right: 20px; }
+  .tf-panel { gap: 40px; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); }
+  .tf-example-card { padding: 24px; }
+  .tf-answer-content { padding-right: 24px; }
+}
+@media (max-width: 900px) {
+  .trust-faq { --tf-gutter: 28px; }
+  .tf-header { min-height: 440px; }
+  .tf-cover { object-position: 65% center; }
+  .tf-header::after { background: linear-gradient(90deg, #080808d9, #08080899 38%, #08080826 68%, transparent); }
+  .tf-cover-copy { width: 72%; padding: 32px; }
+  .tf-heading .section-heading__title { font-size: clamp(34px, 4.8vw, 44px); }
+  .tf-panel { grid-template-columns: 1fr; gap: 36px; min-height: 0; }
+  .tf-example { max-width: 520px; width: 100%; }
+}
+@media (max-width: 620px) {
+  .trust-faq { --tf-gutter: 20px; --tf-top-space: 96px; padding-block: var(--tf-top-space) 72px; }
+  .tf-header { min-height: 620px; align-items: flex-start; border-radius: 16px; }
+  .tf-cover { top: auto; bottom: 0; height: 310px; object-position: right center; mask-image: linear-gradient(180deg, transparent, #000 24%); }
+  .tf-header::after { background: linear-gradient(180deg, #100e0c 0%, #100e0c 43%, #100e0ce6 49%, #100e0c00 69%); }
+  .tf-cover-copy { width: 100%; padding: 32px 24px 320px; }
+  .tf-heading .section-heading__title { font-size: clamp(31px, 8.8vw, 46px); }
+  .tf-heading .section-heading__eyebrow { font-size: 9px; letter-spacing: .16em; }
+  .tf-intro { margin-top: 20px; }
+  .tf-intro p { font-size: 15px; }
+  .tf-panel { padding-top: 28px; }
+  .tf-question h3 button { font-size: 16px; line-height: 26px; gap: 16px; padding-block: 20px; }
+  .tf-question[data-open='true'] h3 button { font-size: 20px; line-height: 29px; }
+  .tf-answer-content { padding-right: 0; padding-bottom: 24px; }
+  .tf-answer p { font-size: 15px; line-height: 25px; }
+  .tf-example-card { padding: 24px; }
+}
+@media (max-width: 370px) {
+  .tf-cover-copy { padding-inline: 20px; }
+  .tf-heading .section-heading__title { font-size: 29px; text-wrap: balance; }
+}
+/* The same discreet numbered rail used by the banking section. */
+.tf-version-bar { position: absolute; z-index: 5; top: calc(var(--tf-top-space) + 32px); right: 0; }
+.tf-versions { display: flex; flex-direction: column; gap: 2px; }
+.tf-versions button { position: relative; display: grid; place-items: center; width: 32px; height: 32px; padding: 0; border: 0; color: #77736b; background: transparent; cursor: pointer; font: 9px/1 'JetBrains Mono', monospace; }
+.tf-versions button::after { content: ''; position: absolute; right: 0; top: 10px; width: 2px; height: 12px; background: currentColor; opacity: 0; }
+.tf-versions button:hover { color: #f1e8d5; }
+.tf-versions button[aria-pressed='true'] { color: #cfb984; }
+.tf-versions button[aria-pressed='true']::after { opacity: 1; }
+.tf-version-name { position: absolute; right: calc(100% + 8px); top: 50%; transform: translateY(-50%); padding: 7px 10px; border: 1px solid #ffffff12; border-radius: 4px; background: var(--page-background, #0c0c0c); color: #c6bda9; font: 11px/16px 'Manrope', sans-serif; white-space: nowrap; opacity: 0; visibility: hidden; pointer-events: none; }
+.tf-versions button:is(:hover, :focus-visible) .tf-version-name { opacity: 1; visibility: visible; }
+.trust-faq .tf-versions button:focus-visible { outline-offset: -3px; }
+
+/* Version 02: One home — sculptural illustration beside the answers. */
+.trust-faq[data-version='split'] .tf-inner { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: clamp(40px, 5vw, 80px); align-items: start; }
+.trust-faq[data-version='split'] .tf-header { display: flex; flex-direction: column; align-items: stretch; min-height: 0; overflow: visible; border: 0; border-radius: 0; background: none; }
+.trust-faq[data-version='split'] .tf-header::before, .trust-faq[data-version='split'] .tf-header::after { content: none; }
+.trust-faq[data-version='split'] .tf-cover-copy { order: 0; width: 100%; padding: 0; }
+.trust-faq[data-version='split'] .tf-heading .section-heading__title { font-size: clamp(38px, 3.55vw, 56px); }
+.trust-faq[data-version='split'] .tf-intro { max-width: 460px; margin-top: 24px; }
+.tf-split-art { order: 1; display: block; width: calc(100% + 48px); max-width: none; height: auto; margin: 0 -24px; object-fit: contain; mask-image: linear-gradient(to bottom, transparent, #000 8%, #000 90%, transparent), linear-gradient(to right, transparent, #000 8%, #000 92%, transparent); mask-composite: intersect; }
+.trust-faq[data-version='split'] .tf-content { min-width: 0; padding-top: 4px; }
+.tf-content-label { margin-bottom: 24px; }
+.trust-faq[data-version='split'] .tf-panel { grid-template-columns: minmax(0, 1fr); gap: 0; padding-top: 12px; min-height: 0; }
+.trust-faq[data-version='split'] .tf-answer-content { padding-right: 12px; padding-bottom: 36px; }
+.trust-faq[data-version='split'] .tf-question:last-child { border-bottom: 1px solid var(--tf-line); }
+.trust-faq[data-version='split'] .tf-question[data-open='true'] h3 button { font-size: 22px; line-height: 32px; }
+@media (max-width: 900px) {
+  .tf-versions button { width: 24px; }
+  .trust-faq[data-version='split'] .tf-inner { grid-template-columns: minmax(0, 1fr); gap: 40px; }
+  .trust-faq[data-version='split'] .tf-heading .section-heading__title { font-size: clamp(34px, 5.7vw, 48px); }
+  .tf-split-art { width: 100%; max-width: 680px; margin: 8px auto 0; }
+  .trust-faq[data-version='split'] .tf-panel { min-height: 0; }
+}
+@media (max-width: 620px) {
+  .tf-version-bar { top: calc(var(--tf-top-space) + 16px); }
+  .tf-versions button { width: 20px; }
+  .trust-faq[data-version='split'] .tf-heading .section-heading__title { font-size: clamp(29px, 8.2vw, 46px); }
+  .trust-faq[data-version='split'] .tf-cover-copy { padding-right: 8px; }
+  .trust-faq[data-version='split'] .tf-inner { gap: 28px; }
+  .trust-faq[data-version='split'] .tf-panel { padding-top: 8px; }
+  .trust-faq[data-version='split'] .tf-question[data-open='true'] h3 button { font-size: 20px; line-height: 29px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .trust-faq *, .trust-faq *::before, .trust-faq *::after { animation: none !important; transition: none !important; }
+}

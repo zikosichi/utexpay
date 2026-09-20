@@ -31,7 +31,7 @@
    inset shadow it can carry a gradient. Angles and stop positions are converted from the exported
    SVG's explicit gradient endpoints, so the ramp sits where the design puts it rather than simply
    spanning the box. */
-.fg-balance-panel::after, .fg-balance-account::after, .fg-currency-badge::after, .fg-receipt::after, .fg-members::after {
+.fg-balance-panel::after, .fg-balance-account::after, .fg-currency-badge::after, .fg-receipt::after, .fg-members::after, .fg-feature-icon::after {
   content: '';
   position: absolute;
   inset: 0;
@@ -163,23 +163,15 @@
 .fg-workspace-copy > div { position: absolute; top: 63px; right: 44px; width: 320px; }
 .fg-workspace-copy p { max-width: 297px; }
 /* Three feature rows under the copy: 32px gold line icons, 28px from 20px Plus Jakarta Sans labels. */
-.fg-workspace-features { display: flex; flex-direction: column; gap: 22px; margin: 64px 0 0; padding: 0; list-style: none; }
-.fg-workspace-features li { display: flex; align-items: center; gap: 28px; color: var(--fg-text); font: 500 20px/28px 'Plus Jakarta Sans', sans-serif; letter-spacing: -.02em; }
-.fg-workspace-features svg { flex-shrink: 0; display: block; width: 32px; height: 32px; color: var(--fg-gold); }
+/* Four rows in frosted squircles — the money panel's recipe (white 7% + 14px backdrop blur, white → #999
+   gradient ring) at 48px, radius 15, icon 22px gold. 4 × 48 + 3 × 14 = 234px under the copy.
+   Rows dim by colour, never opacity: an ancestor with opacity < 1 becomes the backdrop root, and
+   the tile's backdrop blur would then see only its own row instead of the photo. */
+.fg-workspace-features { display: flex; flex-direction: column; gap: 14px; margin: 44px 0 0; padding: 0; list-style: none; }
+.fg-workspace-features li { display: flex; align-items: center; gap: 20px; cursor: default; color: var(--fg-text); font: 500 20px/28px 'Plus Jakarta Sans', sans-serif; letter-spacing: -.02em; }
+.fg-feature-icon { position: relative; display: grid; place-items: center; flex-shrink: 0; width: 48px; height: 48px; border-radius: 15px; background: radial-gradient(120% 100% at 20% 0%, #4a3f3233, #1d1d1d33), #ffffff12; backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); box-shadow: 0 8px 24px -12px #000c; --fg-stroke: linear-gradient(160deg, #ffffff40 0%, #99999926 100%); }
+.fg-feature-icon svg { display: block; width: 22px; height: 22px; color: var(--fg-gold); }
 
-/* Checkout tile — Figma `CheckoutDemo` 4855:22966 (1400 × 630, the grid's full width). One still
-   scene and a caption; the design has no control. `image 154` is 1653 × 664 with its right edge on
-   the tile's right edge and its top at −0.37, so the tile keeps the design's 1400:630 proportion and
-   the scene is sized against the tile (1653 / 1400): at 1400px every offset is the design's own,
-   below it the whole composition scales together. */
-.fg-checkout { min-height: 0; aspect-ratio: 1400 / 630; background: #10100f; }
-.fg-checkout-scene { position: absolute; z-index: 0; top: -1.37px; right: -1px; width: calc(118.0714% + 2px); height: auto; max-width: none; pointer-events: none; user-select: none; }
-/* `Frame 147`: black 70% → 0 over the top 201px, 1401 wide from the tile's outer left edge. */
-.fg-checkout-shade { position: absolute; z-index: 1; top: -1.37px; left: -1px; right: -2px; height: 201px; background: linear-gradient(#000000b3, #0000); pointer-events: none; }
-/* `Frame 145` at y 56, centred: PJS SemiBold 42 (Figma's auto leading renders 53px) + 12px gap + Manrope 16/23.25 #c6c2bb. */
-.fg-checkout-copy { position: absolute; z-index: 2; top: 55px; left: 0; right: -1px; display: flex; flex-direction: column; align-items: center; gap: 13px; /* Figma 12; Chrome seats Manrope's glyphs 1px higher in the 23.25px line box */ padding: 0 24px; text-align: center; pointer-events: none; }
-.fg-checkout-copy h4 { margin: 0; font: 600 42px/53px 'Plus Jakarta Sans', sans-serif; letter-spacing: -1.085px; color: var(--fg-text); text-wrap: balance; }
-.fg-checkout-copy p { margin: 0; font: 400 16px/23.25px 'Manrope', sans-serif; color: #c6c2bb; text-wrap: balance; }
 @media (max-width: 620px) {
   .fg-money .fg-scene { width: 140%; left: -14%; object-position: center; }
   .fg-money-ui { width: min(302px, 76%); }
@@ -235,38 +227,71 @@
   .fg-workspace-scene { inset: 0; width: 100%; height: 100%; object-position: 30% 50%; }
   .fg-workspace-copy { inset: 0; width: auto; height: auto; background: linear-gradient(#000e 0%, #000b 55%, #0000 85%); }
   .fg-workspace-copy > div { position: static; width: auto; padding: 32px 24px 0; }
-  .fg-workspace-features { margin-top: 32px; gap: 22px; }
-  .fg-workspace-features li { font-size: 18px; gap: 20px; }
-  .fg-workspace-features svg { width: 28px; height: 28px; }
+  .fg-workspace-features { margin-top: 32px; gap: 14px; }
+  .fg-workspace-features li { font-size: 18px; gap: 16px; }
+  .fg-feature-icon { width: 42px; height: 42px; border-radius: 13px; }
+  .fg-feature-icon svg { width: 20px; height: 20px; }
 }
 @media (max-width: 480px) {
   .fg-member, .fg-members-columns { gap: 12px; padding-inline: 16px; }
-  .fg-member-chevron, .fg-members-columns > span:last-child { display: none; }
+  .fg-member-chevron, .fg-members-columns > span:last-child, .fg-member-badge { display: none; } /* the badge clips beside the name; the detail line already says "invited" */
   .fg-member-name { font-size: 15px; }
   .fg-member-detail { font-size: 13px; }
   .fg-member-access { font-size: 14px; }
 }
 
-/* Checkout tile below 900px: the proportional tile would get too short, so it takes a fixed height
-   and the scene covers it with the bottle kept in view; the caption tightens with the width. */
-@media (max-width: 1100px) {
-  .fg-checkout-copy h4 { font-size: 36px; line-height: 45px; }
+/* Motion. `data-motion` is set by FeatureGridSection on the client, so the hidden pre-entry state
+   never reaches prerendered HTML or a no-JS reader, and it is only ever applied when the reader
+   has not asked for reduced motion (the reduce rule above then has nothing to hide). `has-entered`
+   is set once per chapter and drives the entrances and the one-shot moments; `is-in` follows
+   visibility and drives the loops, so nothing ticks off-screen. All timings share the grid's
+   register: slow, ease-in-out, no overshoot. */
+@media (prefers-reduced-motion: no-preference) {
+  .feature-grid[data-motion] .fg-chapter:not(.has-entered) :is(.fg-chapter-heading, .fg-tile) { opacity: 0; }
+  .feature-grid[data-motion] .fg-chapter.has-entered :is(.fg-chapter-heading, .fg-tile) { animation: fg-appear .8s cubic-bezier(.2, .6, .2, 1) both; }
+  .feature-grid[data-motion] .fg-chapter.has-entered .fg-tile:nth-child(1) { animation-delay: .12s; }
+  .feature-grid[data-motion] .fg-chapter.has-entered .fg-tile:nth-child(2) { animation-delay: .26s; }
+  .feature-grid[data-motion] .fg-chapter.has-entered .fg-members { animation: fg-appear .8s cubic-bezier(.2, .6, .2, 1) .5s both; }
+
+  /* A member arrives: the wrapper grows from 0fr to 1fr so the rows below ease down 70px, while the
+     row itself fades up. 1.6s after entry — the card has settled, the reader has read the heading. */
+  .feature-grid[data-motion] .fg-member-arrival { display: grid; grid-template-rows: 0fr; }
+  .feature-grid[data-motion] .fg-member-arrival > div { min-height: 0; overflow: hidden; }
+  .feature-grid[data-motion] .fg-member-arrival .fg-member { opacity: 0; transform: translateY(-6px); }
+  .feature-grid[data-motion] .has-entered .fg-member-arrival { animation: fg-arrive .7s cubic-bezier(.2, .7, .2, 1) 1.6s both; }
+  .feature-grid[data-motion] .has-entered .fg-member-arrival .fg-member { animation: fg-arrive-row .5s ease-out 1.85s both; }
+
+  /* Loops start with `has-entered` and only PAUSE while the chapter is off-screen (`is-in` gone),
+     so they resume in phase instead of restarting — restarting snapped every row to its rest state. */
+  .fg-chapter:not(.is-in) .fg-members-emblem::before, .fg-chapter:not(.is-in) .fg-members-emblem-disc { animation-play-state: paused; }
+
+  /* Emblem: the angular ring turns once every 24s and the disc breathes with it. */
+  .has-entered .fg-members-emblem::before { animation: fg-turn 24s linear infinite; }
+  .has-entered .fg-members-emblem-disc { animation: fg-breathe 6s ease-in-out infinite; }
+
+  /* Feature rows take turns: BusinessTiles puts `is-current` on one row at a time — the next every
+     4s, or the hovered one — and the rest is transitions off that class. The other rows rest in
+     muted colour and the current tile carries a faint inner gold glow; a turn crossfades over .64s.
+     Each icon's gesture plays as its row brightens and undoes as it dims: the card's lines draw in,
+     the slider knobs move (their track holes are masked, so they travel with the knobs), the check
+     draws, the arrow nudges forward once. Colour, never opacity — see the note above the rows. */
+  .has-entered .fg-workspace-features li { transition: color .64s; }
+  .has-entered .fg-workspace-features li:not(.is-current) { color: #8f8a82; }
+  .has-entered .fg-feature-icon { transition: box-shadow .64s; }
+  .has-entered .is-current .fg-feature-icon { box-shadow: 0 8px 24px -12px #000c, inset 0 0 20px -6px #d6b77b40; }
+  .has-entered .fg-feature-icon svg { transition: color .64s; }
+  .has-entered li:not(.is-current) .fg-feature-icon svg { color: #8a7a5c; }
+  .has-entered .fg-draw { stroke-dashoffset: 1.05; transition: stroke-dashoffset .64s; }
+  .has-entered .is-current .fg-draw { stroke-dashoffset: 0; transition-duration: .6s; }
+  .has-entered .is-current .fg-draw--late { transition-duration: .48s; transition-delay: .36s; }
+  .has-entered .fg-knob { transition: transform .72s cubic-bezier(.4, 0, .2, 1); }
+  .has-entered .is-current .fg-knob--a { transform: translateX(6px); }
+  .has-entered .is-current .fg-knob--b { transform: translateX(-5px); }
+  .has-entered .is-current .fg-arrow { animation: fg-nudge .96s cubic-bezier(.4, 0, .2, 1); }
 }
-@media (max-width: 900px) {
-  .fg-checkout { aspect-ratio: auto; min-height: 470px; }
-  .fg-checkout-scene { inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; }
-  .fg-checkout-shade { height: 180px; }
-  .fg-checkout-copy { top: 40px; gap: 10px; }
-  .fg-checkout-copy h4 { font-size: 30px; line-height: 38px; letter-spacing: -.03em; }
-  .fg-checkout-copy p { font-size: 15px; line-height: 22px; }
-}
-/* Phones: the caption moves above the scene so neither covers the other, and the scene is a
-   300px band centred on the checkout, fading in from the tile's own background. */
-@media (max-width: 620px) {
-  .fg-checkout { display: flex; flex-direction: column; min-height: 0; }
-  .fg-checkout-copy { position: static; order: -1; padding: 28px 20px 0; }
-  .fg-checkout-copy h4 { font-size: 27px; line-height: 34px; }
-  .fg-checkout-copy p { font-size: 14px; line-height: 21px; }
-  .fg-checkout-shade { display: none; }
-  .fg-checkout-scene { position: relative; inset: auto; width: 100%; height: 300px; margin-top: 16px; object-fit: cover; object-position: 52% 50%; mask-image: linear-gradient(to bottom, transparent, #000 56px); }
-}
+.fg-draw { stroke-dasharray: 1 2; }
+@keyframes fg-arrive { from { grid-template-rows: 0fr; } to { grid-template-rows: 1fr; } }
+@keyframes fg-arrive-row { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+@keyframes fg-turn { to { transform: rotate(1turn); } }
+@keyframes fg-breathe { 50% { filter: brightness(1.3); } }
+@keyframes fg-nudge { 0% { transform: none; } 38% { transform: translateX(3px); } 100% { transform: none; } }

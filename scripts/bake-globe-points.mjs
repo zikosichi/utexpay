@@ -18,7 +18,7 @@ function inside(x, y, ring) {
 const isLand = (x, y) => polygons.some(p => x >= p.x0 && x <= p.x1 && y >= p.y0 && y <= p.y1 && inside(x, y, p.rings[0]) && !p.rings.slice(1).some(r => inside(x, y, r)))
 // Fibonacci distribution avoids dense latitude bands and streaks at the rim.
 const points = [], sampleCount = 62000, goldenAngle = Math.PI * (3 - Math.sqrt(5))
-let landCount = 0
+let landCount = 0, layerEnd = 0
 // The first layer is the approved 100% composition. A second, interleaved
 // distribution adds detail above 100%; stable ranks thin either layer evenly.
 for (let layer = 0; layer < 2; layer++) {
@@ -35,8 +35,12 @@ for (let layer = 0; layer < 2; layer++) {
     const rank = ((hash ^ (hash >>> 16)) >>> 0) % 16383
     points.push(Math.round(x * 32767), Math.round(y * 32767), Math.round(z * 32767), land ? 32767 : 0, 1 + rank + layer * 16384)
   }
+  if (layer === 0) layerEnd = points.length
 }
+// Two files: the base layer is what the page fetches; the extra layer only when the density
+// control goes above 100% (scene.ts appends it to the same interleaved layout).
 mkdirSync(target, { recursive: true })
-const data = new Int16Array(points)
-writeFileSync(new URL('earth-points-v2.bin', target), Buffer.from(data.buffer))
-console.log(`${points.length / 5} dots (${landCount} land), ${data.byteLength} bytes`)
+const base = new Int16Array(points.slice(0, layerEnd)), extra = new Int16Array(points.slice(layerEnd))
+writeFileSync(new URL('earth-points-v3-base.bin', target), Buffer.from(base.buffer))
+writeFileSync(new URL('earth-points-v3-extra.bin', target), Buffer.from(extra.buffer))
+console.log(`${points.length / 5} dots (${landCount} land): base ${base.byteLength} bytes, extra ${extra.byteLength} bytes`)

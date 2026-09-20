@@ -11,8 +11,9 @@
   min-height: 100svh;
   padding-top: 88px;
   position: relative;
-  /* The fixed navigation inherits this layer and must stay above later sections. */
-  z-index: 1;
+  /* The fixed navigation is inside this stacking context. Keep it above the
+     later sections and footer, which use page layers 0 and 1. */
+  z-index: 2;
   isolation: isolate;
   overflow: clip;
   background: radial-gradient(ellipse 43% 48% at 50% 34%, #0e0e0c 0%, #040404 55%, #000000 100%);

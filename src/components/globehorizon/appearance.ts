@@ -1,9 +1,8 @@
 export type GlobeAppearance = { size: number; density: number; radius: number }
 
-export const defaultAppearance: GlobeAppearance = { size: 55, density: 100, radius: 130 }
-export const appearanceStorageKey = 'utexpay.globe.appearance.v4'
-export const previousAppearanceStorageKey = 'utexpay.globe.appearance.v3'
-export const legacyAppearanceStorageKey = 'utexpay.globe.appearance.v1'
+// Zviad's pick, September 18, 2026. Older saved keys (v1–v4) are ignored so everyone sees this.
+export const defaultAppearance: GlobeAppearance = { size: 50, density: 100, radius: 25 }
+export const appearanceStorageKey = 'utexpay.globe.appearance.v5'
 export const appearanceLimits = {
   size: { min: 50, max: 180, step: 5 },
   density: { min: 25, max: 200, step: 5 },

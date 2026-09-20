@@ -3,9 +3,13 @@ import { AccountsHero } from '#/components/accountshero/AccountsHero'
 import { SOURCE, ILLUMINATED_SOURCE } from '#/components/accountshero/config'
 import { PersonalBankingSection } from '#/components/personalbanking/PersonalBankingSection'
 import { GlobeHorizonSection } from '#/components/globehorizon/GlobeHorizonSection'
+import { MoneyInsightSection } from '#/components/moneyinsight/MoneyInsightSection'
+import { TrustFaqSection } from '#/components/trustfaq/TrustFaqSection'
+import { SiteFooter } from '#/components/sitefooter/SiteFooter'
+import { MagneticClosingSection } from '#/components/magneticclosing/MagneticClosingSection'
 
 export const Route = createFileRoute('/version-5')({
-  component: () => <main className="utexpay-landing feature-grid-alternative"><AccountsHero /><PersonalBankingSection initialVersion="features" /><GlobeHorizonSection /></main>,
+  component: () => <main className="utexpay-landing feature-grid-alternative"><AccountsHero /><PersonalBankingSection initialVersion="features" /><MoneyInsightSection /><TrustFaqSection /><GlobeHorizonSection /><MagneticClosingSection /><SiteFooter /></main>,
   head: () => ({
     meta: [{ title: 'UTEX Pay — Version 5 · Feature grid' }],
     links: [

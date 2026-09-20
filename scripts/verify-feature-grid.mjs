@@ -19,6 +19,6 @@ test('every scene the feature grid references is a genuine WebP asset under 150 
   }
 })
 
-test('the checkout tile ships both sizes of the pay scene', () => {
-  for (const name of ['pay-scene-1100.webp', 'pay-scene-1978.webp']) assert.ok(referenced.includes(`/featuregrid/${name}`), name)
+test('the checkout tile ships both sizes of the clean Northstar scene', () => {
+  for (const name of ['northstar-scene-1100.webp', 'northstar-scene-1974.webp']) assert.ok(referenced.includes(`/featuregrid/${name}`), name)
 })

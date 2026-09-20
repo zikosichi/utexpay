@@ -3,6 +3,10 @@ import { AccountsHero } from '#/components/accountshero/AccountsHero'
 import { SOURCE, ILLUMINATED_SOURCE } from '#/components/accountshero/config'
 import { PersonalBankingSection } from '#/components/personalbanking/PersonalBankingSection'
 import { GlobeHorizonSection } from '#/components/globehorizon/GlobeHorizonSection'
+import { MoneyInsightSection } from '#/components/moneyinsight/MoneyInsightSection'
+import { TrustFaqSection } from '#/components/trustfaq/TrustFaqSection'
+import { SiteFooter } from '#/components/sitefooter/SiteFooter'
+import { MagneticClosingSection } from '#/components/magneticclosing/MagneticClosingSection'
 
 export const Route = createFileRoute('/')({
   component: HomePage,
@@ -11,8 +15,9 @@ export const Route = createFileRoute('/')({
     links: [
       { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
       { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossOrigin: 'anonymous' },
-      { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Epilogue:wght@500&display=swap' },
-      { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Mona+Sans:ital,wdth,wght@0,75..125,200..900;1,75..125,200..900&family=Onest:wght@100..900&family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;600&family=JetBrains+Mono:wght@400&family=IBM+Plex+Mono:wght@400;500&family=Oxanium:wght@400;500&family=Space+Grotesk:wght@400&display=swap' },
+      // Only the faces the home page renders. Epilogue, Oxanium and Space Grotesk belong to lab
+      // routes and the hero's typeface picker, which links its own faces on demand (heroFonts.ts).
+      { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Mona+Sans:wdth,wght@75..125,200..900&family=Onest:wght@100..900&family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;600&family=JetBrains+Mono:wght@400&family=IBM+Plex+Mono:wght@400;500&display=swap' },
       { rel: 'preload', as: 'image', href: SOURCE },
       { rel: 'preload', as: 'image', href: ILLUMINATED_SOURCE, crossOrigin: 'anonymous' },
     ],
@@ -25,6 +30,10 @@ function HomePage() {
       <AccountsHero />
       <PersonalBankingSection />
       <GlobeHorizonSection />
+      <MoneyInsightSection />
+      <TrustFaqSection />
+      <MagneticClosingSection />
+      <SiteFooter />
     </main>
   )
 }
