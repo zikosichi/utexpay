@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useId, useRef, useState } from 'react'
 import { SectionHeading } from '#/components/SectionHeading'
 import './money-insight.css'
+import { BentoTrack, type LedgerItem } from './MoneyInsightBento'
+import { GridTrack } from './MoneyInsightGrid'
+import { playMark, settleMark } from './markPlay'
 
 /**
  * "See where your money goes" — pillar 4, Understand your money. One hourly volume chart carries the
@@ -110,44 +113,68 @@ const VIEWS: Record<Mode, View> = {
   },
 }
 
-const TRACK: { name: string; value: string; kind: string; mark: React.ReactNode }[] = [
+/* The inventory. `value` is the one-line live reading (placeholder figures), `desc` the two-sentence
+   explanation the block version shows. Marks are tiny animated charts, not icon-set glyphs: each
+   one replays its own motion on hover. The four Sandro could not read on Sep 18 (countries,
+   issuing banks, settlements, cash flow) were redrawn as a pinned globe, a bank facade, coins
+   settling and wider in/out bars. */
+const TRACK: (LedgerItem & { value: string })[] = [
   {
     name: 'Acceptance rate', value: '87.6%, up 1.2 pts on yesterday', kind: 'spark',
+    desc: 'The share of payment attempts that go through, hour by hour. When it moves, you see which country, bank or method moved it.',
     mark: <svg viewBox="0 0 48 28" fill="none" aria-hidden="true"><path className="mi-draw" pathLength="1" d="M1 22 8 18l7 2 7-9 7 3 7-8 7 3 4-5" stroke="var(--mi-gold)" strokeWidth="1.6" strokeLinejoin="round" /></svg>,
   },
   {
-    name: 'Decline reasons', value: '176 today, insufficient funds first', kind: 'donut',
+    name: 'Decline reasons', value: '176 today, insufficient funds first', kind: 'donut', piece: 'donut',
+    desc: 'Every failed payment carries the reason the bank gave. Insufficient funds, expired card, suspected fraud: grouped, counted and ranked, so you know what to fix.',
     /* Segments carry pathLength=100 so their share is a plain percentage; on hover each one draws
        itself clockwise in turn, the way the app's donut fills in. */
     mark: <svg viewBox="0 0 48 28" fill="none" aria-hidden="true"><g transform="rotate(-90 24 14)"><circle cx="24" cy="14" r="10" stroke="var(--mi-rule)" strokeWidth="5" /><circle className="mi-seg" cx="24" cy="14" r="10" pathLength={100} stroke="var(--mi-gold)" strokeWidth="5" strokeDasharray="38 100" style={{ '--seg': 38, '--n': 0 } as React.CSSProperties} /><circle className="mi-seg" cx="24" cy="14" r="10" pathLength={100} stroke="var(--mi-gold-2)" strokeWidth="5" strokeDasharray="24 100" strokeDashoffset={-38} style={{ '--seg': 24, '--n': 1 } as React.CSSProperties} /><circle className="mi-seg" cx="24" cy="14" r="10" pathLength={100} stroke="var(--mi-gold-3)" strokeWidth="5" strokeDasharray="18 100" strokeDashoffset={-62} style={{ '--seg': 18, '--n': 2 } as React.CSSProperties} /></g></svg>,
   },
   {
-    name: 'Countries', value: 'UK 42%, Germany 23%, NL 12%', kind: 'dots',
-    mark: <svg viewBox="0 0 48 28" fill="none" aria-hidden="true"><circle className="mi-dot" cx="10" cy="9" r="2.4" fill="var(--mi-gold)" /><circle className="mi-dot" cx="20" cy="6" r="2.4" fill="var(--mi-gold)" /><circle className="mi-dot" cx="26" cy="12" r="2.4" fill="var(--mi-gold-2)" /><circle className="mi-dot" cx="16" cy="16" r="2.4" fill="var(--mi-gold-3)" /><circle className="mi-dot" cx="36" cy="10" r="2.4" fill="var(--mi-dim)" /><circle className="mi-dot" cx="40" cy="20" r="2.4" fill="var(--mi-dim)" /><circle className="mi-dot" cx="8" cy="22" r="2.4" fill="var(--mi-dim)" /><circle className="mi-dot" cx="30" cy="22" r="2.4" fill="var(--mi-dim)" /></svg>,
+    name: 'Countries', value: 'UK 42%, Germany 23%, NL 12%', kind: 'globe', piece: 'conv',
+    desc: 'Where your customers pay from, by volume and by acceptance. Spot a market that is growing, or one where more payments fail than they should.',
+    /* A globe: outer circle and meridian draw themselves, then three pins pop onto it. */
+    mark: <svg viewBox="0 0 48 28" fill="none" aria-hidden="true"><circle className="mi-draw" pathLength="1" cx="24" cy="14" r="12" stroke="var(--mi-rule-strong)" strokeWidth="1.4" /><ellipse className="mi-draw mi-draw--late" pathLength="1" cx="24" cy="14" rx="5.5" ry="12" stroke="var(--mi-rule-strong)" strokeWidth="1.2" /><path className="mi-draw mi-draw--late" pathLength="1" d="M12.5 14h23M14.8 8.5h18.4M14.8 19.5h18.4" stroke="var(--mi-rule-strong)" strokeWidth="1.2" /><circle className="mi-pin" cx="19" cy="9.5" r="2.6" fill="var(--mi-gold)" /><circle className="mi-pin" cx="28.5" cy="12" r="2.6" fill="var(--mi-gold-2)" /><circle className="mi-pin" cx="22" cy="18.5" r="2.6" fill="var(--mi-gold-3)" /></svg>,
   },
   {
-    name: 'Issuing banks', value: 'Barclays 31%, Revolut 18%', kind: 'rank',
-    mark: <svg viewBox="0 0 48 28" fill="none" aria-hidden="true"><rect className="mi-rank" x="2" y="4" width="40" height="4" rx="2" fill="var(--mi-gold)" /><rect className="mi-rank" x="2" y="12" width="24" height="4" rx="2" fill="var(--mi-gold-2)" /><rect className="mi-rank" x="2" y="20" width="12" height="4" rx="2" fill="var(--mi-dim)" /></svg>,
+    name: 'Issuing banks', value: 'Barclays 31%, Revolut 18%', kind: 'bank', piece: 'banks',
+    desc: 'Which banks your customers hold their cards with, and how each one treats your payments. When one bank starts declining, you see it that day.',
+    /* A bank facade: the columns rise one after another, then the pediment settles on top. */
+    mark: <svg viewBox="0 0 48 28" fill="none" aria-hidden="true"><rect x="5" y="23.5" width="38" height="2.5" rx="1" fill="var(--mi-dim)" /><rect className="mi-col" x="10" y="11" width="4" height="11" rx="1" fill="var(--mi-gold)" /><rect className="mi-col" x="18" y="11" width="4" height="11" rx="1" fill="var(--mi-gold)" /><rect className="mi-col" x="26" y="11" width="4" height="11" rx="1" fill="var(--mi-gold)" /><rect className="mi-col" x="34" y="11" width="4" height="11" rx="1" fill="var(--mi-gold)" /><path className="mi-roof" d="M24 1.5 43 8.5H5L24 1.5Z" fill="var(--mi-gold-2)" /></svg>,
   },
   {
     name: 'Card schemes and methods', value: 'Visa, Mastercard, Apple Pay, iDEAL', kind: 'cards',
+    desc: 'Visa, Mastercard, Apple Pay, Google Pay, iDEAL and the rest, side by side. See what your customers reach for and where each method wins or loses.',
     /* A fanned hand: one card upright in the middle, two behind it rotated to either side. On hover
        the hand closes behind the middle card and fans back open with a little overshoot. */
     mark: <svg viewBox="0 0 48 28" fill="none" aria-hidden="true"><rect className="mi-card mi-card--l" x="14" y="6" width="20" height="15" rx="3" fill="var(--mi-dim)" /><rect className="mi-card mi-card--r" x="14" y="6" width="20" height="15" rx="3" fill="var(--mi-gold-2)" /><rect className="mi-card mi-card--c" x="14" y="6" width="20" height="15" rx="3" fill="var(--mi-gold)" /><rect className="mi-card mi-card--c mi-chip" x="17" y="10" width="5" height="4" rx="1" fill="#00000040" /></svg>,
   },
   {
     name: 'Refunds and chargebacks', value: '€86 refunded, one case open', kind: 'lines',
+    desc: 'Refunds you issued and disputes your customers raised, tracked against volume. Each case shows its deadline, its evidence and where it stands.',
     mark: <svg viewBox="0 0 48 28" fill="none" aria-hidden="true"><path className="mi-draw" pathLength="1" d="M1 18l7 2 7-3 7 4 7-5 7 3 7-4 4 3" stroke="var(--mi-red)" strokeWidth="1.6" strokeLinejoin="round" /><path className="mi-draw mi-draw--late" pathLength="1" d="M1 10l7-1 7 2 7-3 7 2 7-3 7 2 4-1" stroke="var(--mi-grey)" strokeWidth="1.6" strokeLinejoin="round" /></svg>,
   },
   {
-    name: 'Settlements', value: 'Tomorrow, into your balance', kind: 'timeline',
-    mark: <svg viewBox="0 0 48 28" fill="none" aria-hidden="true"><path d="M11 14h6M23 14h6M35 14h5" stroke="var(--mi-rule)" strokeWidth="1.4" /><circle cx="8" cy="14" r="3" fill="var(--mi-dim)" /><circle cx="20" cy="14" r="3" fill="var(--mi-dim)" /><circle cx="32" cy="14" r="3" fill="var(--mi-dim)" /><circle className="mi-settle" cx="44" cy="14" r="3.5" fill="var(--mi-gold)" /></svg>,
+    name: 'Settlements', value: 'Tomorrow, into your balance', kind: 'coins', piece: 'settle',
+    desc: 'When today’s card payments land in your balance, and which payments make up the amount. Every settlement reconciles back to its transactions.',
+    /* Money arriving: an arrow draws in from the left and three coins drop onto the stack. */
+    mark: <svg viewBox="0 0 48 28" fill="none" aria-hidden="true"><path className="mi-draw" pathLength="1" d="M2 5h12c4.4 0 8 3.6 8 8v7" stroke="var(--mi-gold)" strokeWidth="1.6" strokeLinecap="round" /><path className="mi-draw mi-draw--late" pathLength="1" d="m17.5 16 4.5 4.5 4.5-4.5" stroke="var(--mi-gold)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /><rect className="mi-coin" x="31" y="20" width="15" height="4.5" rx="2.25" fill="var(--mi-gold-3)" /><rect className="mi-coin" x="31" y="14.5" width="15" height="4.5" rx="2.25" fill="var(--mi-gold-2)" /><rect className="mi-coin" x="31" y="9" width="15" height="4.5" rx="2.25" fill="var(--mi-gold)" /></svg>,
   },
   {
     name: 'Banking cash flow', value: 'Income against spending', kind: 'flow',
-    mark: <svg viewBox="0 0 48 28" fill="none" aria-hidden="true"><rect className="mi-flow mi-flow--up" x="3" y="4" width="6" height="10" rx="1.5" fill="var(--mi-bar)" /><rect className="mi-flow mi-flow--down" x="3" y="15" width="6" height="6" rx="1.5" fill="var(--mi-bar-deep)" /><rect className="mi-flow mi-flow--up" x="13" y="6" width="6" height="8" rx="1.5" fill="var(--mi-bar)" /><rect className="mi-flow mi-flow--down" x="13" y="15" width="6" height="9" rx="1.5" fill="var(--mi-bar-deep)" /><rect className="mi-flow mi-flow--up" x="23" y="2" width="6" height="12" rx="1.5" fill="var(--mi-bar)" /><rect className="mi-flow mi-flow--down" x="23" y="15" width="6" height="5" rx="1.5" fill="var(--mi-bar-deep)" /><rect className="mi-flow mi-flow--up" x="33" y="5" width="6" height="9" rx="1.5" fill="var(--mi-bar)" /><rect className="mi-flow mi-flow--down" x="33" y="15" width="6" height="7" rx="1.5" fill="var(--mi-bar-deep)" /><rect x="2" y="14" width="44" height="1" fill="var(--mi-rule-strong)" /></svg>,
+    desc: 'Money in against money out, day by day, across every account and currency. Rent, payroll and client invoices fall where you expect them to.',
+    /* Three in/out pairs on a baseline, with an arrow at each end of the flow. */
+    mark: <svg viewBox="0 0 48 28" fill="none" aria-hidden="true"><rect className="mi-flow mi-flow--up" x="9" y="4" width="8" height="10" rx="1.5" fill="var(--mi-bar)" /><rect className="mi-flow mi-flow--down" x="9" y="15" width="8" height="5" rx="1.5" fill="var(--mi-bar-deep)" /><rect className="mi-flow mi-flow--up" x="20" y="7" width="8" height="7" rx="1.5" fill="var(--mi-bar)" /><rect className="mi-flow mi-flow--down" x="20" y="15" width="8" height="8" rx="1.5" fill="var(--mi-bar-deep)" /><rect className="mi-flow mi-flow--up" x="31" y="2" width="8" height="12" rx="1.5" fill="var(--mi-bar)" /><rect className="mi-flow mi-flow--down" x="31" y="15" width="8" height="4" rx="1.5" fill="var(--mi-bar-deep)" /><rect x="7" y="14" width="34" height="1" fill="var(--mi-rule-strong)" /><path className="mi-arrow mi-arrow--in" d="M3 12V4M.5 6.5 3 4l2.5 2.5" stroke="var(--mi-bar)" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" /><path className="mi-arrow mi-arrow--out" d="M45 16v8m-2.5-2.5L45 24l2.5-2.5" stroke="var(--mi-bar-deep)" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" /></svg>,
   },
 ]
+
+/* Two directions for the inventory, switchable from the bar on the right like the other sections:
+   01 the original two-row list, 02 a 4×2 grid of bordered blocks with a paragraph each (Sep 18
+   review: the page needs more text; Arseny asked for the captions to become small paragraphs). */
+type Version = 'inventory' | 'blocks' | 'bento' | 'grid' | 'grouped' | 'rows'
+const VERSIONS: { value: Version; label: string }[] = [{ value: 'inventory', label: 'Inventory' }, { value: 'blocks', label: 'Blocks' }, { value: 'bento', label: 'Bento' }, { value: 'grid', label: 'Hairline grid' }, { value: 'grouped', label: 'Grouped, no grid' }, { value: 'rows', label: 'Rows' }]
+const DEFAULT_VERSION: Version = 'rows'
 
 /* Motion is opt-in from the client, the same contract the feature grid uses: `data-motion` enables
    the hidden pre-entry state, `has-entered` plays the entrance once (bars grow, then the inventory
@@ -238,7 +265,18 @@ export function MoneyInsightSection() {
   const plot = useRef<HTMLDivElement>(null)
   const chart = useRef<HTMLElement>(null)
   const [mode, setMode] = useState<Mode>('processing')
+  const [version, setVersion] = useState<Version>(DEFAULT_VERSION)
   const [switching, setSwitching] = useState(false)
+  useEffect(() => {
+    const requested = new URLSearchParams(window.location.search).get('insights')
+    if (requested === 'inventory' || requested === 'blocks' || requested === 'bento' || requested === 'grid' || requested === 'grouped' || requested === 'rows') setVersion(requested)
+  }, [])
+  const changeVersion = useCallback((next: Version) => {
+    setVersion(next)
+    const url = new URL(window.location.href)
+    url.searchParams.set('insights', next)
+    window.history.replaceState(window.history.state, '', url)
+  }, [])
   const switchTimer = useRef(0)
   /* Switching views: the bars fold down to the baseline, then the new view's bars grow up in
      their place (keys carry the mode so they remount and replay the entrance). Reduced motion
@@ -261,7 +299,16 @@ export function MoneyInsightSection() {
   /* Before anyone points, no column is "current": every bar keeps its colour and nothing is dimmed. */
   const state = (i: number) => !pointing ? '' : i === index ? ' is-hover' : i > index ? ' is-after' : ''
 
-  return <section ref={section} id="insights" className="money-insight" aria-labelledby={`${id}-title`}>
+  const blocks = version === 'blocks'
+  return <section ref={section} id="insights" className="money-insight" data-version={version} aria-labelledby={`${id}-title`}>
+    <div className="mi-version-bar">
+      <div className="mi-versions" role="group" aria-label="Inventory visual direction">
+        {VERSIONS.map(({ value, label }, i) => <button type="button" key={value} aria-label={`${label} — Version ${i + 1}`}
+          aria-pressed={version === value} aria-controls={`${id}-track`} onClick={() => changeVersion(value)}>
+          <span aria-hidden="true">0{i + 1}</span><span className="mi-version-name" aria-hidden="true">{label}</span>
+        </button>)}
+      </div>
+    </div>
     <div className="mi-inner">
       <SectionHeading className="mi-heading" id={`${id}-title`} eyebrow="Understand your money" description="Card volume hour by hour. Income against spending day by day. Both in the same dashboard, both readable in ten seconds.">
         See where your money goes.<br />At a glance.
@@ -309,18 +356,26 @@ export function MoneyInsightSection() {
         </div>
       </figure>
 
-      <div className="mi-track">
-        <div className="mi-track-head">
+      {version === 'bento' ? <BentoTrack items={TRACK} id={`${id}-track`} /> : version === 'grid' ? <GridTrack items={TRACK} id={`${id}-track`} /> : version === 'grouped' ? <GridTrack items={TRACK} id={`${id}-track`} mode="plain" /> : version === 'rows' ? <GridTrack items={TRACK} id={`${id}-track`} mode="rows" /> : <div className={`mi-track${blocks ? ' mi-track--blocks' : ''}`} id={`${id}-track`}>
+        {blocks ? <div className="mi-track-head mi-track-head--blocks">
+          <p className="mi-track-eyebrow">Also on your dashboard</p>
+          <h3 className="mi-track-title">Eight more things it can tell you.</h3>
+          <p className="mi-track-lead">Each one is a view of the same payments. Click any of them and the chart, and the rest, narrow to match.</p>
+        </div> : <div className="mi-track-head">
           <p className="mi-track-eyebrow">One chart of many. Also on your dashboard</p>
           <p className="mi-track-note">Click any of them and the rest narrows to match.</p>
-        </div>
-        <ul className="mi-track-list">
-          {TRACK.map(({ name, value, kind, mark }, i) => <li key={name} data-kind={kind} tabIndex={0} style={{ '--i': i } as React.CSSProperties}>
+        </div>}
+        <ul className={`mi-track-list${blocks ? ' mi-track-list--blocks' : ''}`}>
+          {TRACK.map(({ name, value, kind, desc, mark }, i) => <li key={name} data-kind={kind} tabIndex={0} style={{ '--i': i } as React.CSSProperties} onPointerEnter={playMark} onAnimationEnd={settleMark}>
             <span className="mi-mark">{mark}</span>
-            <span className="mi-track-text"><strong>{name}</strong><span>{value}</span></span>
+            <span className="mi-track-text">
+              <strong>{name}</strong>
+              <span className="mi-track-value">{value}</span>
+              {blocks && <p className="mi-track-desc">{desc}</p>}
+            </span>
           </li>)}
         </ul>
-      </div>
+      </div>}
     </div>
   </section>
 }

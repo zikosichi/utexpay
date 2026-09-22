@@ -1,6 +1,8 @@
-import { useEffect, useId, useRef, useState } from 'react'
+import { Fragment, useEffect, useId, useRef, useState } from 'react'
 import type { FocusEvent, PointerEvent } from 'react'
 import { Button, ButtonLink } from '../Button'
+import { DEFAULT_HERO_HEADLINE, HERO_HEADLINES, heroHeadline } from './heroHeadlines'
+import type { HeroHeadline, HeroHeadlineId } from './heroHeadlines'
 import './hero-navigation.css'
 
 const NAV_LINKS = [
@@ -111,10 +113,26 @@ export function HeroNavigation() {
   </nav>
 }
 
-export function HeroIntroduction({ onExplore }: { onExplore: () => void }) {
+export function HeroIntroduction({ onExplore, headline = heroHeadline(DEFAULT_HERO_HEADLINE) }: { onExplore: () => void; headline?: HeroHeadline }) {
   return <div className="studio-copy">
-    <h1>Start with an account.<br />Grow into everything.</h1>
-    <p className="studio-description">Add business banking and card payments when you’re ready.<br className="studio-desktop-break" /> Your money stays in the same place.</p>
+    {/* Lines break where they were written on desktop; below 760px the break hides and the headline balances itself. */}
+    <h1>{headline.lines.map((line, index) => <Fragment key={line}>{index > 0 && <br className="studio-desktop-break" />}{index > 0 && ' '}{line}</Fragment>)}</h1>
+    <p className="studio-description">{headline.support}</p>
     <div className="studio-actions" data-hero-actions><ButtonLink href="/#signup">Open an account</ButtonLink><Button variant="secondary" onClick={onExplore}>See how it works</Button></div>
+  </div>
+}
+
+/** Review-time switcher: the same numbered rail the sections below use on their right edge
+    (see personal-banking__versions). One button per candidate, the line's name on hover. */
+export function HeadlineSwitcher({ value, onChange }: { value: HeroHeadlineId; onChange: (id: HeroHeadlineId) => void }) {
+  return <div className="studio-headline-bar">
+    <div className="studio-headline-versions" role="group" aria-label="Hero headline candidates">
+      {HERO_HEADLINES.map((candidate, index) => (
+        <button key={candidate.id} type="button" aria-label={candidate.name} aria-pressed={value === candidate.id} onClick={() => onChange(candidate.id)}>
+          <span aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+          <span className="studio-headline-version-name" aria-hidden="true">{candidate.name}</span>
+        </button>
+      ))}
+    </div>
   </div>
 }

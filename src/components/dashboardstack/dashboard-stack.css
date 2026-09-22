@@ -19,6 +19,23 @@
   scroll-margin-top: 86px;
 }
 .ds-anchor { position: absolute; top: 0; scroll-margin-top: 86px; }
+/* Bare (home page): no heading, the stack starts at the section top and matches the 1400px text
+   container. The rear windows sit BELOW the front one, so the stack reserves its slack at the
+   bottom, and the section keeps enough padding for the front window's 65px shadow. */
+.dashboard-stack--bare { --ds-width: 1400px; padding: clamp(80px, 7vw, 120px) var(--banking-container-gutter) clamp(96px, 8vw, 144px); }
+.dashboard-stack--bare .ds-stage { margin-top: 0; }
+.dashboard-stack--bare .ds-stack { padding: 0 0 4.7%; }
+.dashboard-stack--bare .ds-frame { inset: 0 0 6.75%; transform-origin: center bottom; }
+.dashboard-stack--bare .ds-frame[data-depth='1'] { transform: translateY(4.1%) scale(.957); }
+.dashboard-stack--bare .ds-frame[data-depth='2'] { transform: translateY(7.2%) scale(.915); }
+.dashboard-stack--bare .ds-frame[data-depth='1'], .dashboard-stack--bare .ds-frame[data-depth='2'] { clip-path: inset(92% 0 0 0); }
+/* Minimal tab row under the stack: a short track and a label per view, the pause control at the end. */
+.ds-feature-navigation--minimal { display: flex; justify-content: center; align-items: center; margin-top: clamp(40px, 4vw, 64px); }
+.ds-feature-navigation--minimal .ds-tabs { display: flex; gap: clamp(28px, 4vw, 56px); }
+.ds-feature-navigation--minimal .ds-tabs > button { flex-direction: row; align-items: center; gap: 12px; }
+.ds-feature-navigation--minimal .ds-tab-track { width: 32px; flex: none; background: #3a3733; }
+.ds-feature-navigation--minimal .ds-tab-label { margin: 0; font-size: 15px; font-weight: 500; line-height: 20px; letter-spacing: -.1px; }
+.ds-feature-navigation--minimal .ds-playback { position: static; order: 2; margin-left: 20px; }
 .ds-intro { max-width: 800px; }
 .ds-stage { position: relative; max-width: var(--ds-width); margin: 64px auto 0; }
 .ds-ambient {
@@ -100,6 +117,8 @@
   .ds-stage { margin-top: 40px; }
   .ds-stack { aspect-ratio: 731 / 870; }
   .ds-frame { inset: 6.5% 0 0; border-radius: 8px; }
+  .dashboard-stack--bare .ds-frame { inset: 0 0 6.5%; }
+  .dashboard-stack--bare { padding-top: 64px; padding-bottom: 72px; }
   .ds-dashboard-image { top: 4.3%; left: -25.75%; width: 125.75%; }
   .ds-ambient { height: 130%; top: -10%; filter: blur(8px); opacity: .75; }
   .ds-feature-navigation { margin-top: 48px; }

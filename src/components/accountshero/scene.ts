@@ -9,6 +9,15 @@ import { addAccountCard } from './card'
 import { decalMaterial, prepareDecalTexture } from '../photostructure/decals'
 import { createPanelGeometries, PANEL_NAMES, PANEL_SURFACES, BLEED, panelImage } from './surfaces'
 
+/** World units the stage shows across its width in the full view. The sculpture is about 14.2
+    units wide and 6.2 tall, so 16.4 units of width and 7.6 of height frame it with a slim margin
+    for the pointer rotation and the card shadow: the stage's width is, near enough, the
+    sculpture's width, and the CSS breakpoints size the stage. Wider stages keep the 7.6-unit
+    height (the sculpture centred, room at the sides); taller ones keep the width. */
+function fullWorldWidth(width: number, height: number) {
+  return Math.max(16.4, 7.6 * width / height)
+}
+
 export async function createPhotoScene(canvas: HTMLCanvasElement, source: HTMLImageElement, stage: HTMLElement, signal: AbortSignal, htmlPanels: HTMLElement): Promise<PhotoScene> {
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' })
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2))
@@ -139,7 +148,7 @@ export async function createPhotoScene(canvas: HTMLCanvasElement, source: HTMLIm
     let detailMix = DEFAULT_OPTIONS.focus === 'full' ? 0 : 1
     function framing() {
       const aspect = viewportWidth / viewportHeight
-      const fullWidth = Math.max(19.7, 8.6 * aspect), detailWidth = Math.max(5.2, 5.5 * aspect)
+      const fullWidth = fullWorldWidth(viewportWidth, viewportHeight), detailWidth = Math.max(5.2, 5.5 * aspect)
       const settledWidth = THREE.MathUtils.lerp(fullWidth, detailWidth, detailMix)
       const introProgress = entranceProgress()
       const width = settledWidth / COMPOSITION_SCALE * THREE.MathUtils.lerp(1.18, 1, introProgress)
@@ -237,14 +246,14 @@ export async function createPhotoScene(canvas: HTMLCanvasElement, source: HTMLIm
       // Extend the canvas over the whole hero while preserving the original
       // stage's exact composition, scale and responsive camera framing.
       camera.setViewOffset(viewportWidth, viewportHeight, bounds.left - stageBounds.left, bounds.top - stageBounds.top, width, height)
-      const fullWidth = Math.max(19.7, 8.6 * viewportWidth / viewportHeight) / COMPOSITION_SCALE
+      const fullWidth = fullWorldWidth(viewportWidth, viewportHeight) / COMPOSITION_SCALE
       lightingCamera.left = -fullWidth / 2; lightingCamera.right = fullWidth / 2
       lightingCamera.top = fullWidth * viewportHeight / viewportWidth / 2; lightingCamera.bottom = -lightingCamera.top
       lightingCamera.setViewOffset(viewportWidth, viewportHeight, bounds.left - stageBounds.left, bounds.top - stageBounds.top, width, height)
       environment.frameOverhead(lightingCamera)
       environment.resize(width, height)
       card.reflection.resize(width, height)
-      const targetWorldWidth = (options.focus === 'full' ? Math.max(19.7,8.6*viewportWidth/viewportHeight) : Math.max(5.2,5.5*viewportWidth/viewportHeight)) / COMPOSITION_SCALE
+      const targetWorldWidth = (options.focus === 'full' ? fullWorldWidth(viewportWidth, viewportHeight) : Math.max(5.2,5.5*viewportWidth/viewportHeight)) / COMPOSITION_SCALE
       live.resize(width,height,viewportWidth,targetWorldWidth,{ top: stageBounds.top-bounds.top, left: stageBounds.left-bounds.left, right: bounds.right-stageBounds.right })
       framing()
       invalidate()

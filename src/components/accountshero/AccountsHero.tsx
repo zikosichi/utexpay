@@ -2,9 +2,11 @@ import { useEffect, useRef, useState } from 'react'
 import type { CSSProperties, KeyboardEvent, PointerEvent } from 'react'
 import { CARD_APPEARANCE_LIMITS, CARD_APPEARANCE_STORAGE_KEY, CARD_LIGHT_STORAGE_KEY, CARD_LIGHT_YAW_LIMIT, CARD_PERSPECTIVE_LIMIT, CARD_PERSPECTIVE_STORAGE_KEY, CARD_YAW_LIMIT, CARD_YAW_STORAGE_KEY, DEFAULT_CARD_APPEARANCE, DEFAULT_CARD_TEXTURE, DEFAULT_HINTS, DEFAULT_OPTIONS, HINT_STORAGE_KEY, SOURCE } from './config'
 import type { CardAppearance, PhotoFocus, PhotoOptions, PhotoScene, ViewMode } from './config'
-import { HeroIntroduction, HeroNavigation } from '../herostudio/HeroContent'
+import { HeadlineSwitcher, HeroIntroduction, HeroNavigation } from '../herostudio/HeroContent'
 import { DEFAULT_HERO_BODY, DEFAULT_HERO_FONT, HERO_BODY_FONTS, HERO_BODY_STORAGE_KEY, HERO_FONTS, HERO_FONT_STORAGE_KEY, heroBodyFont, heroBodyPreviewStyle, heroFont, heroFontPreviewStyle, heroFontStyle, isHeroBodyId, isHeroFontId, loadAllBodyFonts, loadAllHeroFonts, loadBodyFont, loadHeroFont } from '../herostudio/heroFonts'
 import type { HeroBodyId, HeroFontId } from '../herostudio/heroFonts'
+import { DEFAULT_HERO_HEADLINE, HERO_HEADLINES, HERO_HEADLINE_STORAGE_KEY, heroHeadline, isHeroHeadlineId } from '../herostudio/heroHeadlines'
+import type { HeroHeadlineId } from '../herostudio/heroHeadlines'
 import '../herostudio/studio.css'
 import './accounts-hero.css'
 import { createPhotoScene } from './scene'
@@ -38,6 +40,7 @@ export function AccountsHero() {
   const [options, setOptions] = useState<PhotoOptions>(DEFAULT_OPTIONS)
   const [font, setFont] = useState<HeroFontId>(DEFAULT_HERO_FONT)
   const [bodyFont, setBodyFont] = useState<HeroBodyId>(DEFAULT_HERO_BODY)
+  const [headline, setHeadline] = useState<HeroHeadlineId>(DEFAULT_HERO_HEADLINE)
   const fontRestored = useRef(false)
   useEffect(() => {
     try {
@@ -45,6 +48,8 @@ export function AccountsHero() {
       if (isHeroFontId(storedDisplay)) setFont(storedDisplay)
       const storedBody = localStorage.getItem(HERO_BODY_STORAGE_KEY)
       if (isHeroBodyId(storedBody)) setBodyFont(storedBody)
+      const storedHeadline = localStorage.getItem(HERO_HEADLINE_STORAGE_KEY)
+      if (isHeroHeadlineId(storedHeadline)) setHeadline(storedHeadline)
     } catch {}
     fontRestored.current = true
   }, [])
@@ -55,8 +60,9 @@ export function AccountsHero() {
     try {
       localStorage.setItem(HERO_FONT_STORAGE_KEY, font)
       localStorage.setItem(HERO_BODY_STORAGE_KEY, bodyFont)
+      localStorage.setItem(HERO_HEADLINE_STORAGE_KEY, headline)
     } catch {}
-  }, [font, bodyFont])
+  }, [font, bodyFont, headline])
   const optionsRef = useRef(options)
   const [controls, setControls] = useState(false)
   useEffect(() => { if (controls) { loadAllHeroFonts(); loadAllBodyFonts() } }, [controls])
@@ -195,7 +201,8 @@ export function AccountsHero() {
     <section className="studio photo-hero accounts-hero" aria-label="Start with an account" style={heroFontStyle(font, bodyFont)} onPointerMove={move} onPointerLeave={reset}>
       <canvas ref={canvas} className={`photo-canvas ${status === 'ready' ? 'is-ready' : ''}`} aria-hidden="true" />
       <HeroNavigation />
-      <HeroIntroduction onExplore={demo} />
+      <HeroIntroduction onExplore={demo} headline={heroHeadline(headline)} />
+      <HeadlineSwitcher value={headline} onChange={setHeadline} />
       <div ref={stage} className={`studio-stage photo-stage ${options.focus !== 'full' ? 'photo-stage--detail' : ''}`} tabIndex={0} role="region"
         aria-label="Interactive bronze structure. Move your pointer or drag to rotate. Arrow keys rotate; Home resets the view."
         onKeyDown={keyboard}
@@ -226,6 +233,18 @@ export function AccountsHero() {
         {controls && <aside id="accounts-controls" className="studio-controls accounts-controls" aria-label="Hero configuration">
           <div className="studio-controls-title"><span>HERO CONFIGURATION</span><button ref={controlClose} aria-label="Close view controls" onClick={closeControls}>×</button></div>
           <p>A new perspective.</p>
+          <div className="studio-font-block studio-headline-block">
+            <div className="studio-font-heading">Headline<span>{heroHeadline(headline).name}</span></div>
+            <p className="studio-font-scope">Zviad’s shortlist of eight, also on the rail at the hero’s right edge. Line breaks hold on desktop; phones re-flow them.</p>
+            <div className="studio-font-list" role="radiogroup" aria-label="Hero headline">
+              {HERO_HEADLINES.map((candidate, index) => (
+                <button key={candidate.id} type="button" role="radio" aria-checked={headline === candidate.id} className="studio-font-option studio-headline-option" title={candidate.note} onClick={() => setHeadline(candidate.id)}>
+                  <span className="studio-headline-text"><i>{String(index + 1).padStart(2, '0')}</i>{candidate.lines.join(' ')}</span>
+                  <span className="studio-font-pair">{candidate.support}</span>
+                </button>
+              ))}
+            </div>
+          </div>
           <div className="studio-view-switch" role="group" aria-label="Display mode">
             {([['photo', 'Sculpture'], ['source', 'Artwork'], ['mesh', 'Geometry']] as const).map(([value, label]) => (
               <button key={value} aria-pressed={options.mode === value} onClick={() => mode(value)} disabled={status !== 'ready'}>{label}</button>
@@ -277,7 +296,7 @@ export function AccountsHero() {
             <button type="button" className="studio-restore" onClick={() => setOptions((previous) => ({ ...previous, ...DEFAULT_HINTS }))}>↻ Reset hints only</button>
           </fieldset>
           <div className="studio-font-block">
-            <div className="studio-font-heading">Headline<span>{heroFont(font).name}</span></div>
+            <div className="studio-font-heading">Headline typeface<span>{heroFont(font).name}</span></div>
             <div className="studio-font-list" role="radiogroup" aria-label="Hero typeface">
               {HERO_FONTS.map((candidate) => (
                 <button key={candidate.id} type="button" role="radio" aria-checked={font === candidate.id} className="studio-font-option" onClick={() => setFont(candidate.id)}>
@@ -312,7 +331,7 @@ export function AccountsHero() {
           </fieldset>
           <div className="studio-control-actions"><button onClick={reset}>Reset view</button><button onClick={demo}>Play movement ↗</button></div>
           <button className="studio-replay" onClick={replayIntro}>↻ Replay intro</button>
-          <button className="studio-restore" onClick={() => { reset(); setOptions(DEFAULT_OPTIONS); setFont(DEFAULT_HERO_FONT); setBodyFont(DEFAULT_HERO_BODY) }}>Restore defaults</button>
+          <button className="studio-restore" onClick={() => { reset(); setOptions(DEFAULT_OPTIONS); setFont(DEFAULT_HERO_FONT); setBodyFont(DEFAULT_HERO_BODY); setHeadline(DEFAULT_HERO_HEADLINE) }}>Restore defaults</button>
           <a className="studio-old-link" href="/hero-accounts">Open previous hero ↗</a>
         </aside>}
         <button ref={controlTrigger} className="studio-tools-trigger" aria-label="Open view controls" aria-expanded={controls} aria-controls="accounts-controls" onClick={() => controls ? closeControls() : setControls(true)}>

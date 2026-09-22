@@ -13,12 +13,29 @@ const QUESTIONS: Question[] = [
   { question: 'What will I pay?', answer: 'Pricing depends on the services your business needs. Talk to our team about your account, payment methods and expected volume for the fees that apply to your setup.' },
 ]
 
-function SecurityMark() {
-  return <svg viewBox="0 0 32 36" fill="none" aria-hidden="true">
-    <path d="M16 2 29 7v10c0 8-6 13-13 17C9 30 3 25 3 17V7L16 2Z" />
-    <path className="tf-mark-detail" d="m10 17 4 4 8-8" />
+function LicenceMark() {
+  return <svg viewBox="0 0 44 48" fill="none" aria-hidden="true">
+    <defs>
+      <linearGradient id="tf-mark-gold" x1="8" y1="4" x2="38" y2="44" gradientUnits="userSpaceOnUse">
+        <stop offset="0" stopColor="#f0d9a6" /><stop offset=".55" stopColor="#d6b77b" /><stop offset="1" stopColor="#8f7340" />
+      </linearGradient>
+    </defs>
+    <path className="tf-mark-fill" d="M22 3 39 9.5v13c0 10.6-7.6 17.8-17 22.5C12.6 40.3 5 33.1 5 22.5v-13L22 3Z" />
+    <path className="tf-mark-outer" d="M22 3 39 9.5v13c0 10.6-7.6 17.8-17 22.5C12.6 40.3 5 33.1 5 22.5v-13L22 3Z" />
+    <path className="tf-mark-inner" d="M22 9.5 33.5 14v9c0 7.5-5.2 12.6-11.5 16C15.7 35.6 10.5 30.5 10.5 23v-9L22 9.5Z" />
+    <path className="tf-mark-detail" d="m15.5 23.5 4.5 4.5 9-9.5" />
   </svg>
 }
+
+// Licence facts are gated on UTEX's answer (regulator, licence number, jurisdiction).
+// Rows marked placeholder render with the same TBC treatment as the footer's regulatory line.
+type Fact = { label: string; value: string; mono?: boolean; status?: boolean; placeholder?: boolean }
+const FACTS: Fact[] = [
+  { label: 'Regulator', value: 'FCA · United Kingdom', placeholder: true },
+  { label: 'Licence no.', value: '000000', mono: true, placeholder: true },
+  { label: 'Customer funds', value: 'Safeguarded', status: true },
+  { label: 'Two-step verification', value: 'On', status: true },
+]
 
 function FaqList({ id, showExample }: { id: string; showExample: boolean }) {
   const [open, setOpen] = useState<number | null>(0)
@@ -41,11 +58,17 @@ function FaqList({ id, showExample }: { id: string; showExample: boolean }) {
     </div>
     {showExample && <figure className="tf-example">
       <div className="tf-example-card">
-        <div className="tf-example-heading"><SecurityMark /><h3>Security, close at hand.</h3></div>
-        <dl>{[['Two-step verification', 'On'], ['Card controls', 'Manage'], ['Team permissions', 'Review']].map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl>
+        <div className="tf-example-heading">
+          <LicenceMark />
+          <div><h3>Licensed. Safeguarded. Secure.</h3><p className="tf-example-kicker">Electronic Money Institution</p></div>
+        </div>
+        <dl>{FACTS.map(({ label, value, mono, status, placeholder }) => <div key={label}>
+          <dt>{label}</dt>
+          <dd data-mono={mono || undefined} data-status={status || undefined} data-placeholder={placeholder || undefined}>{value}</dd>
+        </div>)}</dl>
         <p>{'A little more certainty.\nEvery time you use your account.'}</p>
       </div>
-      <figcaption>Illustrative account settings</figcaption>
+      <figcaption>Licence details to be confirmed</figcaption>
     </figure>}
   </div>
 }
@@ -79,10 +102,10 @@ export function TrustFaqSection() {
         {split ? <img className="tf-split-art" src="/trustfaq/one-home-1200.webp"
           srcSet="/trustfaq/one-home-640.webp 640w, /trustfaq/one-home-1200.webp 1200w"
           sizes="(max-width: 900px) calc(100vw - 56px), (max-width: 1496px) 56vw, 800px"
-          width="1200" height="900" loading="lazy" decoding="async" alt="" aria-hidden="true" /> : <img className="tf-cover" src="/trustfaq/doorway-cover-1600.webp"
-          srcSet="/trustfaq/doorway-cover-960.webp 960w, /trustfaq/doorway-cover-1600.webp 1600w, /trustfaq/doorway-cover-2126.webp 2126w"
+          width="1200" height="900" loading="lazy" decoding="async" alt="" aria-hidden="true" /> : <img className="tf-cover" src="/trustfaq/doorway-cover-physics-1600.webp"
+          srcSet="/trustfaq/doorway-cover-physics-960.webp 960w, /trustfaq/doorway-cover-physics-1600.webp 1600w, /trustfaq/doorway-cover-physics-2125.webp 2125w"
           sizes="(max-width: 620px) 920px, (max-width: 900px) 1300px, (max-width: 1496px) calc(100vw - 96px), 1400px"
-          width="2126" height="740" loading="lazy" decoding="async" alt="" aria-hidden="true" />}
+          width="2125" height="740" loading="lazy" decoding="async" alt="" aria-hidden="true" />}
         <div className="tf-cover-copy">
           <div className="tf-heading"><p className="section-heading__eyebrow">Your questions, answered</p>
             <h2 id={`${id}-title`} className="section-heading__title">Feel at home.<br />Before you move in.</h2></div>

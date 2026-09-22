@@ -1,0 +1,151 @@
+/* One account — the text section. Same container, gutters, palette and type as the analytics and
+   FAQ sections; no artwork on purpose. An editorial header (headline left, lead right) over a
+   four-row verb ledger with hairline rules, then a mono strip. */
+.one-account {
+  --oa-text: #f3f0e9;
+  --oa-muted: #ada89f;
+  --oa-gold: #d6b77b;
+  --oa-rule: #2e2b26;
+  --oa-gutter: 48px;
+  --oa-width: 1400px;
+  --oa-row-pad: 40px;
+  --oa-ease: cubic-bezier(.22, 1, .36, 1);
+  position: relative;
+  z-index: 1;
+  padding: clamp(88px, 8vw, 128px) 0 clamp(72px, 6vw, 104px);
+  color: var(--oa-text);
+  font-family: 'Manrope', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  scroll-margin-top: 88px;
+}
+.oa-inner { width: calc(100% - 2 * var(--oa-gutter)); max-width: var(--oa-width); margin: 0 auto; }
+.oa-header { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: clamp(40px, 5vw, 96px); align-items: end; }
+.oa-heading .section-heading__eyebrow, .oa-heading .section-heading__title { text-align: left; }
+.oa-heading .section-heading__title { font-size: clamp(38px, 3.6vw, 60px); max-width: 15ch; text-wrap: pretty; }
+.oa-accent { color: var(--oa-gold); }
+.oa-lead { padding-bottom: 6px; }
+.oa-lead p { margin: 0; color: var(--oa-muted); font-size: clamp(16px, 1.15vw, 19px); line-height: 1.6; text-wrap: pretty; }
+.oa-lead p + p { margin-top: 16px; color: var(--oa-text); }
+
+.oa-ledger { list-style: none; margin: clamp(48px, 5vw, 80px) 0 0; padding: 0; border-top: 1px solid var(--oa-rule); }
+.oa-row { display: grid; grid-template-columns: 72px 220px minmax(0, 1fr) 150px; column-gap: 24px; align-items: start; padding: 30px 0; border-bottom: 1px solid var(--oa-rule); }
+.oa-index { color: #77736b; font: 400 12px/26px 'JetBrains Mono', monospace; letter-spacing: .08em; }
+.oa-verb { margin: .08em 0 0; font: 500 clamp(24px, 2vw, 32px)/1 'Plus Jakarta Sans', sans-serif; letter-spacing: -.03em; transition: color 220ms ease; }
+.oa-row:hover .oa-verb { color: var(--oa-gold); }
+.oa-text { margin: 0; max-width: 640px; color: var(--oa-muted); font-size: 16px; line-height: 26px; text-wrap: pretty; }
+.oa-status { display: inline-flex; align-items: center; justify-content: flex-end; gap: 10px; color: #9a9690; font: 400 12px/26px 'JetBrains Mono', monospace; letter-spacing: .1em; text-transform: uppercase; white-space: nowrap; }
+.oa-status[data-on] { color: var(--oa-gold); }
+/* The fourth row's switch: the one capability you add rather than open with. */
+.oa-toggle { position: relative; width: 28px; height: 16px; border-radius: 999px; background: #c9a56733; box-shadow: inset 0 0 0 1px #c9a56760; }
+.oa-toggle::after { content: ''; position: absolute; top: 3px; left: 3px; width: 10px; height: 10px; border-radius: 50%; background: var(--oa-gold); box-shadow: 0 0 8px #d6b77b99; transform: translateX(0); transition: transform 420ms var(--oa-ease); }
+.one-account.is-in .oa-toggle::after { transform: translateX(12px); transition-delay: 900ms; }
+
+.oa-strip { display: flex; flex-wrap: wrap; gap: 6px 0; margin: 28px 0 0; color: #77736b; font: 400 11px/20px 'JetBrains Mono', monospace; letter-spacing: .14em; text-transform: uppercase; }
+.oa-dot { margin: 0 14px; color: #4f4b45; }
+
+/* Entrance: header first, then the rows take turns. */
+.oa-header, .oa-row, .oa-strip { opacity: 0; transform: translateY(14px); transition: opacity 640ms var(--oa-ease), transform 640ms var(--oa-ease); }
+.oa-row { transition-delay: calc(160ms + var(--i) * 110ms); }
+.oa-strip { transition-delay: 640ms; }
+.one-account.is-in :is(.oa-header, .oa-row, .oa-strip) { opacity: 1; transform: none; }
+
+@media (max-width: 1100px) {
+  .oa-row { grid-template-columns: 56px 180px minmax(0, 1fr) 130px; }
+}
+@media (max-width: 900px) {
+  .one-account { --oa-gutter: 28px; }
+  .oa-header { grid-template-columns: 1fr; gap: 28px; align-items: start; }
+  .oa-heading .section-heading__title { max-width: 20ch; }
+  .oa-lead { max-width: 560px; }
+  .oa-row { grid-template-columns: 48px minmax(0, 1fr) auto; grid-template-areas: 'index verb status' 'index text text'; row-gap: 10px; padding: 26px 0; }
+  .oa-index { grid-area: index; }
+  .oa-verb { grid-area: verb; }
+  .oa-text { grid-area: text; }
+  .oa-status { grid-area: status; }
+}
+@media (max-width: 620px) {
+  .one-account { --oa-gutter: 20px; padding-top: 96px; }
+  .oa-heading .section-heading__title { font-size: clamp(31px, 8.8vw, 46px); max-width: none; }
+  .oa-lead p { font-size: 15px; }
+  .oa-row { grid-template-columns: 36px minmax(0, 1fr); grid-template-areas: 'index verb' 'index text' 'index status'; row-gap: 8px; }
+  .oa-status { justify-content: flex-start; margin-top: 4px; }
+  .oa-text { font-size: 15px; line-height: 25px; }
+  .oa-dot { margin: 0 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .oa-header, .oa-row, .oa-strip, .oa-toggle::after { transition: none !important; opacity: 1; transform: none; }
+}
+
+/* ---- Version rail (01 Ledger / 02 Accordion), same grammar as the personal-banking rail. ---- */
+.oa-versions { position: absolute; z-index: 5; top: clamp(88px, 8vw, 128px); right: 0; display: flex; flex-direction: column; gap: 2px; }
+.oa-versions button { position: relative; display: grid; place-items: center; width: 32px; height: 32px; padding: 0; border: 0; color: #77736b; background: transparent; cursor: pointer; font: 9px/1 'JetBrains Mono', monospace; }
+.oa-versions button::after { content: ''; position: absolute; right: 0; top: 10px; width: 2px; height: 12px; background: currentColor; opacity: 0; }
+.oa-versions button:hover { color: #f1e8d5; }
+.oa-versions button[aria-pressed='true'] { color: #cfb984; }
+.oa-versions button[aria-pressed='true']::after { opacity: 1; }
+.oa-version-name { position: absolute; right: calc(100% + 8px); top: 50%; transform: translateY(-50%); padding: 7px 10px; border: 1px solid #ffffff12; border-radius: 4px; background: var(--page-background); color: #c6bda9; font: 11px/16px 'Manrope', sans-serif; white-space: nowrap; opacity: 0; visibility: hidden; pointer-events: none; }
+.oa-versions button:is(:hover, :focus-visible) .oa-version-name { opacity: 1; visibility: visible; }
+
+/* ---- Version 02: accordion. The row head keeps the ledger's four columns; the open row grows a
+   glass window under the text that shows the matching product screen. One row open at a time. ---- */
+.oa-row--acc { display: block; padding: 0; }
+.oa-acc-heading { margin: 0; font: inherit; }
+.oa-row-head { display: grid; grid-template-columns: 72px 220px minmax(0, 1fr) 150px; column-gap: 24px; align-items: start; width: 100%; padding: var(--pad, var(--oa-row-pad)) 0; border: 0; background: transparent; color: inherit; text-align: left; font: inherit; cursor: pointer; }
+.oa-row-head:focus-visible { outline: 2px solid var(--oa-gold); outline-offset: -2px; border-radius: 4px; }
+.oa-row--acc .oa-verb { display: block; }
+.oa-row--acc .oa-text { display: block; }
+.oa-row--acc[data-open] .oa-verb, .oa-row--acc[data-open] .oa-index { color: var(--oa-gold); }
+.oa-row--acc[data-open] .oa-text { color: var(--oa-text); }
+.oa-panel { overflow: hidden; }
+/* Closed rows take their height from the tween (--peek); the open row from its measured content,
+   with a CSS transition for the opening. Closing is tweened too, from the panel's live height. */
+.oa-row--acc:not([data-open]) .oa-panel { max-height: var(--peek, 0px); }
+.oa-row--acc[data-open] .oa-panel { max-height: var(--panel-h, 900px); transition: max-height 640ms var(--oa-ease); }
+@media (hover: hover) {
+  .oa-row--acc:not([data-open]):hover .oa-window { opacity: 1; transform: none; }
+}
+.oa-panel-inner { display: grid; grid-template-columns: 72px 220px minmax(0, 1fr); column-gap: 24px; align-items: start; min-height: 0; padding: 4px 0 56px; }
+/* Details under the verb: three label / value pairs of concrete facts for the open row. */
+.oa-details { grid-column: 2; margin: 6px 0 0; display: grid; gap: 18px; opacity: 0; transform: translateY(12px); transition: opacity 520ms var(--oa-ease), transform 640ms var(--oa-ease); }
+.oa-row--acc[data-open] .oa-details { opacity: 1; transform: none; transition-delay: 200ms; }
+.oa-detail { display: grid; gap: 4px; }
+.oa-detail dt { color: #77736b; font: 400 11px/18px 'JetBrains Mono', monospace; letter-spacing: .12em; text-transform: uppercase; }
+.oa-detail dd { margin: 0; color: #c6bda9; font-size: 14px; line-height: 22px; text-wrap: pretty; }
+.oa-window { grid-column: 3; position: relative; isolation: isolate; margin: 0; aspect-ratio: 1300 / 700; border-radius: 12px; overflow: hidden;
+  background: linear-gradient(135deg, #ffffff08, #ffffff02 55%), rgb(13 13 15 / 58%); box-shadow: 0 24px 65px #0005, inset 0 1px 0 #ffffff05;
+  opacity: 0; transform: translateY(12px); transition: opacity 520ms var(--oa-ease), transform 640ms var(--oa-ease); }
+.oa-row--acc[data-open] .oa-window { opacity: 1; transform: none; transition-delay: 120ms; }
+/* A masked ring lights only the glass edge, as on the stack windows. */
+.oa-window::before { content: ''; position: absolute; z-index: 1; inset: 0; padding: 1px; border-radius: inherit; background: linear-gradient(180deg, #f3edde66 0%, #dfd9ce3d 35%, #cbc6bc29 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none; }
+.oa-screen { position: absolute; top: 5%; left: 12%; display: block; width: 76%; height: auto; max-width: none; }
+/* Spend reuses the banking dashboard, scrolled to its Accounts, Cash Flow and Cards widgets. */
+.oa-window[data-focus='cards'] .oa-screen { top: auto; bottom: -3%; }
+
+@media (max-width: 1100px) {
+  .oa-row-head { grid-template-columns: 56px 180px minmax(0, 1fr) 130px; }
+  .oa-panel-inner { grid-template-columns: 56px 180px minmax(0, 1fr); }
+}
+@media (max-width: 900px) {
+  .one-account { --oa-row-pad: 32px; }
+  .oa-row-head { grid-template-columns: 48px minmax(0, 1fr) auto; grid-template-areas: 'index verb status' 'index text text'; row-gap: 10px; }
+  .oa-row-head .oa-index { grid-area: index; }
+  .oa-row-head .oa-verb { grid-area: verb; }
+  .oa-row-head .oa-text { grid-area: text; }
+  .oa-row-head .oa-status { grid-area: status; }
+  .oa-panel-inner { grid-template-columns: 48px minmax(0, 1fr); padding-bottom: 40px; }
+  .oa-details { grid-column: 2; margin: 0 0 20px; gap: 12px; }
+  .oa-window { grid-column: 2; aspect-ratio: 4 / 3; border-radius: 10px; }
+  .oa-screen { top: 4%; left: -22%; width: 122%; }
+}
+@media (max-width: 620px) {
+  .oa-versions { top: 96px; }
+  .oa-row-head { grid-template-columns: 36px minmax(0, 1fr); grid-template-areas: 'index verb' 'index text' 'index status'; row-gap: 8px; }
+  .oa-row-head .oa-status { justify-content: flex-start; margin-top: 4px; }
+  .oa-panel-inner { grid-template-columns: 36px minmax(0, 1fr); }
+  .oa-window { aspect-ratio: 1 / 1; }
+  .oa-screen { left: -30%; width: 130%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .oa-panel, .oa-window, .oa-details { transition: none; }
+}

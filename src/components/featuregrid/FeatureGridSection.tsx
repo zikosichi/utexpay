@@ -1,10 +1,19 @@
 import { useEffect, useId, useRef } from 'react'
 import { SectionHeading } from '#/components/SectionHeading'
-import { BusinessTiles } from './BusinessTiles'
+import { BUSINESS_SCENES, BusinessTiles } from './BusinessTiles'
 import { CheckoutScene } from './CheckoutScene'
 import { TotalBalancePanel } from './TotalBalancePanel'
 import { CoffeeSteam } from './CoffeeSteam'
+import { ImageDirections, PERSONAL_SCENES, useImageDirection } from './ImageDirections'
 import './feature-grid.css'
+
+// The chapter index under the heading: one line per chapter, linking to it. First form of the
+// numbered in-page navigation Sandro asked for on Sep 18.
+const CHAPTERS = [
+  { href: '#feature-personal', name: 'Personal', text: 'Balances, cards and daily spending in one view, with accounts in the currencies you use.' },
+  { href: '#feature-business', name: 'Business', text: 'Company money, team cards and supplier payments, with roles and an activity log.' },
+  { href: '#feature-payments', name: 'Payments', text: 'Card payments from your customers, settled into the account you already run.' },
+]
 
 /* Motion is opt-in from the client: `data-motion` on the grid enables the hidden pre-entry state,
    so prerendered HTML and no-JS readers see every tile. Each chapter gets `has-entered` once (the
@@ -30,20 +39,33 @@ export function FeatureGridSection() {
   const id = useId()
   const grid = useRef<HTMLDivElement>(null)
   useChapterMotion(grid)
+  const [personalScene, selectPersonalScene] = useImageDirection('personalScene', PERSONAL_SCENES)
+  const [businessScene, selectBusinessScene] = useImageDirection('businessScene', BUSINESS_SCENES, 'handover')
 
   return <div className="feature-grid" ref={grid} aria-labelledby={`${id}-title`}>
-    <SectionHeading id={`${id}-title`} eyebrow="Banking & payments" description="For your everyday, your business and the customers you serve.">
-      One place.<br />More possibilities.
+    <SectionHeading id={`${id}-title`} eyebrow="Banking & payments" description="Three ways to use UTEX. One account underneath all of them.">
+      For you. For your business.<br />For your customers.
     </SectionHeading>
-    <section className="fg-chapter" aria-labelledby={`${id}-personal`}>
-      <header className="fg-chapter-heading"><p>Personal banking</p><h3 id={`${id}-personal`}>Make room for everyday life.</h3></header>
+    <nav className="fg-index" aria-label="In this section">
+      <ol>
+        {CHAPTERS.map(({ href, name, text }, i) => <li key={href}>
+          <a href={href}><span className="fg-index-num" aria-hidden="true">0{i + 1}</span><span className="fg-index-name">{name}</span><span className="fg-index-text">{text}</span></a>
+        </li>)}
+      </ol>
+    </nav>
+    <section className="fg-chapter fg-chapter--directions" id="feature-personal" aria-labelledby={`${id}-personal`}>
+      <ImageDirections label="Personal image direction" controls={`${id}-personal-scene`} options={PERSONAL_SCENES} selected={personalScene} onSelect={selectPersonalScene} />
+      <header className="fg-chapter-heading"><p>Personal banking</p><h3 id={`${id}-personal`}>Make room for everyday life.</h3><p className="fg-chapter-lead">Accounts in the currencies you use and a card ready the day you open it. Balances and spending in one view.</p></header>
       <div className="fg-row fg-row--personal">
         <article className="fg-tile fg-money">
-          <img className="fg-scene fg-money-phone" src="/personalbanking/phone-scene-1254.webp"
-            srcSet="/personalbanking/phone-scene-640.webp 640w, /personalbanking/phone-scene-960.webp 960w, /personalbanking/phone-scene-1254.webp 1254w"
-            sizes="(max-width: 620px) 100vw, (max-width: 900px) 70vw, 600px"
-            width="1254" height="1254" loading="lazy" decoding="async" draggable="false"
-            alt="Illustrative UTEX Pay personal banking interface on a phone, with a gold card and recent transactions." />
+          <div id={`${id}-personal-scene`} className="fg-money-art" data-scene={personalScene}>
+            {PERSONAL_SCENES.map((item) => <img key={item.id}
+              className={`fg-scene fg-money-phone${personalScene === item.id ? ' is-selected' : ''}`}
+              src={item.src} srcSet={`${item.small} 640w, ${item.src} 1254w`}
+              sizes="(max-width: 620px) 100vw, (max-width: 900px) 70vw, 600px"
+              width="1254" height="1254" loading="lazy" decoding="async" draggable="false"
+              alt={personalScene === item.id ? item.alt : ''} aria-hidden={personalScene !== item.id || undefined} />)}
+          </div>
           <div className="fg-tile-heading"><h4>Your money,<br />ready to use.</h4><p>Currency accounts<br />and cards, together.</p></div>
           <div className="fg-money-ui">
             <TotalBalancePanel />
@@ -64,12 +86,13 @@ export function FeatureGridSection() {
         </article>
       </div>
     </section>
-    <section className="fg-chapter" aria-labelledby={`${id}-business`}>
-      <header className="fg-chapter-heading"><p>Business banking</p><h3 id={`${id}-business`}>Give your business its own space.</h3></header>
-      <BusinessTiles />
+    <section className="fg-chapter fg-chapter--directions" id="feature-business" aria-labelledby={`${id}-business`}>
+      <header className="fg-chapter-heading"><p>Business banking</p><h3 id={`${id}-business`}>Give your business its own space.</h3><p className="fg-chapter-lead">Open it to run the business. Everything you need next is something you switch on, not somewhere you move to.</p></header>
+      <ImageDirections label="Business image direction" controls={`${id}-business-scene`} options={BUSINESS_SCENES} selected={businessScene} onSelect={selectBusinessScene} />
+      <BusinessTiles scene={businessScene} sceneId={`${id}-business-scene`} />
     </section>
     <section className="fg-chapter" id="feature-payments" aria-labelledby={`${id}-payments`}>
-      <header className="fg-chapter-heading"><p>Payment processing</p><h3 id={`${id}-payments`}>From checkout to confirmation.</h3></header>
+      <header className="fg-chapter-heading"><p>Payment processing</p><h3 id={`${id}-payments`}>From checkout to confirmation.</h3><p className="fg-chapter-lead">What your customers pay lands in the account you already run. Yours the moment it clears, no payout to wait for.</p></header>
       <CheckoutScene />
     </section>
   </div>

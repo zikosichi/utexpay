@@ -1,5 +1,21 @@
 # Version 5 — Feature grid
 
+## Business image review — September 22, 2026
+
+Selected default: **06 — Team handover**. Options 07 and 08 have been removed from the selector; their source assets are retained. It renders on initial load and when no valid `businessScene` is specified. The numbered alternatives remain available for review.
+
+The right business tile offers six image directions: Team cards, Workspace, Working moment, Daylight, Graphic and Team handover. Its footprint, left members tile, section heading and feature copy are retained. Artwork preserves its aspect ratio; phones stack copy above the image.
+
+The personal money tile offers the original phone and three human directions: In your hand, Everyday action and Phone & card. Its copy and live balance panel stay unchanged. Original PNGs and prompts are in `../Landing/concept-designs/personal-banking-human-2026-09-22/`.
+
+Both sections use external numbered selectors at the page's right edge, aligned with the top of their tile rows. Smaller screens place wrapping, touch-sized controls above the tiles. Buttons support keyboard activation and expose their selection through `aria-pressed`. URL parameters preserve selections: `businessScene=cards|laptop|human|daylight|graphic|handover` and `personalScene=original|hand|touch|card`. For example, `/version-5?businessScene=handover#feature-business`. Reduced motion removes crossfades.
+
+Additional business source PNGs and prompts are in `../Landing/concept-designs/business-right-tile-2026-09-22/additional-directions/`. These use human handover, a cool-toned overhead desk, and a sculptural metal still life to test distinct art directions.
+
+Source PNGs, generation prompts and the Apple keyboard reference are in `../Landing/concept-designs/business-right-tile-2026-09-22/refined/` relative to the project. The cards now use visible slotted supports and consistent planar geometry. The laptop pass corrects letter-row order, card scale/contact, hardware side strips and function-key treatment using Apple's top-view reference. These remain generated illustrations, not a CAD-certified hardware reproduction. Apple reference imagery is not included in public assets.
+
+Validation: application-source TypeScript, feature-grid WebP asset checks and production/static builds pass. Both scenes load, mouse and keyboard switching work, selection restores after hydration on reload, and the business section has no horizontal overflow at 390px or 320px. At 320px the text fits above the artwork. Existing unrelated changes in other sections were left untouched. Forge documentation was searched for but no callable `get_forge_docs` tool was available; the implementation follows the existing component and style structure.
+
 Added September 15, 2026 from the selected `Landing/concept-designs/post-meeting-middle-2026-09-11/02-feature-grid.png` and September 11 meeting feedback.
 
 ## Review

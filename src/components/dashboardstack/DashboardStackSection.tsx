@@ -28,8 +28,12 @@ const VIEWS = [
 
 type View = (typeof VIEWS)[number]['id']
 
-/** Supplied dashboard images sit inside HTML glass windows; the section tabs are interactive. */
-export function DashboardStackSection({ embedded = false }: { embedded?: boolean }) {
+/** Supplied dashboard images sit inside HTML glass windows; the section tabs are interactive.
+ *  `bare` drops the heading and the mobile caption, widens the stack to the 1400px section
+ *  container, stacks the rear windows below the front one instead of above, and moves a minimal
+ *  Bank / Move / Get paid tab row (track + label, no descriptions) under the stack. Used on the
+ *  home page directly after the one-account ledger, which already names the four verbs. */
+export function DashboardStackSection({ embedded = false, bare = false }: { embedded?: boolean; bare?: boolean }) {
   const id = useId()
   const [active, setActive] = useState<View>('bank')
   const [cycle, setCycle] = useState(0)
@@ -80,17 +84,7 @@ export function DashboardStackSection({ embedded = false }: { embedded?: boolean
     tabs.current[next]?.focus({ preventScroll: true })
   }
 
-  return <section ref={section} className="dashboard-stack" id="dashboard-stack" aria-labelledby={`${id}-title`} aria-roledescription="carousel"
-    data-view={active} data-autoplay={running ? 'running' : 'paused'} data-reduced-motion={reducedMotion}
-    onFocusCapture={(event) => {
-      if (event.target.matches(':focus-visible')) setPaused(true)
-    }}>
-    {!embedded && <><span className="ds-anchor" id="banking" aria-hidden="true" />
-      <span className="ds-anchor" id="why-utex" aria-hidden="true" /></>}
-    <SectionHeading className="ds-intro" id={`${id}-title`} eyebrow="Banking & payments" description="Bank, spend, send and get paid. All from the same account.">
-      One account.<br />More possibilities.
-    </SectionHeading>
-    <div className="ds-feature-navigation">
+  const navigation = <div className={`ds-feature-navigation${bare ? ' ds-feature-navigation--minimal' : ''}`}>
       {!reducedMotion && <button className="ds-playback" type="button" aria-label={paused ? 'Resume automatic slides' : 'Pause automatic slides'}
         title={paused ? 'Resume slideshow' : 'Pause slideshow'} onClick={() => setPaused((value) => !value)}>
         <svg viewBox="0 0 16 16" width="12" height="12" fill="currentColor" aria-hidden="true">
@@ -98,17 +92,30 @@ export function DashboardStackSection({ embedded = false }: { embedded?: boolean
         </svg>
       </button>}
       <div className="ds-tabs" role="tablist" aria-label="Explore your UTEX account">
-        {VIEWS.map((view, index) => <button ref={(element) => { tabs.current[index] = element }} key={view.id} id={`${id}-tab-${view.id}`} type="button" role="tab" aria-selected={active === view.id} aria-controls={`${id}-panel-${view.id}`} aria-describedby={`${id}-description-${view.id}`} tabIndex={active === view.id ? 0 : -1} onClick={() => selectView(view.id)} onKeyDown={(event) => onKeyDown(event, index)}>
+        {VIEWS.map((view, index) => <button ref={(element) => { tabs.current[index] = element }} key={view.id} id={`${id}-tab-${view.id}`} type="button" role="tab" aria-selected={active === view.id} aria-controls={`${id}-panel-${view.id}`} aria-describedby={bare ? undefined : `${id}-description-${view.id}`} tabIndex={active === view.id ? 0 : -1} onClick={() => selectView(view.id)} onKeyDown={(event) => onKeyDown(event, index)}>
           <span className="ds-tab-track" aria-hidden="true"><span key={active === view.id ? cycle : -1}
             onAnimationEnd={(event) => {
               if (event.animationName === 'ds-tab-progress' && active === view.id) setActive(VIEWS[(index + 1) % VIEWS.length].id)
             }} /></span>
-          <span className="ds-tab-label"><img src={`${ASSETS}${active === view.id ? 'dot-active' : 'dot'}.svg`} width="8" height="8" alt="" />{view.label}</span>
-          <span className="ds-tab-description" id={`${id}-description-${view.id}`}>{view.description}</span>
+          <span className="ds-tab-label">{!bare && <img src={`${ASSETS}${active === view.id ? 'dot-active' : 'dot'}.svg`} width="8" height="8" alt="" />}{view.label}</span>
+          {!bare && <span className="ds-tab-description" id={`${id}-description-${view.id}`}>{view.description}</span>}
         </button>)}
       </div>
     </div>
-    <p className="ds-mobile-description" aria-live={running ? 'off' : 'polite'}>{VIEWS[activeIndex].description}</p>
+
+  return <section ref={section} className={`dashboard-stack${bare ? ' dashboard-stack--bare' : ''}`} id="dashboard-stack"
+    aria-labelledby={bare ? undefined : `${id}-title`} aria-label={bare ? 'Bank, Move and Get paid screens' : undefined} aria-roledescription="carousel"
+    data-view={active} data-autoplay={running ? 'running' : 'paused'} data-reduced-motion={reducedMotion}
+    onFocusCapture={(event) => {
+      if (event.target.matches(':focus-visible')) setPaused(true)
+    }}>
+    {!embedded && <><span className="ds-anchor" id="banking" aria-hidden="true" />
+      <span className="ds-anchor" id="why-utex" aria-hidden="true" /></>}
+    {!bare && <><SectionHeading className="ds-intro" id={`${id}-title`} eyebrow="Banking & payments" description="Bank, spend, send and get paid. All from the same account.">
+      One account.<br />More possibilities.
+    </SectionHeading>
+    {navigation}
+    <p className="ds-mobile-description" aria-live={running ? 'off' : 'polite'}>{VIEWS[activeIndex].description}</p></>}
     <div className="ds-stage">
       <img className="ds-ambient" src={`${ASSETS}ambient-soft.png`} width="1936" height="1181" alt="" loading="lazy" draggable="false" />
       <div className="ds-stack">
@@ -124,5 +131,6 @@ export function DashboardStackSection({ embedded = false }: { embedded?: boolean
         })}
       </div>
     </div>
+    {bare && navigation}
   </section>
 }

@@ -1,0 +1,127 @@
+/* Version 04 · Hairline grid. Lines are drawn once by the container (verticals at column
+   fractions, horizontals at 0 / the question row / equal item rows) and run 32px past the grid on
+   every side; a small cross sits on each intersection. Cells carry no border and no fill. */
+.mi-track--grid { padding-left: 0; padding-right: 0; }
+/* The head shares the three-column grid below it: the title spans the first two columns, the lead
+   sits on the third, so the lead's left edge is the third question's left edge. */
+.mi-track--grid .mi-track-head--blocks { grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-areas: 'eyebrow eyebrow eyebrow' 'title title lead'; column-gap: 56px; }
+.mi-track--grid .mi-track-lead { max-width: none; }
+.mig { --mig-q: 52px; --mig-ext: 32px; --mig-rule: #2e2b26; --mig-cross: #6b665e; position: relative; display: grid; grid-template-columns: repeat(var(--cols), minmax(0, 1fr)); margin: 56px 24px 0; }
+.mig-col { display: grid; grid-template-rows: var(--mig-q) repeat(calc(var(--rows) - 1), minmax(0, 1fr)); }
+.mig-lines { position: absolute; inset: 0; pointer-events: none; }
+.mig-v { position: absolute; top: calc(-1 * var(--mig-ext)); bottom: calc(-1 * var(--mig-ext)); left: calc(var(--c) * 100% / var(--cols)); width: 1px; background: var(--mig-rule); transform-origin: top; }
+.mig-h { position: absolute; left: calc(-1 * var(--mig-ext)); right: calc(-1 * var(--mig-ext)); top: calc(min(var(--r), 1) * var(--mig-q) + max(var(--r) - 1, 0) * (100% - var(--mig-q)) / (var(--rows) - 1)); height: 1px; background: var(--mig-rule); transform-origin: left; }
+.mig-h:last-of-type, .mig-v:last-of-type { transform: translate(-1px, 0); }
+.mig-x { position: absolute; width: 9px; height: 9px; left: calc(var(--c) * 100% / var(--cols) - 4px); top: calc(min(var(--r), 1) * var(--mig-q) + max(var(--r) - 1, 0) * (100% - var(--mig-q)) / (var(--rows) - 1) - 4px); background: linear-gradient(var(--mig-cross), var(--mig-cross)) center / 9px 1px no-repeat, linear-gradient(var(--mig-cross), var(--mig-cross)) center / 1px 9px no-repeat; }
+
+.mig-q { display: flex; align-items: center; gap: 12px; margin: 0; padding: 0 24px; font: 400 11px/1.5 var(--mi-mono); letter-spacing: .16em; text-transform: uppercase; color: var(--mi-gold); }
+.mig-q span { color: var(--mi-muted-2); }
+.mig-cell { position: relative; display: flex; flex-direction: column; gap: 10px; min-height: 170px; padding: 26px 28px 30px 24px; outline: none; cursor: default; }
+.mig-cell:focus-visible { outline: 2px solid #e0c48b; outline-offset: -6px; border-radius: 6px; }
+.mig-cell .mi-mark { margin-bottom: 8px; }
+.mig-cell strong { font: 500 17px/1.3 var(--mi-display); letter-spacing: -.02em; color: var(--mi-text); }
+.mig-cell p { margin: 0; max-width: 34ch; font-size: 14px; line-height: 1.55; color: var(--mi-muted); }
+/* The transition lives on the base rule so the dimmed cells fade back up when the pointer leaves
+   the whole strip, not only when it moves between cells. */
+.mig-cell :is(strong, p) { transition: opacity .35s ease; }
+.mig:hover .mig-cell:not(:hover) :is(strong, p) { opacity: .6; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .mig-cell:is(.is-playing, :focus-visible) .mi-draw { animation: mi-draw .9s cubic-bezier(.4, 0, .2, 1) both; }
+  .mig-cell:is(.is-playing, :focus-visible) .mi-draw--late { animation-delay: .15s; }
+  .mig-cell:is(.is-playing, :focus-visible) .mi-seg { animation: mi-seg .55s cubic-bezier(.4, 0, .2, 1) calc(var(--n) * .3s) both; }
+  .mig-cell:is(.is-playing, :focus-visible) .mi-pin { animation: mi-pop .6s ease-out .45s both; }
+  .mig-cell:is(.is-playing, :focus-visible) .mi-pin:nth-of-type(2) { animation-delay: .6s; }
+  .mig-cell:is(.is-playing, :focus-visible) .mi-pin:nth-of-type(3) { animation-delay: .75s; }
+  .mig-cell:is(.is-playing, :focus-visible) .mi-col { animation: mi-grow-y .5s cubic-bezier(.2, .7, .2, 1) both; }
+  .mig-cell:is(.is-playing, :focus-visible) .mi-col:nth-of-type(3) { animation-delay: .07s; }
+  .mig-cell:is(.is-playing, :focus-visible) .mi-col:nth-of-type(4) { animation-delay: .14s; }
+  .mig-cell:is(.is-playing, :focus-visible) .mi-col:nth-of-type(5) { animation-delay: .21s; }
+  .mig-cell:is(.is-playing, :focus-visible) .mi-roof { animation: mi-roof .55s cubic-bezier(.2, .7, .2, 1) .3s both; }
+  .mig-cell:is(.is-playing, :focus-visible) .mi-card--l { animation: mi-fan-l .8s cubic-bezier(.34, 1.45, .64, 1) both; }
+  .mig-cell:is(.is-playing, :focus-visible) .mi-card--r { animation: mi-fan-r .8s cubic-bezier(.34, 1.45, .64, 1) .06s both; }
+  .mig-cell:is(.is-playing, :focus-visible) .mi-card--c { animation: mi-fan-c .8s cubic-bezier(.34, 1.45, .64, 1) both; }
+  .mig-cell:is(.is-playing, :focus-visible) .mi-coin { animation: mi-coin-drop .5s cubic-bezier(.2, .8, .3, 1.2) .5s both; }
+  .mig-cell:is(.is-playing, :focus-visible) .mi-coin:nth-of-type(2) { animation-delay: .62s; }
+  .mig-cell:is(.is-playing, :focus-visible) .mi-coin:nth-of-type(3) { animation-delay: .74s; }
+  .mig-cell:is(.is-playing, :focus-visible) .mi-flow { animation: mi-grow-y .6s cubic-bezier(.2, .7, .2, 1) both; }
+  .mig-cell:is(.is-playing, :focus-visible) .mi-flow:nth-child(3), .mig-cell:is(.is-playing, :focus-visible) .mi-flow:nth-child(4) { animation-delay: .07s; }
+  .mig-cell:is(.is-playing, :focus-visible) .mi-flow:nth-child(5), .mig-cell:is(.is-playing, :focus-visible) .mi-flow:nth-child(6) { animation-delay: .14s; }
+  .mig-cell:is(.is-playing, :focus-visible) .mi-arrow--in { animation: mi-nudge-up .6s ease-out both; }
+  .mig-cell:is(.is-playing, :focus-visible) .mi-arrow--out { animation: mi-nudge-down .6s ease-out .2s both; }
+  .mig-cell:is(.is-playing, :focus-visible) .mi-coin-out { animation: mig-coin-lift .55s cubic-bezier(.4, 0, .2, 1) both; }
+  .mig-cell:is(.is-playing, :focus-visible) .mi-coin-out:nth-of-type(2) { animation-delay: .1s; }
+  .mig-cell:is(.is-playing, :focus-visible) .mi-coin-out:nth-of-type(1) { animation-delay: .2s; }
+
+  /* Entrance: the rules draw themselves (verticals down, horizontals across), the crosses pop,
+     then the cells fade in column by column. */
+  .money-insight[data-motion]:not(.has-entered) :is(.mig-cell, .mig-q, .mig-x) { opacity: 0; }
+  .money-insight[data-motion]:not(.has-entered) .mig-v { transform: scaleY(0); }
+  .money-insight[data-motion]:not(.has-entered) .mig-h { transform: scaleX(0); }
+  .money-insight.has-entered .mig-v { animation: mig-draw-y .9s cubic-bezier(.2, .7, .2, 1) calc(var(--c) * 90ms) both; }
+  .money-insight.has-entered .mig-h { animation: mig-draw-x 1s cubic-bezier(.2, .7, .2, 1) calc(.1s + var(--r) * 90ms) both; }
+  .money-insight.has-entered .mig-x { animation: mi-fade-in .4s ease calc(.7s + (var(--c) + var(--r)) * 60ms) both; }
+  .money-insight.has-entered .mig-q { animation: mi-rise .6s cubic-bezier(.2, .7, .2, 1) .6s both; }
+  .money-insight.has-entered .mig-cell { animation: mi-rise .6s cubic-bezier(.2, .7, .2, 1) calc(.75s + var(--i) * 70ms) both; }
+}
+.mi-mark .mi-coin-out { transform-box: fill-box; }
+@keyframes mig-coin-lift { 0% { transform: none; opacity: 1; } 45% { transform: translateY(-10px); opacity: 0; } 46% { transform: translateY(6px); opacity: 0; } 100% { transform: none; opacity: 1; } }
+@keyframes mig-draw-y { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+@keyframes mig-draw-x { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+/* 05 · Plain: same columns and questions, no rules. Text sits on the section's 24px inset so the
+   left and right edges line up with the heading and the chart; cells keep an even vertical rhythm. */
+.mig--plain { margin: 56px 24px 0; column-gap: 56px; }
+.mig--plain .mig-col { grid-template-rows: auto; grid-auto-rows: auto; align-content: start; }
+.mig--plain .mig-q { padding: 0; min-height: 0; margin-bottom: 30px; }
+.mig--plain .mig-cell { min-height: 0; padding: 0; margin-bottom: 44px; }
+.mig--plain .mig-cell:last-child { margin-bottom: 0; }
+.mig--plain .mig-cell:focus-visible { outline-offset: 10px; }
+.mig--plain .mig-cell p { max-width: 36ch; }
+
+/* 06 · Rows. Horizontal rules only, running the full width of the section: one under the question
+   row, one above each item row, one closing the set. Columns are subgrids so the rows line up
+   across the three questions; the rule is the page's gradient hairline, brighter at the left. */
+/* The head follows the rows' column maths (no gap, right padding on the first two columns) so the
+   lead sits exactly on the third column: same left edge as question 03, same width. */
+.mi-track--rows .mi-track-head--blocks { column-gap: 0; }
+.mi-track--rows .mi-track-title { padding-right: 48px; }
+.mig--rows { margin: 56px 24px 0; column-gap: 0; }
+.mig--rows .mig-col { display: grid; grid-template-rows: subgrid; grid-row: 1 / span calc(var(--depth) + 1); }
+.mig--rows .mig-q { align-self: end; min-height: 0; padding: 0 0 22px; }
+.mig--rows .mig-cell { min-height: 0; padding: 30px 48px 36px 0; border-top: 1px solid var(--mig-rule); }
+.mig--rows .mig-col:last-child .mig-cell { padding-right: 0; }
+.mig--rows .mig-cell:last-child { border-bottom: 1px solid var(--mig-rule); }
+.mig--rows .mig-col:first-child .mig-cell { border-image: linear-gradient(to right, #d6b77b66, var(--mig-rule) 22%) 1; }
+.mig--rows .mig-cell.is-empty { border-bottom: 1px solid var(--mig-rule); }
+.mig--rows .mig-cell:focus-visible { outline-offset: -8px; }
+.mig--rows .mig-cell p { max-width: 36ch; }
+
+@media (max-width: 1100px) {
+  .mig-cell { padding: 22px 20px 26px 20px; min-height: 160px; }
+  .mig--rows .mig-cell { padding: 24px 28px 30px 0; min-height: 0; }
+  .mig--plain { column-gap: 36px; }
+  .mi-track--grid .mi-track-head--blocks { grid-template-columns: 1fr; grid-template-areas: 'eyebrow' 'title' 'lead'; }
+  .mig--plain .mig-cell { padding: 0; min-height: 0; }
+}
+@media (max-width: 900px) {
+  /* One column: the three questions stack, each a run of cells; the lines follow because the
+     container's row maths is per column, so the grid becomes 1 × (question + items) per group. */
+  .mig { grid-template-columns: 1fr; --mig-ext: 20px; margin: 40px 4px 0; }
+  .mig--plain { row-gap: 40px; }
+  .mig--plain .mig-col { border: 0; }
+  .mig--plain .mig-q { padding: 0; margin-bottom: 20px; }
+  .mig--plain .mig-cell { border: 0; margin-bottom: 28px; }
+  .mig--rows { row-gap: 0; }
+  .mig--rows .mig-col { display: block; grid-row: auto; border: 0; }
+  .mig--rows .mig-q { padding: 26px 4px 14px; }
+  .mig--rows .mig-cell { padding: 18px 4px 24px; border-image: none; }
+  .mig--rows .mig-cell.is-empty { display: none; }
+  .mig--rows .mig-col:not(:last-child) .mig-cell:last-child { border-bottom: 0; }
+  .mig-lines { display: none; }
+  .mig-col { grid-template-rows: none; border-top: 1px solid var(--mig-rule); }
+  .mig-col:last-child { border-bottom: 1px solid var(--mig-rule); }
+  .mig-q { padding: 18px 4px 6px; }
+  .mig-cell { min-height: 0; padding: 14px 4px 22px; border-top: 1px dashed #2e2b2680; }
+  .mig-cell p { max-width: none; }
+}

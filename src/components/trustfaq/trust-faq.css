@@ -52,15 +52,31 @@
 .tf-question[data-open='true'] .tf-answer-content { transform: translateY(0); }
 .tf-answer p { margin: 0; color: var(--tf-muted); font-size: 16px; line-height: 26px; }
 .tf-example { margin: 0; }
-.tf-example-card { position: relative; padding: 28px; border: 1px solid transparent; border-radius: 16px; background: #1f1d1a; }
-.tf-example-heading { display: flex; align-items: center; gap: 14px; }
-.tf-example-heading svg { flex-shrink: 0; width: 32px; height: 36px; stroke: var(--tf-gold); stroke-width: 1.5; }
-.tf-mark-detail { stroke: var(--tf-text); }
-.tf-example-heading h3 { margin: 0; font: 500 18px/26px 'Plus Jakarta Sans', sans-serif; letter-spacing: -.02em; }
-.tf-example dl { margin: 24px 0; }
-.tf-example dl > div { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--tf-line); }
+/* Licence card: the same dark tile, warmed by a low gold glow behind the mark and a hairline
+   of light along the top edge, so it reads as lit by the doorway above rather than a settings panel. */
+.tf-example-card { position: relative; padding: 28px; border: 1px solid transparent; border-radius: 16px; background:
+  radial-gradient(520px 300px at 8% -10%, #d6b77b24, transparent 62%),
+  linear-gradient(165deg, #25221e, #1c1a17 58%, #191714); }
+.tf-example-card::before { content: ''; position: absolute; z-index: 3; top: -1px; left: 8%; right: 8%; height: 1px; background: linear-gradient(90deg, transparent, #f0d9a680 42%, #f0d9a680 58%, transparent); pointer-events: none; }
+.tf-example-heading { display: flex; align-items: center; gap: 18px; }
+.tf-example-heading svg { flex-shrink: 0; width: 44px; height: 48px; filter: drop-shadow(0 0 12px #d6b77b55) drop-shadow(0 6px 10px #00000066); }
+.tf-mark-fill { fill: url(#tf-mark-gold); fill-opacity: .12; }
+.tf-mark-outer { stroke: url(#tf-mark-gold); stroke-width: 1.4; stroke-linejoin: round; }
+.tf-mark-inner { stroke: url(#tf-mark-gold); stroke-width: .9; stroke-linejoin: round; opacity: .55; }
+.tf-mark-detail { stroke: #f7f1e4; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.tf-example-heading h3 { margin: 0; font: 500 20px/28px 'Plus Jakarta Sans', sans-serif; letter-spacing: -.02em; }
+.tf-example-kicker { margin: 4px 0 0; color: var(--tf-gold); font-size: 13px; line-height: 20px; letter-spacing: .01em; }
+.tf-example dl { margin: 26px 0 22px; }
+.tf-example dl > div { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 15px 0; border-bottom: 1px solid #ffffff12; }
+.tf-example dl > div:first-child { border-top: 1px solid #ffffff12; }
 .tf-example dt { font-size: 15px; line-height: 22px; }
-.tf-example dd { margin: 0; width: 88px; flex-shrink: 0; text-align: right; color: var(--tf-muted); font-size: 13px; line-height: 20px; }
+.tf-example dd { position: relative; margin: 0; flex-shrink: 0; text-align: right; color: var(--tf-muted); font-size: 13px; line-height: 20px; }
+.tf-example dd[data-mono] { color: var(--tf-gold); font: 400 13px/20px 'JetBrains Mono', monospace; letter-spacing: .08em; }
+/* Status values carry a small lit dot: the two things that are simply true. */
+.tf-example dd[data-status] { display: inline-flex; align-items: center; gap: 8px; color: var(--tf-text); }
+.tf-example dd[data-status]::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--tf-gold); box-shadow: 0 0 8px #d6b77b99; }
+/* Placeholder values: dotted underline in gold, no pill, so the card stays calm; the caption carries the TBC. */
+.tf-example dd[data-placeholder] { text-decoration: underline dotted #c9a56780; text-underline-offset: 4px; }
 .tf-example-card > p { margin: 0; color: var(--tf-muted); font-size: 14px; line-height: 22px; white-space: pre-line; }
 .tf-example figcaption { margin-top: 20px; color: #9a9690; font: 400 11px/20px 'JetBrains Mono', monospace; letter-spacing: .04em; text-transform: uppercase; }
 @media (max-width: 1100px) {

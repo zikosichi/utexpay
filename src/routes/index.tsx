@@ -2,6 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { AccountsHero } from '#/components/accountshero/AccountsHero'
 import { SOURCE, ILLUMINATED_SOURCE } from '#/components/accountshero/config'
 import { PersonalBankingSection } from '#/components/personalbanking/PersonalBankingSection'
+import { OneAccountSection } from '#/components/oneaccount/OneAccountSection'
 import { GlobeHorizonSection } from '#/components/globehorizon/GlobeHorizonSection'
 import { MoneyInsightSection } from '#/components/moneyinsight/MoneyInsightSection'
 import { TrustFaqSection } from '#/components/trustfaq/TrustFaqSection'
@@ -29,6 +30,7 @@ function HomePage() {
     <main className="utexpay-landing">
       <AccountsHero />
       <PersonalBankingSection />
+      <OneAccountSection />
       <GlobeHorizonSection />
       <MoneyInsightSection />
       <TrustFaqSection />

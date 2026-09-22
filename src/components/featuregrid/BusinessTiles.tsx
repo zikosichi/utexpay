@@ -2,8 +2,8 @@ import { useEffect, useId, useRef, useState } from 'react'
 
 /** Figma `BusinessTiles` 4855:22868 — two still tiles. The left one (`Article` 4855:22869,
     521.51 × 600.28) holds the Members card, cut off by the tile and faded at the bottom; the right
-    one (`Article` 4855:22955, 860.49 × 600.28) is the cards-on-a-notebook photo with copy over a
-    black gradient. Neither has a control in the design; the motion is ambient (see "Motion" in
+    one (`Article` 4855:22955, 860.49 × 600.28) offers alternate business artwork for review,
+    with the same live copy. The scene selection is mirrored in the URL. Motion is ambient (see "Motion" in
     the README): a new member arrives once the tile has entered, the emblem turns, and the feature
     rows take turns on the photo. The one pointer response is on those rows: hovering one makes it
     current and holds the turn, and the loop carries on from it once the pointer leaves. */
@@ -82,6 +82,15 @@ const FEATURES = [
 
 const TURN_MS = 4000
 
+export const BUSINESS_SCENES = [
+  { id: 'cards', label: 'Team cards', src: '/featuregrid/business-team-cards-1720.webp', small: '/featuregrid/business-team-cards-860.webp' },
+  { id: 'laptop', label: 'Workspace', src: '/featuregrid/business-laptop-1720.webp', small: '/featuregrid/business-laptop-860.webp' },
+  { id: 'human', label: 'Working moment', src: '/featuregrid/business-human-1720.webp', small: '/featuregrid/business-human-860.webp' },
+  { id: 'daylight', label: 'Daylight', src: '/featuregrid/business-daylight-1720.webp', small: '/featuregrid/business-daylight-860.webp' },
+  { id: 'graphic', label: 'Graphic', src: '/featuregrid/business-graphic-1720.webp', small: '/featuregrid/business-graphic-860.webp' },
+  { id: 'handover', label: 'Team handover', src: '/featuregrid/business-handover-1720.webp', small: '/featuregrid/business-handover-860.webp' },
+] as const
+
 /* Which row is current. A timer hands the turn to the next row every 4s while the list is on
    screen (so nothing ticks off-screen, like the chapter's `is-in`); the pointer over the list holds
    the timer and the hovered row takes the turn; on leave the timer restarts from that row, so the
@@ -120,7 +129,7 @@ function useFeatureTurns(count: number) {
   }
 }
 
-export function BusinessTiles() {
+export function BusinessTiles({ scene, sceneId }: { scene: string; sceneId: string }) {
   const maskId = `fg-track-${useId().replace(/\W/g, '')}` // a plain id, safe inside url(#…)
   const turns = useFeatureTurns(FEATURES.length)
   return <div className="fg-row fg-row--business">
@@ -136,10 +145,13 @@ export function BusinessTiles() {
       </div>
       <div className="fg-members-fade" aria-hidden="true" />
     </article>
-    <article className="fg-tile fg-workspace">
-      <img className="fg-workspace-scene" src="/featuregrid/business-cards-scene-926.webp"
-        srcSet="/featuregrid/business-cards-scene-926.webp 926w, /featuregrid/business-cards-scene-1536.webp 1536w"
-        sizes="926px" width="1536" height="1024" loading="lazy" decoding="async" draggable="false" alt="" aria-hidden="true" />
+    <article className="fg-tile fg-workspace" data-scene={scene}>
+      <div id={sceneId} className="fg-workspace-art" aria-hidden="true">
+        {BUSINESS_SCENES.map((item) => <img key={item.id}
+          className={`fg-workspace-scene fg-workspace-scene--${item.id}${scene === item.id ? ' is-selected' : ''}`} src={item.src}
+          srcSet={`${item.small} 860w, ${item.src} 1720w`} sizes="(max-width: 900px) 100vw, 860px"
+          width="1720" height="1200" loading="lazy" decoding="async" draggable="false" alt="" />)}
+      </div>
       <div className="fg-workspace-copy">
         <div>
           <h4>Keep your<br />business moving.</h4>
