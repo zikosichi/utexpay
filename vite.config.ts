@@ -27,7 +27,16 @@ export default defineConfig({
     // `build` script also runs `scripts/verify-static-build.mjs` to catch
     // those — otherwise a broken page silently ships as empty HTML.
     tanstackStart({
-      prerender: { enabled: true, crawlLinks: true, failOnError: true },
+      prerender: {
+        enabled: true,
+        crawlLinks: true,
+        failOnError: true,
+        // The crawler keys pages by their full href, so `/#banking`, `/#privacy` and the other
+        // in-page anchors each become a "page" that renders `/` again and rewrites the same
+        // `index.html` concurrently. Concurrent truncating writes raced on Vercel and shipped a
+        // 64 KB or 0-byte home page (Sep 22). Anchors are not pages: skip them.
+        filter: (page) => !page.path.includes('#'),
+      },
     }),
     viteReact(),
   ],

@@ -27,6 +27,18 @@ if (pages.length === 0) {
   process.exit(1)
 }
 
+// A page whose write was cut short (a concurrent-write race once shipped a 64 KB and a
+// 0-byte index.html) has no closing tag. Treat that as a failed build too.
+const truncated = pages.filter((abs) => !readFileSync(abs, 'utf8').trimEnd().endsWith('</html>'))
+if (truncated.length > 0) {
+  console.error(
+    '[verify-static-build] Truncated or empty HTML for:\n' +
+      truncated.map((abs) => `  - /${relative(outDir, abs)} (${readFileSync(abs).length} bytes)`).join('\n') +
+      '\nThe prerender wrote this file more than once or did not finish writing it.',
+  )
+  process.exit(1)
+}
+
 const broken = pages.filter((abs) =>
   readFileSync(abs, 'utf8').includes('<!--$!-->'),
 )
