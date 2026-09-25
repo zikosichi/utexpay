@@ -1,10 +1,13 @@
 .magnetic-closing {
+  --mc-fan-spread: calc(310 / 305.586 * 100%);
   --mc-container: min(1400px, calc(100vw - 96px));
   --mc-width: min(800px, 52vw);
   --mc-scene-height: calc(var(--mc-width) * 650 / 1635);
   --mc-tile-gap: calc(var(--mc-width) * .26);
   --mc-tile-height: calc(var(--mc-width) * 560 / 1635);
   --mc-tile-start: 40svh;
+  /* Where the sticky card rides (its center, from the viewport top). Mirrors useCardY in the TSX. */
+  --mc-card-y: 55svh;
   --mc-exit-clearance: min(29svh, 218px);
   --mc-tile-end: calc(var(--mc-tile-start) + 2 * var(--mc-tile-gap) + var(--mc-tile-height));
   position: relative;
@@ -18,18 +21,24 @@
 .mc-journey {
   position: relative;
   /* Release as the last tile clears the card; the closing copy follows without an empty hold. */
-  height: calc(var(--mc-tile-end) + 50svh + var(--mc-scene-height) / 2 - var(--mc-exit-clearance));
+  height: calc(var(--mc-tile-end) + var(--mc-card-y) + var(--mc-scene-height) / 2 - var(--mc-exit-clearance));
 }
 .mc-card-sticky {
   position: sticky;
-  top: calc(50svh - var(--mc-scene-height) / 2);
+  top: calc(var(--mc-card-y) - var(--mc-scene-height) / 2);
   z-index: 2;
   width: var(--mc-width);
   height: var(--mc-scene-height);
   margin-inline: auto;
   pointer-events: none;
 }
-.mc-card-scene { display: block; width: 100%; height: 100%; overflow: visible; }
+.mc-card-scene { position: relative; width: 100%; height: 100%; overflow: visible; }
+.mc-clip-defs { position: absolute; }
+/* Fixed geometry keeps the pivot steady while each bitmap moves on its own layer.
+   Lay out the largest pose around the original center (818.793, 325) so the GPU
+   never enlarges a low-resolution cached layer during the final spread. */
+.mc-card-pose { position: absolute; left: calc((818.793 - 152.793 * var(--mc-fan-scale)) / 1635 * 100%); top: calc((325 - 240 * var(--mc-fan-scale)) / 650 * 100%); width: calc(305.586 * var(--mc-fan-scale) / 1635 * 100%); height: calc(480 * var(--mc-fan-scale) / 650 * 100%); transform-origin: 50% 50%; will-change: transform; }
+.mc-card { position: absolute; inset: 0; transform-origin: 50% 50%; will-change: transform, opacity; }
 .mc-tile {
   position: absolute;
   left: 50%;
@@ -93,6 +102,7 @@
 .magnetic-closing .section-heading__eyebrow { margin-bottom: 16px; }
 .magnetic-closing .section-heading__description { margin-top: 16px; max-width: 640px; font-size: 16px; }
 .mc-actions { display: flex; justify-content: center; gap: 12px; margin-top: 28px; }
+.mc-actions .utex-button { --button-height: 56px; --button-padding: 28px; --button-font-size: 16.5px; }
 .mc-products { color: #88877e; font: 400 12px/1.5 'Onest', sans-serif; letter-spacing: .04em; margin: 20px 0 0; }
 .mc-products span { margin: 0 12px; color: #bc9c66; }
 .magnetic-closing + .site-footer { margin-top: 0; }
@@ -108,9 +118,13 @@
   .mc-chapter-line--right { right: calc((100% - var(--mc-width) * .96) / 2 - var(--mc-right-x)); }
   .mc-chapter-copy { padding-left: 12px; }
 }
-@media (max-width: 760px) {
-  .magnetic-closing { --mc-container: calc(100vw - 40px); --mc-width: min(580px, 94vw); --mc-tile-gap: calc(var(--mc-tile-height) + 140px); }
-  .mc-chapters-eyebrow { top: 56px; font-size: 9px; letter-spacing: .15em; }
+@media (max-width: 760px),
+       (min-width: 761px) and (max-width: 1100px) and (orientation: portrait) {
+  .magnetic-closing { --mc-card-y: 60svh; --mc-container: calc(100vw - 40px); --mc-width: min(580px, 94vw); --mc-tile-gap: calc(var(--mc-tile-height) + 40px); }
+  /* The card starts at the top of the journey, so in the compact layout the eyebrow gets its own band above it
+     instead of sitting where the card enters. */
+  .mc-chapters-eyebrow { top: 40px; font-size: 9px; letter-spacing: .15em; text-align: center; }
+  .magnetic-closing { padding-top: 104px; }
   /* Keep the copy below the artwork and a clear center lane for the traveling card. */
   .mc-chapter { top: calc(100% + 6px); transform: translateX(-50%); grid-template-columns: minmax(0, 1fr) calc(var(--mc-width) * .34) minmax(0, 1fr); }
   .mc-chapter-marker { align-items: flex-start; flex-direction: column; gap: 5px; }
@@ -121,18 +135,29 @@
   .mc-chapter-copy p { font-size: clamp(11px, 1.8vw, 12px); line-height: 1.45; }
   .mc-chapter-line--left { left: 56px; right: auto; top: 21px; width: 32px; }
   .mc-chapter-line--right { display: none; }
+  /* Compact layouts let the tiles and card carry the story without side annotations. */
+  .mc-chapter { display: none; }
 }
-@media (max-width: 600px) {
+@media (max-width: 600px),
+       (min-width: 621px) and (max-width: 1100px) and (orientation: portrait) {
+  .magnetic-closing { --mc-fan-spread: calc(245 / 305.586 * 100%); }
   .magnetic-closing { --mc-tile-start: 26svh; --mc-exit-clearance: min(26svh, 210px); }
   .mc-card-scene { transform: scale(1.25); transform-origin: center; }
-  .mc-card-sticky { overflow-x: clip; }
-  .mc-closing-copy { padding-inline: 20px; }
-  .magnetic-closing .section-heading__title { font-size: clamp(30px, 8.5vw, 42px); max-width: 360px; margin-inline: auto; }
-  .magnetic-closing .section-heading__description { max-width: 320px; font-size: 14px; }
   .mc-tile-name { font-size: 44px; }
   .mc-tile-value { font-size: 40px; dominant-baseline: central; }
   .mc-tile-detail { display: none; }
+}
+@media (min-width: 621px) and (max-width: 1100px) and (orientation: portrait) {
+  .magnetic-closing { --mc-container: calc(100vw - 56px); --mc-width: var(--mc-container); }
+  .magnetic-closing .section-heading__title { font-size: clamp(44px, 6vw, 64px); max-width: 800px; margin-inline: auto; }
+  .magnetic-closing .section-heading__description { font-size: 18px; }
+}
+@media (max-width: 600px) {
+  .mc-closing-copy { padding-inline: 20px; }
+  .magnetic-closing .section-heading__title { font-size: clamp(30px, 8.5vw, 42px); max-width: 360px; margin-inline: auto; }
+  .magnetic-closing .section-heading__description { max-width: 320px; font-size: 14px; }
   .mc-actions { gap: 8px; }
+  .mc-actions .utex-button { --button-height: 54px; --button-padding: 20px; --button-font-size: 15px; }
   .mc-products { margin-top: 16px; }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -146,7 +171,8 @@
   .mc-reduced-chapters h3 { font-size: 22px; margin: 14px 0 8px; }
   .mc-reduced-chapters p { color: #aaa69f; font-size: 14px; line-height: 1.5; margin: 0; }
 }
-@media (prefers-reduced-motion: reduce) and (max-width: 760px) {
+@media (prefers-reduced-motion: reduce) and (max-width: 760px),
+       (prefers-reduced-motion: reduce) and (min-width: 761px) and (max-width: 1100px) and (orientation: portrait) {
   .mc-reduced-chapters { grid-template-columns: 1fr; gap: 24px; }
 }
 
@@ -192,4 +218,4 @@
   background-size: 180px 180px;
   mix-blend-mode: normal;
 }
-.mc-card-art { filter: drop-shadow(0 10px 16px #0005); }
+.mc-card-art { position: absolute; left: 100%; top: 0; width: calc(480 / 305.586 * 100%); height: calc(305.586 / 480 * 100%); max-width: none; transform: rotate(90deg); transform-origin: 0 0; filter: drop-shadow(0 10px 16px #0005); user-select: none; }

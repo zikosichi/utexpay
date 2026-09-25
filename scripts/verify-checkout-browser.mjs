@@ -202,7 +202,17 @@ try {
     await screenshot(`northstar-interactive-${width}`)
   }
   await sleep(3400)
-  assert.equal((await state()).phase, 'success', 'success stays visible until Try again')
+  assert.equal((await state()).phase, 'success', 'success stays visible until replay')
+  assert.equal(await evaluate(`document.querySelector('.fg-checkout-replay').innerText`), 'Replay', 'phones offer automatic replay')
+  await evaluate(`document.querySelector('.fg-checkout-replay').click()`)
+  await sleep(80)
+  assert.equal(await evaluate(`document.querySelector('.fg-checkout').dataset.intro`), 'running', 'mobile replay restarts the demonstration')
+  assert.equal(await evaluate(`document.activeElement?.tagName === 'INPUT'`), false, 'mobile replay does not open an input keyboard')
+  // Replay pauses when the form is offscreen; bring it into view in the tall phone layout.
+  await evaluate(`document.querySelector('.fg-checkout-form').scrollIntoView({behavior:'instant',block:'center'})`)
+  await waitForPhase('success')
+  await send('Emulation.setDeviceMetricsOverride', { width: W, height: H, deviceScaleFactor: 1, mobile: false })
+  assert.equal(await evaluate(`document.querySelector('.fg-checkout-replay').innerText`), 'Try it yourself', 'desktop retains manual entry')
   await evaluate(`document.querySelector('.fg-checkout-confirmed-store button').click()`)
   await sleep(80)
   assert.deepEqual((await state()).values, ['', '', ''], 'Try again clears the form for manual use')
@@ -302,6 +312,7 @@ try {
   await send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27 })
   assert.equal(await evaluate(`!!document.querySelector('.checkout-controls-panel')`), false)
   // A fresh visit runs the complete typed demonstration exactly once.
+  await evaluate(`history.scrollRestoration = 'manual'; window.scrollTo({top:0,behavior:'instant'})`)
   await send('Emulation.setDeviceMetricsOverride', { width: W, height: H, deviceScaleFactor: 1, mobile: false })
   await send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'no-preference' }] })
   await send('Page.navigate', { url: url.split('#')[0] })

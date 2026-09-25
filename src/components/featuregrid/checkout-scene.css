@@ -71,39 +71,56 @@
 .fg-checkout-notification { display: flex; align-items: center; gap: inherit; width: 100%; min-width: 0; }
 .fg-checkout-notification--received .fg-checkout-product-price { color: #b5dca0; }
 
-/* Tablets retain the still life and use larger cards across the foreground. */
-@media (min-width: 621px) and (max-width: 900px) {
-  .fg-tile.fg-checkout { aspect-ratio: 1.65; }
-  .fg-checkout-scene { object-position: 43% center; }
-  .fg-checkout-copy h4 { font-size: 4cqw; }
-  .fg-checkout-copy p { font-size: 1.8cqw; max-width: 70%; }
-  .fg-checkout-form { left: 39%; top: 32%; width: 36%; font-size: 1.6cqw; }
-  .fg-checkout-merchant strong { font-size: 1.7cqw; }
-  .fg-checkout-demo { font-size: 1.15cqw; }
-  .fg-checkout-brand-word { font-size: 1.5cqw; }
-  .fg-checkout-field-check { width: 1.5cqw; height: 1.5cqw; }
-  .fg-checkout-field-label { font-size: 1.5cqw; }
-  .fg-checkout-card-number, .fg-checkout-field-row > .fg-checkout-input-wrap { height: 4cqw; }
-  .fg-checkout-product { left: 4%; bottom: 22%; width: 32%; }
-  .fg-checkout-product-name strong { font-size: 1.4cqw; }
-  .fg-checkout-product-name > span { font-size: 1.2cqw; }
-  .fg-checkout-product-price { font-size: 1.8cqw; }
-  .fg-checkout-confirmation { left: 75%; top: 58%; width: 22%; min-height: 0; font-size: 1.6cqw; }
-  .fg-checkout-confirmation > strong { font-size: 1.5cqw; }
-  .fg-checkout-confirmed-store { font-size: 1.4cqw; }
-  .fg-checkout-confirmed-amount { font-size: 2.5cqw; }
+/* Tablet portrait uses the phone's form/result stack beside the bottle. Both states share
+   one right-hand grid cell, keeping the photograph short and the tabletop composition intact. */
+@media (min-width: 621px) and (max-width: 900px),
+       (min-width: 901px) and (max-width: 1100px) and (orientation: portrait) {
+  .fg-tile.fg-checkout { aspect-ratio: auto; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.12fr); grid-template-areas: '. copy' 'receipt form'; gap: 20px 24px; padding: 24px; }
+  .fg-checkout-scene { object-position: 32% center; }
+  .fg-checkout-copy { position: relative; inset: auto; grid-area: copy; gap: 8px; padding: 0; }
+  .fg-checkout-copy h4 { font-size: clamp(28px, 4cqw, 36px); }
+  .fg-checkout-copy p { font-size: 14px; }
+  .fg-checkout-product, .fg-checkout-form, .fg-checkout-confirmation { position: relative; inset: auto; width: 100%; min-width: 0; font-size: 14px; border-radius: 10px; }
+  .fg-checkout-form { grid-area: form; padding: 16px; }
+  .fg-checkout-merchant { gap: 10px; margin-bottom: 12px; }
+  .fg-checkout-merchant strong { font-size: 16px; }
+  .fg-checkout-lock { width: 32px; height: 32px; }
+  .fg-checkout-lock svg { width: 22px; height: 22px; }
+  .fg-checkout-total { padding-bottom: 10px; margin-bottom: 10px; }
+  .fg-checkout-total strong { font-size: 22px; }
+  .fg-checkout-field-label { font-size: 13px; margin-bottom: 8px; }
+  .fg-checkout-card-number, .fg-checkout-field-row > .fg-checkout-input-wrap { height: 38px; padding-inline: 10px; }
+  .fg-checkout-field-row { gap: 10px; margin-top: 10px; }
+  .fg-checkout-input-wrap input { font-size: 16px; }
+  .fg-checkout-brand-word { font-size: 12px; }
+  .fg-checkout-field-check { width: 13px; height: 13px; }
+  .fg-checkout-demo { font-size: 10px; margin-top: 10px; }
+  .fg-checkout .fg-checkout-pay.utex-button { margin-top: 12px; --button-height: 42px; --button-font-size: 15px; }
+  .fg-checkout-product { grid-area: receipt; align-self: end; justify-self: center; max-width: 320px; margin-bottom: 32px; gap: 12px; padding: 14px; }
+  .fg-checkout-product-photo { width: 32px; height: 40px; }
+  .fg-checkout-product-name strong { font-size: 13px; }
+  .fg-checkout-product-name > span { font-size: 11px; }
+  .fg-checkout-product-price { font-size: 18px; }
+  .fg-checkout-confirmation { grid-area: form; align-self: stretch; justify-content: center; min-height: 0; margin-top: 16px; padding: 24px 20px; }
+  .fg-checkout-check { width: 36px; height: 36px; margin-bottom: 10px; }
+  .fg-checkout-confirmation > strong { font-size: 14px; }
+  .fg-checkout-confirmed-amount { font-size: 26px; }
+  .fg-checkout .fg-checkout-confirmed-store { font-size: 12px; margin-top: 14px; padding-top: 12px; min-height: calc(32px + 12px + 1px); }
 }
 
-/* On phones the photo has its own band; cards become a readable vertical sequence. */
+/* On phones the photo has its own band and the form sits under it. The receipt and the
+   confirmation only exist after a payment, so they share cells instead of holding empty slots:
+   the receipt lands on the photo's lower edge, the confirmation sits in front of the form. */
 @media (max-width: 620px) {
-  .fg-tile.fg-checkout { aspect-ratio: auto; display: flex; flex-direction: column; align-items: stretch; padding: 0 20px 24px; }
-  .fg-checkout-copy { position: relative; inset: auto; order: -2; padding: 28px 0 0; gap: 10px; }
+  .fg-tile.fg-checkout { aspect-ratio: auto; display: grid; grid-template-columns: minmax(0, 1fr); grid-template-areas: 'copy' 'scene' 'form'; padding: 0 20px 20px; }
+  .fg-checkout-copy { position: relative; inset: auto; grid-area: copy; padding: 28px 0 0; gap: 10px; }
   .fg-checkout-copy h4 { font-size: 27px; line-height: 34px; letter-spacing: -.8px; }
   .fg-checkout-copy p { font-size: 14px; line-height: 21px; }
-  .fg-checkout-scene { position: relative; inset: auto; order: -1; width: calc(100% + 40px); max-width: none; height: 255px; margin: 12px -20px 0; object-fit: cover; object-position: 28% center; mask-image: linear-gradient(transparent, #000 30px, #000 82%, transparent); }
+  .fg-checkout-scene { position: relative; inset: auto; grid-area: scene; width: calc(100% + 40px); max-width: none; height: 255px; margin: 12px -20px 0; object-fit: cover; object-position: 28% center; mask-image: linear-gradient(transparent, #000 30px, #000 82%, transparent); }
   .fg-checkout-shade { display: none; }
   .fg-checkout-product, .fg-checkout-form, .fg-checkout-confirmation { position: relative; inset: auto; width: 100%; transform: none; font-size: 14px; border-radius: 10px; }
-  .fg-checkout-product { gap: 12px; padding: 14px; margin: -40px 0 20px; }
+  .fg-checkout-product { grid-area: scene; align-self: end; z-index: 3; gap: 12px; padding: 14px; margin: 0 0 44px; }
+  .fg-checkout-form { grid-area: form; margin-top: -28px; }
   .fg-checkout-product-photo { width: 36px; height: 46px; border-radius: 5px; }
   .fg-checkout-product-name { gap: 4px; }
   .fg-checkout-product-name strong { font-size: 13px; }
@@ -130,7 +147,7 @@
   .fg-checkout-card-brand::before, .fg-checkout-card-brand::after { width: 19px; height: 19px; }
   .fg-checkout-field-row { gap: 10px; margin-top: 10px; }
   .fg-checkout .fg-checkout-pay.utex-button { margin-top: 14px; --button-height: 44px; --button-font-size: 15px; }
-  .fg-checkout-confirmation { margin-top: 20px; padding: 24px 20px 18px; min-height: 0; }
+  .fg-checkout-confirmation { grid-area: form; align-self: stretch; justify-content: center; margin-top: -28px; padding: 24px 20px 18px; min-height: 0; background: linear-gradient(135deg, #373027f0, #141310f7 80%); }
   .fg-checkout-check { width: 44px; height: 44px; margin-bottom: 12px; }
   .fg-checkout-confirmation > strong { font-size: 16px; }
   .fg-checkout-confirmed-amount { font-size: 28px; margin-top: 6px; }
@@ -160,7 +177,7 @@
 .fg-checkout [data-tuning="true"]::after { content: ''; position: absolute; z-index: 5; left: var(--tune-origin-x); top: var(--tune-origin-y); width: 8px; height: 8px; border: 2px solid #ffe2a1; border-radius: 50%; background: #634a24; box-shadow: 0 0 0 3px #15120b88; transform: translate(-50%, -50%); pointer-events: none; }
 /* Keep the approved phone stack centered; further tuning remains relative to these defaults. */
 @media (max-width: 620px) {
-  .fg-checkout-product, .fg-checkout-form, .fg-checkout-confirmation { --tune-render-x: var(--tune-mobile-x); --tune-render-y: var(--tune-mobile-y); --tune-render-ry: var(--tune-mobile-ry); }
+  .fg-checkout-product, .fg-checkout-form, .fg-checkout-confirmation { --tune-render-x: var(--tune-offset-x); --tune-render-y: var(--tune-offset-y); --tune-render-ry: var(--tune-offset-ry); }
 }
 
 /* Reflect the live surfaces themselves so typing, perspective and anchor changes stay in sync.
@@ -176,6 +193,14 @@
   .fg-checkout-form, .fg-checkout-confirmation { --checkout-card-scale: .92; }
   .fg-checkout-product { --checkout-card-scale: .85; border-radius: 2cqw; }
 }
+/* Portrait's grid owns placement. Only additional review adjustments carry across; applying
+   the approved desktop offsets a second time would push the receipt outside the tile. */
+@media (min-width: 621px) and (max-width: 900px),
+       (min-width: 901px) and (max-width: 1100px) and (orientation: portrait) {
+  .fg-checkout-product, .fg-checkout-form, .fg-checkout-confirmation { --checkout-card-scale: 1; --tune-render-x: var(--tune-offset-x); --tune-render-y: var(--tune-offset-y); --tune-render-ry: var(--tune-offset-ry); }
+  .fg-checkout-form, .fg-checkout-confirmation { --tune-base-y: 0deg; --tune-base-z: 0deg; -webkit-box-reflect: initial; }
+}
+
 .fg-checkout-product { corner-shape: squircle; }
 .fg-checkout-product-photo { corner-shape: squircle; }
 @media (max-width: 620px) {
@@ -289,4 +314,57 @@
 }
 .fg-checkout-replay:active { background: #ead8b72e; }
 @media (max-width: 620px) { .fg-checkout-confirmed-store, .fg-checkout-replay { min-height: 40px; } }
+/* "Try it yourself" — Sandro read the tile as a still after the self-playing payment (Sep 22), so
+   the way in keeps asking: a gold light runs round the pill's rim and a soft halo breathes under it,
+   on a loop, until the visitor takes a turn. Reduced motion keeps the gold rim, still. */
+@property --replay-angle { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+.fg-checkout-replay[data-invite] { position: relative; isolation: isolate; border-color: #d6b77b8c; background: #d6b77b1f; color: #fff3d8; }
+.fg-checkout-replay[data-invite]::before { content: ''; position: absolute; inset: -1px; z-index: -1; padding: 1px; border-radius: inherit; pointer-events: none;
+  background: conic-gradient(from var(--replay-angle), transparent 0 58%, #f4dca5 72%, #fff6df 78%, #f4dca5 84%, transparent 96%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; opacity: 0; }
+@media (prefers-reduced-motion: no-preference) {
+  .fg-checkout-replay[data-invite] { animation: checkout-invite-breathe 2.4s ease-in-out .9s infinite; }
+  .fg-checkout-replay[data-invite]::before { animation: checkout-invite-run 2.4s linear .9s infinite, checkout-invite-in .5s ease .9s forwards; }
+}
+@keyframes checkout-invite-run { to { --replay-angle: 360deg; } }
+@keyframes checkout-invite-in { to { opacity: 1; } }
+@keyframes checkout-invite-breathe {
+  0%, 100% { box-shadow: 0 0 0 0 #d6b77b00, 0 0 .9em -.2em #d6b77b33; }
+  50% { box-shadow: 0 0 0 .22em #d6b77b1f, 0 0 1.6em -.1em #d6b77b66; }
+}
 @media (prefers-reduced-motion: reduce) { .fg-checkout-replay { transition: none; } }
+.fg-checkout-replay-mobile { display: none; }
+@media (max-width: 620px) {
+  .fg-checkout-replay-desktop { display: none; }
+  .fg-checkout-replay-mobile { display: inline; }
+  .fg-checkout-confirmation { margin-top: -4px; }
+}
+/* Phone and tablet results share the form's cell, depth treatment and transition. */
+@media (max-width: 900px),
+       (min-width: 901px) and (max-width: 1100px) and (orientation: portrait) {
+  /* Override the inline desktop pivot so the notification grows from bottom center. */
+  .fg-checkout-product { transform-origin: center bottom !important; }
+  .fg-checkout-form {
+    /* The shared grid uses a centered pivot instead of the inline desktop tuning origin. */
+    transform-origin: center top !important;
+    border-color: #e7e0d5;
+    box-shadow: inset 0 1px 0 #fffc, 1px 1px 0 #a69e90, 0 12px 28px -16px #0009;
+  }
+  /* The form stays flat, with a small lift and scale leaving a narrow strip above the result.
+     Both cards retain their grid cell, so success and replay do not move the page. */
+  .fg-checkout:has(> .fg-checkout-confirmation[data-visible="true"]) .fg-checkout-form {
+    transform: translate3d(var(--tune-render-x, 0px), calc(var(--tune-render-y, 0px) - 6px), 0) scale(.88);
+    filter: brightness(.65) saturate(.8);
+  }
+  .fg-checkout-confirmation {
+    border-color: #d8cfc038;
+    background: linear-gradient(135deg, #373027f2, #141310f8 80%);
+    box-shadow: inset 0 1px 0 #ffffff12, 0 18px 36px -16px #000b;
+  }
+}
+@media (max-width: 900px) and (prefers-reduced-motion: no-preference),
+       (min-width: 901px) and (max-width: 1100px) and (orientation: portrait) and (prefers-reduced-motion: no-preference) {
+  .fg-checkout-form { transition: transform .65s cubic-bezier(.22,.68,.25,1), filter .65s ease; }
+  .fg-checkout-confirmation { transition: opacity .5s ease, translate .65s cubic-bezier(.22,.68,.25,1), visibility .5s; }
+  .fg-checkout-confirmation[data-visible="false"] { translate: 0 10px; }
+}

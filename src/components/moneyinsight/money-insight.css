@@ -241,7 +241,7 @@
 .mi-track-desc { margin: 4px 0 0; font-size: 14px; line-height: 1.6; color: var(--mi-muted); }
 /* Mark hover: each mark replays its own little motion when its row is hovered or focused. */
 .mi-mark .mi-draw { stroke-dasharray: 1; stroke-dashoffset: 0; }
-.mi-mark .mi-pin, .mi-mark .mi-rank, .mi-mark .mi-card, .mi-mark .mi-chip, .mi-mark .mi-col, .mi-mark .mi-roof, .mi-mark .mi-coin, .mi-mark .mi-flow, .mi-mark .mi-arrow { transform-box: fill-box; }
+.mi-mark .mi-pin, .mi-mark .mi-rank, .mi-mark .mi-card, .mi-mark .mi-chip, .mi-mark .mi-col, .mi-mark .mi-roof, .mi-mark .mi-row, .mi-mark .mi-land, .mi-mark .mi-flow, .mi-mark .mi-arrow { transform-box: fill-box; }
 .mi-mark .mi-pin { transform-origin: center; }
 .mi-mark .mi-col { transform-origin: center bottom; }
 .mi-mark .mi-roof { transform-origin: center bottom; }
@@ -250,7 +250,8 @@
 .mi-mark .mi-card--c:not(.mi-chip) { filter: drop-shadow(0 1.5px 2.5px #00000099) drop-shadow(0 0 1px #0000004d); }
 .mi-mark .mi-card--l { transform: translateX(-9px) rotate(-16deg); }
 .mi-mark .mi-card--r { transform: translateX(9px) rotate(16deg); }
-.mi-mark .mi-rank { transform-origin: left center; }
+.mi-mark .mi-rank, .mi-mark .mi-row { transform-origin: left center; }
+.mi-mark .mi-land { transform-origin: center; }
 .mi-mark .mi-flow--up { transform-origin: center bottom; }
 .mi-mark .mi-flow--down { transform-origin: center top; }
 @media (prefers-reduced-motion: no-preference) {
@@ -265,9 +266,11 @@
   .mi-track-list li:is(.is-playing, :focus-visible) .mi-col:nth-of-type(4) { animation-delay: .14s; }
   .mi-track-list li:is(.is-playing, :focus-visible) .mi-col:nth-of-type(5) { animation-delay: .21s; }
   .mi-track-list li:is(.is-playing, :focus-visible) .mi-roof { animation: mi-roof .55s cubic-bezier(.2, .7, .2, 1) .3s both; }
-  .mi-track-list li:is(.is-playing, :focus-visible) .mi-coin { animation: mi-coin-drop .5s cubic-bezier(.2, .8, .3, 1.2) .5s both; }
-  .mi-track-list li:is(.is-playing, :focus-visible) .mi-coin:nth-of-type(2) { animation-delay: .62s; }
-  .mi-track-list li:is(.is-playing, :focus-visible) .mi-coin:nth-of-type(3) { animation-delay: .74s; }
+  .mi-track-list li:is(.is-playing, :focus-visible) .mi-row { animation: mi-grow-x .45s cubic-bezier(.2, .7, .2, 1) both; }
+  .mi-track-list li:is(.is-playing, :focus-visible) .mi-row:nth-child(2) { animation-delay: .08s; }
+  .mi-track-list li:is(.is-playing, :focus-visible) .mi-row:nth-child(3) { animation-delay: .16s; }
+  .mi-track-list li:is(.is-playing, :focus-visible) .mi-land { animation: mi-pop .6s ease-out .6s both; }
+  .mi-track-list li:is(.is-playing, :focus-visible) .mi-land--first { animation-delay: 0s; }
   .mi-track-list li:is(.is-playing, :focus-visible) .mi-arrow--in { animation: mi-nudge-up .6s ease-out both; }
   .mi-track-list li:is(.is-playing, :focus-visible) .mi-arrow--out { animation: mi-nudge-down .6s ease-out .2s both; }
   .mi-track-list li:is(.is-playing, :focus-visible) .mi-rank { animation: mi-grow-x .7s cubic-bezier(.2, .7, .2, 1) both; }
@@ -289,7 +292,6 @@
 @keyframes mi-fan-r { 0% { transform: translateX(0) rotate(0); } 100% { transform: translateX(9px) rotate(16deg); } }
 @keyframes mi-fan-c { 0% { transform: none; } 45% { transform: translateY(-2.5px); } 100% { transform: none; } }
 @keyframes mi-roof { 0% { transform: translateY(-5px); opacity: 0; } 100% { transform: none; opacity: 1; } }
-@keyframes mi-coin-drop { 0% { transform: translateY(-14px); opacity: 0; } 100% { transform: none; opacity: 1; } }
 @keyframes mi-nudge-up { 0% { transform: translateY(3px); opacity: .2; } 100% { transform: none; opacity: 1; } }
 @keyframes mi-nudge-down { 0% { transform: translateY(-3px); opacity: .2; } 100% { transform: none; opacity: 1; } }
 @keyframes mi-grow-y { from { transform: scaleY(0); } to { transform: scaleY(1); } }
@@ -332,20 +334,22 @@
 }
 @media (max-width: 620px) {
   .money-insight { --mi-gutter: 20px; }
-  .mi-chart { --mi-k-scale: .56; --mi-bar-w: 14px; --mi-gap: 3px; margin-top: 48px; }
-  .mi-chart-head { padding-left: 36px; gap: 12px; }
+  .mi-chart { --mi-k-scale: .56; --mi-bar-w: 14px; --mi-gap: 3px; display: grid; grid-template-columns: minmax(0, 1fr); margin-top: 48px; }
+  .mi-chart-head { display: contents; }
+  .mi-toggle { grid-row: 1; justify-self: center; margin-bottom: 28px; }
   .mi-toggle button { padding: 7px 10px; font-size: 12px; }
-  .mi-legend { gap: 12px; }
+  .mi-legend { grid-row: 4; justify-content: center; flex-wrap: wrap; gap: 8px 12px; margin-top: 8px; line-height: 20px; }
   .mi-ylabels { width: 26px; }
-  .mi-grid-area { gap: 10px; }
+  .mi-grid-area { grid-row: 2; gap: 10px; }
+  .mi-axis { grid-row: 3; }
   .mi-axis > span:not(.mi-pill) { left: calc(36px + (100% - 36px) * (var(--col) + .5) / var(--mi-cols)); }
   .mi-axis > span:not(.mi-pill):nth-child(even) { display: none; }
   .mi-pill { left: calc(36px + (100% - 36px) * (var(--mi-index) + .5) / var(--mi-cols)); }
-  /* On a phone the ledger would cover the bars, so it sits under the axis instead and the figure
+  /* On a phone the ledger would cover the bars, so it sits under the legend instead and the figure
      reserves the room. Both flip states collapse to the same full-width block. */
   .mi-chart { transition: padding-bottom .3s ease; }
   .mi-chart[data-pointing] { padding-bottom: 236px; }
-  .mi-tooltip { top: calc(100% + 56px); left: 0 !important; right: 0; width: auto; padding: 12px 14px; }
+  .mi-tooltip { top: calc(100% + 92px); left: 0 !important; right: 0; width: auto; padding: 12px 14px; }
   .mi-tooltip-rows { gap: 8px; }
   .mi-tooltip-rows dt, .mi-tooltip-rows dd { font-size: 13px; }
   .mi-track { padding: 36px 4px 0; }

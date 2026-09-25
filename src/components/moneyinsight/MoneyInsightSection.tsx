@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useId, useRef, useState } from 'react'
 import { SectionHeading } from '#/components/SectionHeading'
+import { isStudio, useStudio } from '#/components/studio'
 import './money-insight.css'
 import { BentoTrack, type LedgerItem } from './MoneyInsightBento'
 import { GridTrack } from './MoneyInsightGrid'
@@ -117,7 +118,8 @@ const VIEWS: Record<Mode, View> = {
    explanation the block version shows. Marks are tiny animated charts, not icon-set glyphs: each
    one replays its own motion on hover. The four Sandro could not read on Sep 18 (countries,
    issuing banks, settlements, cash flow) were redrawn as a pinned globe, a bank facade, coins
-   settling and wider in/out bars. */
+   settling and wider in/out bars. Sep 25: the coin stacks read as neither coins nor money, so
+   settlements and payouts now share a euro tile — payments join into it, a payout carries it to a bank. */
 const TRACK: (LedgerItem & { value: string })[] = [
   {
     name: 'Acceptance rate', value: '87.6%, up 1.2 pts on yesterday', kind: 'spark',
@@ -156,10 +158,10 @@ const TRACK: (LedgerItem & { value: string })[] = [
     mark: <svg viewBox="0 0 48 28" fill="none" aria-hidden="true"><path className="mi-draw" pathLength="1" d="M1 18l7 2 7-3 7 4 7-5 7 3 7-4 4 3" stroke="var(--mi-red)" strokeWidth="1.6" strokeLinejoin="round" /><path className="mi-draw mi-draw--late" pathLength="1" d="M1 10l7-1 7 2 7-3 7 2 7-3 7 2 4-1" stroke="var(--mi-grey)" strokeWidth="1.6" strokeLinejoin="round" /></svg>,
   },
   {
-    name: 'Settlements', value: 'Tomorrow, into your balance', kind: 'coins', piece: 'settle',
+    name: 'Settlements', value: 'Tomorrow, into your balance', kind: 'settle', piece: 'settle',
     desc: 'When today’s card payments land in your balance, and which payments make up the amount. Every settlement reconciles back to its transactions.',
-    /* Money arriving: an arrow draws in from the left and three coins drop onto the stack. */
-    mark: <svg viewBox="0 0 48 28" fill="none" aria-hidden="true"><path className="mi-draw" pathLength="1" d="M2 5h12c4.4 0 8 3.6 8 8v7" stroke="var(--mi-gold)" strokeWidth="1.6" strokeLinecap="round" /><path className="mi-draw mi-draw--late" pathLength="1" d="m17.5 16 4.5 4.5 4.5-4.5" stroke="var(--mi-gold)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /><rect className="mi-coin" x="31" y="20" width="15" height="4.5" rx="2.25" fill="var(--mi-gold-3)" /><rect className="mi-coin" x="31" y="14.5" width="15" height="4.5" rx="2.25" fill="var(--mi-gold-2)" /><rect className="mi-coin" x="31" y="9" width="15" height="4.5" rx="2.25" fill="var(--mi-gold)" /></svg>,
+    /* Many payments become one amount in your balance: three payment lines join into the euro tile. */
+    mark: <svg viewBox="0 0 48 28" fill="none" aria-hidden="true"><path className="mi-row" d="M2 6.5h7" stroke="var(--mi-gold-3)" strokeWidth="2.4" strokeLinecap="round" /><path className="mi-row" d="M2 14h5" stroke="var(--mi-gold-2)" strokeWidth="2.4" strokeLinecap="round" /><path className="mi-row" d="M2 21.5h8" stroke="var(--mi-gold)" strokeWidth="2.4" strokeLinecap="round" /><path className="mi-draw mi-draw--late" pathLength="1" d="M12.5 6.5c7 0 7 7.5 13 7.5M12.5 21.5c7 0 7-7.5 13-7.5M10 14h15.5" stroke="var(--mi-rule-strong)" strokeWidth="1.5" strokeLinecap="round" /><g className="mi-land"><rect x="28" y="5" width="18" height="18" rx="4.5" fill="var(--mi-gold)" /><path d="M40.6 10a5.4 5.4 0 1 0 0 8M30.8 12.6h6.6M30.8 15.4h6.6" stroke="#1c170d" strokeWidth="1.7" strokeLinecap="round" /></g></svg>,
   },
   {
     name: 'Banking cash flow', value: 'Income against spending', kind: 'flow',
@@ -172,9 +174,9 @@ const TRACK: (LedgerItem & { value: string })[] = [
 /* Two directions for the inventory, switchable from the bar on the right like the other sections:
    01 the original two-row list, 02 a 4×2 grid of bordered blocks with a paragraph each (Sep 18
    review: the page needs more text; Arseny asked for the captions to become small paragraphs). */
-type Version = 'inventory' | 'blocks' | 'bento' | 'grid' | 'grouped' | 'rows'
-const VERSIONS: { value: Version; label: string }[] = [{ value: 'inventory', label: 'Inventory' }, { value: 'blocks', label: 'Blocks' }, { value: 'bento', label: 'Bento' }, { value: 'grid', label: 'Hairline grid' }, { value: 'grouped', label: 'Grouped, no grid' }, { value: 'rows', label: 'Rows' }]
-const DEFAULT_VERSION: Version = 'rows'
+type Version = 'inventory' | 'blocks' | 'bento' | 'grid' | 'grouped' | 'rows' | 'list'
+const VERSIONS: { value: Version; label: string }[] = [{ value: 'inventory', label: 'Inventory' }, { value: 'blocks', label: 'Blocks' }, { value: 'bento', label: 'Bento' }, { value: 'grid', label: 'Hairline grid' }, { value: 'grouped', label: 'Grouped, no grid' }, { value: 'rows', label: 'Rows' }, { value: 'list', label: 'List' }]
+const DEFAULT_VERSION: Version = 'list'
 
 /* Motion is opt-in from the client, the same contract the feature grid uses: `data-motion` enables
    the hidden pre-entry state, `has-entered` plays the entrance once (bars grow, then the inventory
@@ -265,11 +267,13 @@ export function MoneyInsightSection() {
   const plot = useRef<HTMLDivElement>(null)
   const chart = useRef<HTMLElement>(null)
   const [mode, setMode] = useState<Mode>('processing')
+  const studio = useStudio()
   const [version, setVersion] = useState<Version>(DEFAULT_VERSION)
   const [switching, setSwitching] = useState(false)
   useEffect(() => {
+    if (!isStudio()) return
     const requested = new URLSearchParams(window.location.search).get('insights')
-    if (requested === 'inventory' || requested === 'blocks' || requested === 'bento' || requested === 'grid' || requested === 'grouped' || requested === 'rows') setVersion(requested)
+    if (requested === 'inventory' || requested === 'blocks' || requested === 'bento' || requested === 'grid' || requested === 'grouped' || requested === 'rows' || requested === 'list') setVersion(requested)
   }, [])
   const changeVersion = useCallback((next: Version) => {
     setVersion(next)
@@ -301,14 +305,14 @@ export function MoneyInsightSection() {
 
   const blocks = version === 'blocks'
   return <section ref={section} id="insights" className="money-insight" data-version={version} aria-labelledby={`${id}-title`}>
-    <div className="mi-version-bar">
+    {studio && <div className="mi-version-bar">
       <div className="mi-versions" role="group" aria-label="Inventory visual direction">
         {VERSIONS.map(({ value, label }, i) => <button type="button" key={value} aria-label={`${label} — Version ${i + 1}`}
           aria-pressed={version === value} aria-controls={`${id}-track`} onClick={() => changeVersion(value)}>
           <span aria-hidden="true">0{i + 1}</span><span className="mi-version-name" aria-hidden="true">{label}</span>
         </button>)}
       </div>
-    </div>
+    </div>}
     <div className="mi-inner">
       <SectionHeading className="mi-heading" id={`${id}-title`} eyebrow="Understand your money" description="Card volume hour by hour. Income against spending day by day. Both in the same dashboard, both readable in ten seconds.">
         See where your money goes.<br />At a glance.
@@ -356,7 +360,7 @@ export function MoneyInsightSection() {
         </div>
       </figure>
 
-      {version === 'bento' ? <BentoTrack items={TRACK} id={`${id}-track`} /> : version === 'grid' ? <GridTrack items={TRACK} id={`${id}-track`} /> : version === 'grouped' ? <GridTrack items={TRACK} id={`${id}-track`} mode="plain" /> : version === 'rows' ? <GridTrack items={TRACK} id={`${id}-track`} mode="rows" /> : <div className={`mi-track${blocks ? ' mi-track--blocks' : ''}`} id={`${id}-track`}>
+      {version === 'bento' ? <BentoTrack items={TRACK} id={`${id}-track`} /> : version === 'grid' ? <GridTrack items={TRACK} id={`${id}-track`} /> : version === 'grouped' ? <GridTrack items={TRACK} id={`${id}-track`} mode="plain" /> : version === 'rows' ? <GridTrack items={TRACK} id={`${id}-track`} mode="rows" /> : version === 'list' ? <GridTrack items={TRACK} id={`${id}-track`} mode="list" /> : <div className={`mi-track${blocks ? ' mi-track--blocks' : ''}`} id={`${id}-track`}>
         {blocks ? <div className="mi-track-head mi-track-head--blocks">
           <p className="mi-track-eyebrow">Also on your dashboard</p>
           <h3 className="mi-track-title">Eight more things it can tell you.</h3>

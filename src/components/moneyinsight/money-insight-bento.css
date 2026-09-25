@@ -104,9 +104,11 @@
   .mib-ledger li:is(.is-playing, :focus-visible) .mi-card--l { animation: mi-fan-l .8s cubic-bezier(.34, 1.45, .64, 1) both; }
   .mib-ledger li:is(.is-playing, :focus-visible) .mi-card--r { animation: mi-fan-r .8s cubic-bezier(.34, 1.45, .64, 1) .06s both; }
   .mib-ledger li:is(.is-playing, :focus-visible) .mi-card--c { animation: mi-fan-c .8s cubic-bezier(.34, 1.45, .64, 1) both; }
-  .mib-ledger li:is(.is-playing, :focus-visible) .mi-coin { animation: mi-coin-drop .5s cubic-bezier(.2, .8, .3, 1.2) .5s both; }
-  .mib-ledger li:is(.is-playing, :focus-visible) .mi-coin:nth-of-type(2) { animation-delay: .62s; }
-  .mib-ledger li:is(.is-playing, :focus-visible) .mi-coin:nth-of-type(3) { animation-delay: .74s; }
+  .mib-ledger li:is(.is-playing, :focus-visible) .mi-row { animation: mi-grow-x .45s cubic-bezier(.2, .7, .2, 1) both; }
+  .mib-ledger li:is(.is-playing, :focus-visible) .mi-row:nth-child(2) { animation-delay: .08s; }
+  .mib-ledger li:is(.is-playing, :focus-visible) .mi-row:nth-child(3) { animation-delay: .16s; }
+  .mib-ledger li:is(.is-playing, :focus-visible) .mi-land { animation: mi-pop .6s ease-out .6s both; }
+  .mib-ledger li:is(.is-playing, :focus-visible) .mi-land--first { animation-delay: 0s; }
   .mib-ledger li:is(.is-playing, :focus-visible) .mi-flow { animation: mi-grow-y .6s cubic-bezier(.2, .7, .2, 1) both; }
   .mib-ledger li:is(.is-playing, :focus-visible) .mi-flow:nth-child(3), .mib-ledger li:is(.is-playing, :focus-visible) .mi-flow:nth-child(4) { animation-delay: .07s; }
   .mib-ledger li:is(.is-playing, :focus-visible) .mi-flow:nth-child(5), .mib-ledger li:is(.is-playing, :focus-visible) .mi-flow:nth-child(6) { animation-delay: .14s; }

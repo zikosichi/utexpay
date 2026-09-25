@@ -220,13 +220,16 @@ export function CheckoutScene() {
   }
 
   function reset() {
+    const replay = window.matchMedia('(max-width: 620px)').matches
     introStarted.current = true
-    automaticPayment.current = false
-    setIntro('manual'); setDemoField(null); setReceiptVisible(false)
-    setCard(''); setExpiry(''); setCvc(''); setTouched({}); setPhase('editing')
-    requestAnimationFrame(() => cardRef.current?.focus({ preventScroll: true }))
+    automaticPayment.current = replay
+    setIntro(replay ? 'running' : 'manual'); setDemoField(null); setReceiptVisible(false)
+    setCard(''); setExpiry(''); setCvc(''); setTouched({}); setPhase(replay ? 'preview' : 'editing')
+    if (!replay) requestAnimationFrame(() => cardRef.current?.focus({ preventScroll: true }))
   }
 
+  // Phones replay the automatic demo without focusing an input or opening the keyboard.
+  // Desktop invites manual entry after the first demo, then offers "Try again".
   const status = phase === 'processing' ? 'Confirming payment' : phase === 'editing' ? ready ? 'Ready to pay' : 'Your secure checkout' : 'Payment successful'
 
   return <article className="fg-tile fg-checkout" data-intro={intro}>
@@ -296,7 +299,7 @@ export function CheckoutScene() {
       <strong role="status">{status}</strong>
       <span className="fg-checkout-confirmed-amount">€48.00</span>
       <span className="fg-checkout-order">{phase === 'editing' ? 'Demo order #1048' : 'Order #1048'}</span>
-      <span className="fg-checkout-confirmed-store">{phase === 'success' ? <button className="fg-checkout-replay" type="button" ref={replayRef} onClick={reset}><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 7a6 6 0 1 1 .1 6M4 3v4h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>Try again</button> : 'Northstar Store'}</span>
+      <span className="fg-checkout-confirmed-store">{phase === 'success' ? <button className="fg-checkout-replay" type="button" ref={replayRef} onClick={reset} data-invite={intro === 'done' || undefined}><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 7a6 6 0 1 1 .1 6M4 3v4h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg><span className="fg-checkout-replay-desktop">{intro === 'done' ? 'Try it yourself' : 'Try again'}</span><span className="fg-checkout-replay-mobile">Replay</span></button> : 'Northstar Store'}</span>
     </div>
     {tuning.controls}
   </article>

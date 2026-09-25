@@ -41,17 +41,16 @@
   .mig-cell:is(.is-playing, :focus-visible) .mi-card--l { animation: mi-fan-l .8s cubic-bezier(.34, 1.45, .64, 1) both; }
   .mig-cell:is(.is-playing, :focus-visible) .mi-card--r { animation: mi-fan-r .8s cubic-bezier(.34, 1.45, .64, 1) .06s both; }
   .mig-cell:is(.is-playing, :focus-visible) .mi-card--c { animation: mi-fan-c .8s cubic-bezier(.34, 1.45, .64, 1) both; }
-  .mig-cell:is(.is-playing, :focus-visible) .mi-coin { animation: mi-coin-drop .5s cubic-bezier(.2, .8, .3, 1.2) .5s both; }
-  .mig-cell:is(.is-playing, :focus-visible) .mi-coin:nth-of-type(2) { animation-delay: .62s; }
-  .mig-cell:is(.is-playing, :focus-visible) .mi-coin:nth-of-type(3) { animation-delay: .74s; }
+  .mig-cell:is(.is-playing, :focus-visible) .mi-row { animation: mi-grow-x .45s cubic-bezier(.2, .7, .2, 1) both; }
+  .mig-cell:is(.is-playing, :focus-visible) .mi-row:nth-child(2) { animation-delay: .08s; }
+  .mig-cell:is(.is-playing, :focus-visible) .mi-row:nth-child(3) { animation-delay: .16s; }
+  .mig-cell:is(.is-playing, :focus-visible) .mi-land { animation: mi-pop .6s ease-out .6s both; }
+  .mig-cell:is(.is-playing, :focus-visible) .mi-land--first { animation-delay: 0s; }
   .mig-cell:is(.is-playing, :focus-visible) .mi-flow { animation: mi-grow-y .6s cubic-bezier(.2, .7, .2, 1) both; }
   .mig-cell:is(.is-playing, :focus-visible) .mi-flow:nth-child(3), .mig-cell:is(.is-playing, :focus-visible) .mi-flow:nth-child(4) { animation-delay: .07s; }
   .mig-cell:is(.is-playing, :focus-visible) .mi-flow:nth-child(5), .mig-cell:is(.is-playing, :focus-visible) .mi-flow:nth-child(6) { animation-delay: .14s; }
   .mig-cell:is(.is-playing, :focus-visible) .mi-arrow--in { animation: mi-nudge-up .6s ease-out both; }
   .mig-cell:is(.is-playing, :focus-visible) .mi-arrow--out { animation: mi-nudge-down .6s ease-out .2s both; }
-  .mig-cell:is(.is-playing, :focus-visible) .mi-coin-out { animation: mig-coin-lift .55s cubic-bezier(.4, 0, .2, 1) both; }
-  .mig-cell:is(.is-playing, :focus-visible) .mi-coin-out:nth-of-type(2) { animation-delay: .1s; }
-  .mig-cell:is(.is-playing, :focus-visible) .mi-coin-out:nth-of-type(1) { animation-delay: .2s; }
 
   /* Entrance: the rules draw themselves (verticals down, horizontals across), the crosses pop,
      then the cells fade in column by column. */
@@ -64,8 +63,6 @@
   .money-insight.has-entered .mig-q { animation: mi-rise .6s cubic-bezier(.2, .7, .2, 1) .6s both; }
   .money-insight.has-entered .mig-cell { animation: mi-rise .6s cubic-bezier(.2, .7, .2, 1) calc(.75s + var(--i) * 70ms) both; }
 }
-.mi-mark .mi-coin-out { transform-box: fill-box; }
-@keyframes mig-coin-lift { 0% { transform: none; opacity: 1; } 45% { transform: translateY(-10px); opacity: 0; } 46% { transform: translateY(6px); opacity: 0; } 100% { transform: none; opacity: 1; } }
 @keyframes mig-draw-y { from { transform: scaleY(0); } to { transform: scaleY(1); } }
 @keyframes mig-draw-x { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 
@@ -124,4 +121,48 @@
   .mig-q { padding: 18px 4px 6px; }
   .mig-cell { min-height: 0; padding: 14px 4px 22px; border-top: 1px dashed #2e2b2680; }
   .mig-cell p { max-width: none; }
+}
+/* Phones: the title keeps the full width (the desktop right padding is the column gap), so each
+   sentence breaks once instead of leaving a one-word line. */
+@media (max-width: 620px) {
+  .mi-track--rows .mi-track-title { padding-right: 0; font-size: 26px; }
+}
+
+/* 07 · List. No question grouping: the nine views in one flat grid. Three across on desktop, two
+   on tablets and phones. Like Rows, the column gap is right padding on the cells so the rule above
+   each row runs unbroken across the full width; the container closes the set with the last rule. */
+.mi-track--list .mi-track-title { max-width: 16ch; }
+/* The title counts what is on screen: two columns drop the ninth view (below), so it says eight. */
+.mig-count--8 { display: none; }
+.mig--list { --list-cols: 3; margin: 56px 24px 0; display: grid; grid-template-columns: repeat(var(--list-cols), minmax(0, 1fr)); border-bottom: 1px solid var(--mig-rule); }
+.mig--list .mig-cell { min-height: 0; padding: 30px 48px 36px 0; border-top: 1px solid var(--mig-rule); }
+.mig--list .mig-cell:nth-child(3n) { padding-right: 0; }
+.mig--list .mig-cell:nth-child(3n + 1) { border-image: linear-gradient(to right, #d6b77b66, var(--mig-rule) 22%) 1; }
+.mig--list .mig-cell:focus-visible { outline-offset: -8px; }
+.mig--list .mig-cell p { max-width: 36ch; }
+@media (prefers-reduced-motion: no-preference) {
+  .money-insight[data-motion]:not(.has-entered) .mig--list .mig-cell { opacity: 0; }
+  .money-insight.has-entered .mig--list .mig-cell { animation: mi-rise .6s cubic-bezier(.2, .7, .2, 1) calc(.3s + var(--i) * 60ms) both; }
+}
+@media (max-width: 1100px) {
+  .mig--list .mig-cell { padding: 24px 28px 30px 0; }
+}
+@media (max-width: 900px) {
+  .mig--list { --list-cols: 2; margin: 40px 24px 0; }
+  .mig--list .mig-cell, .mig--list .mig-cell:nth-child(3n) { padding: 22px 24px 26px 0; border-image: none; }
+  .mig--list .mig-cell:nth-child(2n) { padding-right: 0; }
+  .mig--list .mig-cell:nth-child(2n + 1) { border-image: linear-gradient(to right, #d6b77b66, var(--mig-rule) 22%) 1; }
+  /* Nine in two columns leaves one over: the last view is dropped so the grid ends on a full row. */
+  .mig--list .mig-cell:last-child:nth-child(odd) { display: none; }
+  .mig-count--9 { display: none; }
+  .mig-count--8 { display: inline; }
+}
+@media (max-width: 620px) {
+  .mi-track--list .mi-track-title { max-width: none; }
+  .mig--list { margin: 32px 4px 0; }
+  .mig--list .mig-cell, .mig--list .mig-cell:nth-child(3n) { gap: 8px; padding: 18px 16px 22px 0; }
+  .mig--list .mig-cell:nth-child(2n) { padding-right: 0; }
+  .mig--list .mig-cell .mi-mark { width: 40px; height: 24px; margin-bottom: 4px; }
+  .mig--list .mig-cell strong { font-size: 15px; }
+  .mig--list .mig-cell p { font-size: 13px; line-height: 1.5; }
 }

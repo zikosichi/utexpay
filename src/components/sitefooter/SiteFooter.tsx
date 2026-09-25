@@ -1,70 +1,47 @@
 import './site-footer.css'
 
 /**
- * Sitemap by verb, the way the Aug 25 page map calls for it: Bank · Spend · Send · Get paid,
- * plus Developers. Section anchors match the hero navigation so the links resolve on this page.
+ * Three short columns: what the product is (each link lands on the section of this page that shows
+ * it), then the support and company pages a small EMI site actually has. Legal sits in the bottom row with the licence
+ * line. Pages that don't exist yet use hash anchors so the prerender crawler doesn't follow them
+ * into a 404, which fails the build on Vercel (`failOnError`).
  */
 const COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
   {
-    title: 'Bank',
+    title: 'Product',
     links: [
-      { label: 'Personal accounts', href: '/#banking' },
-      { label: 'Business accounts', href: '/#banking' },
-      { label: 'IBANs and top-ups', href: '/#banking' },
+      { label: 'Personal account', href: '/#banking' },
+      { label: 'Business account', href: '/#one-account' },
       { label: 'Cards', href: '/#banking' },
+      { label: 'International transfers', href: '/#international-payments' },
+      { label: 'Accept payments', href: '/#insights' },
     ],
   },
   {
-    title: 'Spend',
+    title: 'Resources',
     links: [
-      { label: 'Team cards', href: '/#banking' },
-      { label: 'Limits and approvals', href: '/#banking' },
-      { label: 'Roles', href: '/#banking' },
-      { label: 'Activity log', href: '/#banking' },
+      { label: 'Help and FAQs', href: '/#questions' },
+      { label: 'Developers', href: '/#developers' },
+      { label: 'Security', href: '/#security' },
+      { label: 'System status', href: '/#status' },
     ],
   },
   {
-    title: 'Send',
+    title: 'Company',
     links: [
-      { label: 'SEPA', href: '/#international-payments' },
-      { label: 'SWIFT', href: '/#international-payments' },
-      { label: 'UTEX to UTEX', href: '/#international-payments' },
-      { label: '30+ currencies', href: '/#international-payments' },
-    ],
-  },
-  {
-    title: 'Get paid',
-    links: [
-      { label: 'Card payments', href: '/#payments' },
-      { label: 'Hosted checkout', href: '/#payments' },
-      { label: 'Dashboard', href: '/#payments' },
-      { label: 'Settlement', href: '/#payments' },
-    ],
-  },
-  {
-    title: 'Developers',
-    links: [
-      { label: 'Documentation', href: '/#developers' },
-      { label: 'API reference', href: '/#developers' },
-      { label: 'Webhooks', href: '/#developers' },
-      { label: 'Test mode', href: '/#developers' },
+      { label: 'About UTEX', href: '/#about' },
+      { label: 'Careers', href: '/#careers' },
+      { label: 'Contact', href: 'mailto:hello@utexpay.com' },
     ],
   },
 ]
 
-const COMPANY = [
-  { label: 'Pricing', href: '/#pricing' },
-  { label: 'Contact', href: 'mailto:hello@utexpay.com' },
-  { label: 'Log in', href: '/#login' },
-]
-
-// Legal pages don't exist yet. Hash anchors (like every other placeholder link
-// here) keep the prerender crawler from following them into a 404, which fails
-// the build on Vercel (`failOnError`).
+// Complaints is required of a regulated EMI, cookies of any EU/UK site; both are cheap to add.
 const LEGAL = [
   { label: 'Privacy', href: '/#privacy' },
   { label: 'Terms', href: '/#terms' },
-  { label: 'Security', href: '/#security' },
+  { label: 'Cookies', href: '/#cookies' },
+  { label: 'Complaints', href: '/#complaints' },
 ]
 
 export function SiteFooter() {
@@ -96,9 +73,6 @@ export function SiteFooter() {
         </p>
         <div className="sf-meta">
           <p className="sf-copyright">© 2026 UTEX Pay</p>
-          <ul className="sf-links">
-            {COMPANY.map(({ label, href }) => <li key={label}><a href={href}>{label}</a></li>)}
-          </ul>
           <ul className="sf-links sf-links--legal">
             {LEGAL.map(({ label, href }) => <li key={label}><a href={href}>{label}</a></li>)}
           </ul>

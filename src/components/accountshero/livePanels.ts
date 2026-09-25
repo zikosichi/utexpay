@@ -111,8 +111,12 @@ export function createLivePanels(root: HTMLElement, surfaces: Surface[], maxAnis
     textures: new Map(panels.map((panel) => [panel.name,panel.texture])),
     resize(canvasWidth: number, canvasHeight: number, stageWidth: number, worldWidth: number, clip: { top: number; left: number; right: number }) {
       width = canvasWidth; height = canvasHeight
-      unit = 4*stageWidth/worldWidth/720
-      root.style.clipPath = `inset(${Math.max(0,clip.top)}px ${Math.max(0,clip.right)}px 0 ${Math.max(0,clip.left)}px)`
+      // The panels are laid out at `unit` and mapped onto the boxes by matrix3d, so a small change
+      // is invisible; skipping it keeps a stage-height tween from re-laying them out every frame.
+      const next = 4*stageWidth/worldWidth/720, clipPath = `inset(${Math.max(0,clip.top)}px ${Math.max(0,clip.right)}px 0 ${Math.max(0,clip.left)}px)`
+      if (clipPath === root.style.clipPath && Math.abs(next-unit) < unit*.02) return
+      unit = next
+      root.style.clipPath = clipPath
       for (const panel of panels) {
         panel.element.style.width = `${panel.spec.width*unit}px`; panel.element.style.height = `${panel.spec.height*unit}px`
         panel.element.style.setProperty('--ah-unit',`${unit}px`)

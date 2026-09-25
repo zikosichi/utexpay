@@ -2,6 +2,7 @@ import { useEffect, useId, useRef, useState } from 'react'
 import type { GlobeScene } from './scene'
 import { GlobeControls } from './GlobeControls'
 import { SectionHeading } from '#/components/SectionHeading'
+import { isStudio, useStudio } from '#/components/studio'
 import { appearanceStorageKey, defaultAppearance, normalizeAppearance, type GlobeAppearance } from './appearance'
 import './globe-horizon.css'
 
@@ -67,9 +68,11 @@ export function GlobeHorizonSection() {
   const appearanceRef = useRef(defaultAppearance)
   const [appearance, setAppearance] = useState(defaultAppearance)
   const [status, setStatus] = useState<'still' | 'ready'>('still')
+  const studio = useStudio()
 
   useEffect(() => {
-    try {
+    // Saved tuning only applies in review mode; `/` always shows the defaults.
+    if (isStudio()) try {
       const saved = normalizeAppearance(JSON.parse(localStorage.getItem(appearanceStorageKey) ?? 'null'))
       appearanceRef.current = saved
       setAppearance(saved)
@@ -124,6 +127,6 @@ export function GlobeHorizonSection() {
       Across borders.<br />From one account.
     </SectionHeading>
     <StatsRow />
-    {status === 'ready' && <GlobeControls value={appearance} onChange={changeAppearance} />}
+    {studio && status === 'ready' && <GlobeControls value={appearance} onChange={changeAppearance} />}
   </section>
 }

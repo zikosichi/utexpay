@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import type { CSSProperties } from 'react'
+import { isStudio, useStudio } from '../studio'
 import './checkout-controls.css'
 
 type Item = 'product' | 'form' | 'confirmation'
@@ -88,8 +89,8 @@ function itemStyle(values: Values, defaults: Values): CSSProperties {
     transformOrigin: `${values.originX}% ${values.originY}% ${px(values.originZ)}`,
     '--tune-reflection': values.reflection / 100,
     '--tune-origin-x': `${values.originX}%`, '--tune-origin-y': `${values.originY}%`,
-    '--tune-mobile-x': px(values.x - defaults.x), '--tune-mobile-y': px(values.y - defaults.y),
-    '--tune-mobile-ry': `${values.ry - defaults.ry}deg`,
+    '--tune-offset-x': px(values.x - defaults.x), '--tune-offset-y': px(values.y - defaults.y),
+    '--tune-offset-ry': `${values.ry - defaults.ry}deg`,
     '--tune-x': px(values.x), '--tune-y': px(values.y),
     '--tune-rx': `${values.rx}deg`, '--tune-ry': `${values.ry}deg`, '--tune-rz': `${values.rz}deg`,
     '--tune-shadow': `${px(values.shadowX)} ${px(values.shadowY)} ${px(values.blur)} ${px(values.spread)} rgb(0 0 0 / ${values.opacity}%)`,
@@ -101,7 +102,9 @@ export function useCheckoutControls() {
   const [settings, setSettings] = useState<Settings>(DEFAULTS)
   const [loaded, setLoaded] = useState(false)
   const [saved, setSaved] = useState(true)
-  useEffect(() => { setSettings(readSettings()); setLoaded(true) }, [])
+  const studio = useStudio()
+  // Tuning is review-mode only: `/` shows the approved composition and never overwrites saved tuning.
+  useEffect(() => { if (isStudio()) { setSettings(readSettings()); setLoaded(true) } }, [])
   useEffect(() => {
     if (!loaded) return
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(settings)); setSaved(true) }
@@ -116,7 +119,7 @@ export function useCheckoutControls() {
       ...Object.fromEntries((Object.keys(BUTTON_COLORS) as ButtonColor[]).map(key => [`--pay-${key}`, settings.button[key]])),
     } as CSSProperties, product: itemStyle(settings.product, DEFAULTS.product), form: itemStyle(settings.form, DEFAULTS.form), confirmation: itemStyle(settings.confirmation, DEFAULTS.confirmation) },
     selected: open ? selected : undefined,
-    controls: <CheckoutControls settings={settings} saved={saved} open={open} setOpen={setOpen} selected={selected} setSelected={setSelected}
+    controls: studio && <CheckoutControls settings={settings} saved={saved} open={open} setOpen={setOpen} selected={selected} setSelected={setSelected}
       update={(field, value) => { if (selected !== 'button') setSettings(previous => ({ ...previous, [selected]: { ...previous[selected], [field]: value } })) }}
       updateButton={value => setSettings(previous => ({ ...previous, button: { ...previous.button, ...value } }))}
       reset={() => setSettings(previous => ({ ...previous, [selected]: { ...DEFAULTS[selected] } }))}

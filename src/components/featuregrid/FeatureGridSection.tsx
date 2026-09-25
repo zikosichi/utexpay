@@ -5,6 +5,7 @@ import { CheckoutScene } from './CheckoutScene'
 import { TotalBalancePanel } from './TotalBalancePanel'
 import { CoffeeSteam } from './CoffeeSteam'
 import { ImageDirections, PERSONAL_SCENES, useImageDirection } from './ImageDirections'
+import { useStudio } from '../studio'
 import './feature-grid.css'
 
 // The chapter index under the heading: one line per chapter, linking to it. First form of the
@@ -39,12 +40,13 @@ export function FeatureGridSection() {
   const id = useId()
   const grid = useRef<HTMLDivElement>(null)
   useChapterMotion(grid)
-  const [personalScene, selectPersonalScene] = useImageDirection('personalScene', PERSONAL_SCENES)
-  const [businessScene, selectBusinessScene] = useImageDirection('businessScene', BUSINESS_SCENES, 'handover')
+  const studio = useStudio()
+  const [personalScene, selectPersonalScene] = useImageDirection('personalScene', PERSONAL_SCENES, 'full-composition')
+  const [businessScene, selectBusinessScene] = useImageDirection('businessScene', BUSINESS_SCENES, 'human')
 
   return <div className="feature-grid" ref={grid} aria-labelledby={`${id}-title`}>
     <SectionHeading id={`${id}-title`} eyebrow="Banking & payments" description="Three ways to use UTEX. One account underneath all of them.">
-      For you. For your business.<br />For your customers.
+      For you. <br className="fg-phone-break" />For your business.<br />For your customers.
     </SectionHeading>
     <nav className="fg-index" aria-label="In this section">
       <ol>
@@ -57,13 +59,14 @@ export function FeatureGridSection() {
       <ImageDirections label="Personal image direction" controls={`${id}-personal-scene`} options={PERSONAL_SCENES} selected={personalScene} onSelect={selectPersonalScene} />
       <header className="fg-chapter-heading"><p>Personal banking</p><h3 id={`${id}-personal`}>Make room for everyday life.</h3><p className="fg-chapter-lead">Accounts in the currencies you use and a card ready the day you open it. Balances and spending in one view.</p></header>
       <div className="fg-row fg-row--personal">
-        <article className="fg-tile fg-money">
+        <article className="fg-tile fg-money" data-scene={personalScene}>
           <div id={`${id}-personal-scene`} className="fg-money-art" data-scene={personalScene}>
-            {PERSONAL_SCENES.map((item) => <img key={item.id}
+            {/* Outside ?studio only the chosen direction is in the DOM, so the others are never downloaded. */}
+            {PERSONAL_SCENES.filter((item) => studio || item.id === personalScene).map((item) => <img key={item.id}
               className={`fg-scene fg-money-phone${personalScene === item.id ? ' is-selected' : ''}`}
-              src={item.src} srcSet={`${item.small} 640w, ${item.src} 1254w`}
+              src={item.src} srcSet={`${item.small} 640w, ${item.src} ${'width' in item ? item.width : 1254}w`}
               sizes="(max-width: 620px) 100vw, (max-width: 900px) 70vw, 600px"
-              width="1254" height="1254" loading="lazy" decoding="async" draggable="false"
+              width={'width' in item ? item.width : 1254} height={'height' in item ? item.height : 'width' in item ? item.width : 1254} loading="lazy" decoding="async" draggable="false"
               alt={personalScene === item.id ? item.alt : ''} aria-hidden={personalScene !== item.id || undefined} />)}
           </div>
           <div className="fg-tile-heading"><h4>Your money,<br />ready to use.</h4><p>Currency accounts<br />and cards, together.</p></div>
@@ -72,17 +75,19 @@ export function FeatureGridSection() {
           </div>
         </article>
         <article className="fg-tile fg-spending">
-          <img className="fg-spending-scene" src="/featuregrid/coffee-card-scene-1122.webp"
-            srcSet="/featuregrid/coffee-card-scene-640.webp 640w, /featuregrid/coffee-card-scene-1122.webp 1122w"
-            sizes="(max-width: 620px) 100vw, (max-width: 900px) 50vw, 594px"
-            width="1122" height="1402" loading="lazy" decoding="async" draggable="false" alt="" aria-hidden="true" />
+          <div className="fg-spending-art">
+            <img className="fg-spending-scene" src="/featuregrid/coffee-card-scene-1122.webp"
+              srcSet="/featuregrid/coffee-card-scene-640.webp 640w, /featuregrid/coffee-card-scene-1122.webp 1122w"
+              sizes="(max-width: 900px) 100vw, (max-width: 1400px) 40vw, 594px"
+              width="1122" height="1402" loading="lazy" decoding="async" draggable="false" alt="" aria-hidden="true" />
+            <div className="fg-receipt" role="img" aria-label="A card payment of €4.50 for coffee, just now">
+              <span className="fg-receipt-avatar" aria-hidden="true"><img src="/featuregrid/coffee-script.svg" width="20" height="20" alt="" draggable="false" /></span>
+              <span className="fg-receipt-text"><span>Coffee</span><small>Card payment · Just now</small></span>
+              <strong>−€4.50</strong>
+            </div>
+          </div>
           <CoffeeSteam />
           <div className="fg-tile-heading"><h4>Keep up with<br />your spending.</h4><p>Every little moment,<br />all in view.</p></div>
-          <div className="fg-receipt" role="img" aria-label="A card payment of €4.50 for coffee, just now">
-            <span className="fg-receipt-avatar" aria-hidden="true"><img src="/featuregrid/coffee-script.svg" width="20" height="20" alt="" draggable="false" /></span>
-            <span className="fg-receipt-text"><span>Coffee</span><small>Card payment · Just now</small></span>
-            <strong>−€4.50</strong>
-          </div>
         </article>
       </div>
     </section>

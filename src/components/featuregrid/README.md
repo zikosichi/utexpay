@@ -1,8 +1,37 @@
 # Version 5 — Feature grid
 
+## Responsive layout rules
+
+Phone layouts apply through 620px. Compact Personal tile typography, balance panels and image sizing are shared from 621–1400px. Stacked tablet layouts apply at 621–900px and at 901–1100px in portrait, so large upright iPads use the same composition. Landscape keeps the two-tile row. Keep these tablet queries aligned in `feature-grid.css` and `checkout-scene.css`.
+
+Personal tile height comes from `--personal-tile-height`. The coffee photo and receipt share an image-proportioned frame; place the receipt using the cup's source-image coordinates rather than independent viewport offsets. Portrait business accounts use two grid columns with copy aligned top-left beside the UI. The business photo covers a compact 400–440px tile; its feature spacing shares the same tablet layout rules.
+
+Tablet checkout uses a compact two-column composition: bottle and receipt on the left, heading above the checkout on the right, and form and confirmation sharing one grid cell below it. It reuses the phone success/depth treatment without tabletop reflections. Hidden results retain their cell, so payment and replay do not move the page. `--tune-offset-*` contains review adjustments relative to approved defaults; phones and tablet grids use these instead of reapplying desktop positions. Desktop keeps its existing tuned composition. Hero layout lives in `accountshero/accounts-hero.css`: desktop copy stays compact and the remaining viewport height fits the top 83% of the stage; the bottom 17% of floor/reflection may sit below the fold. A grid sizes the stage to that space divided by .83, capped at its natural 2.15 aspect ratio and 1610px width. The 3D camera fits that stage in both dimensions, and the floor fade stays below the readable panels. Upright tablets retain larger gaps with a restrained title; short touch screens keep normal page flow. Hero copy selectors outrank shared studio styles so lazy-loaded CSS cannot change the sizing.
+
+
+## Business physical card — September 25, 2026
+
+Quality refresh: the current master is `business-working-moment-fresh-original.png`, generated in one fresh edit from the untouched September 22 `directions/human.png` plus the user's UI card reference. Previously edited scenes were excluded to avoid accumulated texture changes. The exact prompt is saved as `FRESH-ORIGINAL-PROMPT.md` alongside the master. Responsive WebP assets were regenerated from this master.
+
+Option **03 — Working moment** now uses the user-supplied UI card design rendered as a physical matte black card with a fine gold edge, gold chip and lettering, masked number ending 4532, expiration, cardholder name, and red/amber payment-network mark. The artwork follows the card perspective and natural hand occlusion. Source and ImageGen prompt: `../Landing/concept-designs/business-physical-ui-card-2026-09-25/`. Existing `business-human-{1720,860}.webp` paths and dimensions are retained. Prior source masters remain available.
+
+## Supplied mobile UI and consistent card — September 25, 2026
+
+**Personal 07 — Phone & card · Actual UI** (`personalScene=approved-ui`) edits the Gemini scene using the user's supplied mobile dashboard and card artwork. The screen shows the balances, accounts, cash-flow chart and bottom navigation; the physical card follows the supplied chip, logo, masked number, expiry, name and payment-mark layout with a satin finish. This is an ImageGen composite, not a pixel-exact UI export. Source references and the 1254 × 1254 master are in `public/featuregrid/approved-ui-v1/`; responsive assets are `personal-approved-ui-{640,1254}.webp`. Earlier alternatives and business option 03 remain unchanged. Exact prompt: [approved-ui-prompt.md](./approved-ui-prompt.md).
+
+## User-supplied Gemini alternative — September 24, 2026
+
+**Personal 06 — Phone & card · Gemini** (`personalScene=gemini`) uses the user's supplied image unchanged. Its original 1024 × 1024 PNG is saved at `public/featuregrid/gemini-v1/personal-phone-card.png`; WebP derivatives are `personal-gemini-1024.webp` and `personal-gemini-640.webp` (quality 90/88). The source is not upscaled. Responsive descriptors use its actual width, while display sizing matches the existing options. All previous versions remain available and the business default stays option 03.
+
+## Realistic image alternatives — September 24, 2026
+
+Added **Personal 05 — In your hand · refined** as a conservative retouch of the existing approved phone-in-hand image. Open `/version-5?personalScene=realistic#feature-personal` to review it. The current revision preserves the original composition, golden lighting, colors, phone and UI, while softening synthetic skin detail and refining the hand. The neutral-light redesign was rejected and is archived. It shares the original options' image framing and 1254/640px square asset sizes; the earlier custom containment rule was removed because it made the image appear smaller. The personal image keeps the existing phone mockup; the final responsive product UI is still a separate dependency. Per the September 24 clarification, business uses approved **03 — Working moment** by default; the new business handover experiment was removed from the selector and its assets retained unused.
+
+The built-in ImageGen tool produced the current master in `public/featuregrid/realistic-v3/personal-in-hand.png` and archived earlier masters in `public/featuregrid/realistic-v1/`. The current responsive assets are `personal-realistic-v3-{640,1254}.webp`. Exact prompts and references: [realistic-images-prompts.md](./realistic-images-prompts.md).
+
 ## Business image review — September 22, 2026
 
-Selected default: **06 — Team handover**. Options 07 and 08 have been removed from the selector; their source assets are retained. It renders on initial load and when no valid `businessScene` is specified. The numbered alternatives remain available for review.
+Selected default (updated September 24): **03 — Working moment** (`businessScene=human`). Options 07 and 08 have been removed from the selector; their source assets are retained. It renders on initial load and when no valid `businessScene` is specified. The numbered alternatives remain available for review.
 
 The right business tile offers six image directions: Team cards, Workspace, Working moment, Daylight, Graphic and Team handover. Its footprint, left members tile, section heading and feature copy are retained. Artwork preserves its aspect ratio; phones stack copy above the image.
 
@@ -109,7 +138,7 @@ The first personal-banking tile now reuses V1's `public/personalbanking/phone-sc
 
 The currency UI follows [Figma Account Tabs, node 4852:4127](https://www.figma.com/design/HCaWhMISKtMkyK6o9Euw5d/UTEX?node-id=4852-4127): 216.75 × 135px cards, 40px blurred currency badges, 8px corners, Manrope labels/balances and JetBrains Mono masked account numbers. `CurrencyAccountCards.tsx` stacks these cards to fit beside the phone. Existing EUR/USD/GBP order and balances are retained, so USD remains funded rather than adopting the reference's Pending example. Exported currency images, divider and chevron are saved unchanged in `public/featuregrid/currencies/`. Figma's documented gold active border is used for selection. The reference screenshot is saved in `output/feature-grid/figma-currency-cards.png`.
 
-The checkout scene uses the generated Northstar still life (1974 × 797), exported as `public/featuregrid/northstar-scene-1974.webp` (90 KB) and `-1100.webp` (38 KB). `CheckoutScene.tsx` and `checkout-scene.css` place three HTML cards over the photo with warm surfaces, slight perspective and grounded shadows. The product thumbnail reuses the photo with a CSS crop. Desktop retains the 1400 × 630 tile; tablet enlarges the foreground cards; phones show the bottle photograph followed by the three cards in a readable vertical sequence. The earlier generated card/espresso/bottle scenes (`card-scene`, `coffee-scene`, `checkout-scene`) and the `SceneImage` helper are removed; their PNG originals remain in `Landing/concept-designs/version-05-assets-2026-09-15/`. The existing transparent `public/utex-card.png` supplies the second team card.
+The checkout scene uses the generated Northstar still life (1974 × 797), exported as `public/featuregrid/northstar-scene-1974.webp` (90 KB) and `-1100.webp` (38 KB). `CheckoutScene.tsx` and `checkout-scene.css` place three HTML cards over the photo with warm surfaces, slight perspective and grounded shadows. The product thumbnail reuses the photo with a CSS crop. Desktop retains the 1400 × 630 tile; tablet places the bottle and receipt beside a shared form/result cell; phones show the photograph above the form/result stack. The earlier generated card/espresso/bottle scenes (`card-scene`, `coffee-scene`, `checkout-scene`) and the `SceneImage` helper are removed; their PNG originals remain in `Landing/concept-designs/version-05-assets-2026-09-15/`. The existing transparent `public/utex-card.png` supplies the second team card.
 
 All copy and functional UI are HTML. Scene images have explicit dimensions, responsive sources, lazy loading and async decoding. Pointer depth is event-driven, limited to visible tiles, and disabled for touch, hidden pages and reduced motion. No additional WebGL canvas or continuous scene animation is introduced.
 
@@ -151,7 +180,7 @@ The copied tuning values from September 18 are now the reset/default composition
 
 Applied the next approved configuration: checkout pivot (0%, 50%); confirmation position (+56, +4), Y rotation −10°, pivot (0%, 28%), shadow (−4, −12, blur 31, spread 1, opacity 27%) and edge (+2, 0). All other supplied values are preserved.
 
-The checkout and confirmation reflect below their own surfaces with a 1px contact gap and a mask fading through the nearest 30% of the reflected card. The reflection includes live text and follows each surface’s transform and pivot automatically. **Reflection → Strength** is available on those two items (28% checkout / 38% confirmation), persists, and exports as `reflection`. The notification has no reflection. Phone layouts omit reflections because the cards are stacked outside the tabletop scene.
+The checkout and confirmation reflect below their own surfaces with a 1px contact gap and a mask fading through the nearest 30% of the reflected card. The reflection includes live text and follows each surface’s transform and pivot automatically. **Reflection → Strength** is available on those two items (28% checkout / 38% confirmation), persists, and exports as `reflection`. The notification has no reflection. Phone and portrait tablet layouts omit reflections because the form and result share a flat grid cell.
 
 The effect uses [`-webkit-box-reflect`](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/-webkit-box-reflect) as a progressive enhancement for Chromium/Safari, including the in-app preview; browsers without it keep the normal cards and contact shadows. Browser checks verify both reflections, their strength control and the absence of a notification reflection.
 

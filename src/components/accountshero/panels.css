@@ -18,6 +18,11 @@
   color: #f1f0ec;
   font: 400 var(--ah-type-body)/1.35 'DM Sans', sans-serif;
   font-variant-numeric: tabular-nums;
+  /* Sandro, Sep 22: the panels are a picture of the app, not a document — no text I-beam,
+     no drag-selection. Buttons still get the pointer below. */
+  cursor: default;
+  user-select: none;
+  -webkit-user-select: none;
 }
 .ah-panel * { box-sizing: border-box; }
 .ah-panel p { margin: 0; }

@@ -1,6 +1,6 @@
 .section-heading { position: relative; z-index: 1; text-align: center; margin-inline: auto; font-family: 'Manrope', sans-serif; }
 .section-heading__eyebrow { margin: 0 0 18px; font: 400 clamp(11px, .9vw, 15px)/1.5 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: .22em; color: #c9a567; }
-.section-heading__title { margin: 0; color: #f3f2ee; font: 500 clamp(40px, 3.7vw, 68px)/1.16 'Plus Jakarta Sans', sans-serif; letter-spacing: -.045em; text-wrap: balance; }
+.section-heading__title { margin: 0; color: #f3f2ee; font: 500 clamp(40px, 3.7vw, 68px)/1.16 'Plus Jakarta Sans', sans-serif; letter-spacing: -.045em; word-spacing: .1em; text-wrap: balance; }
 .section-heading__description { margin: 20px auto 0; color: #999c94; font-size: clamp(16px, 1.2vw, 20px); line-height: 1.6; text-wrap: balance; }
 @media (max-width: 900px) {
   .section-heading__title { font-size: 44px; }

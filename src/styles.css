@@ -27,3 +27,11 @@
     text-decoration: none;
   }
 }
+
+/* Review tools (version rails, Studio / Globe controls, card tuning) are for comparing directions
+   on a desktop. On phones they cover content and nobody compares there, so the page shows only
+   the defaults. */
+@media (max-width: 760px) {
+  .studio-tools, .studio-headline-bar, .personal-banking__version-bar, .fg-image-directions, .oa-versions,
+  .mi-version-bar, .tf-version-bar, .gh-settings, .checkout-controls-toggle { display: none !important; }
+}

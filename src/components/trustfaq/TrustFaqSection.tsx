@@ -1,4 +1,5 @@
 import { useEffect, useId, useState } from 'react'
+import { isStudio, useStudio } from '../studio'
 import '../section-heading.css'
 import './trust-faq.css'
 
@@ -75,8 +76,10 @@ function FaqList({ id, showExample }: { id: string; showExample: boolean }) {
 
 export function TrustFaqSection() {
   const id = useId()
+  const studio = useStudio()
   const [version, setVersion] = useState<'cover' | 'split'>('cover')
   useEffect(() => {
+    if (!isStudio()) return
     const requested = new URLSearchParams(window.location.search).get('faq')
     if (requested === 'cover' || requested === 'split') setVersion(requested)
   }, [])
@@ -88,7 +91,7 @@ export function TrustFaqSection() {
   }
   const split = version === 'split'
   return <section id="questions" className="trust-faq" data-version={version} aria-labelledby={`${id}-title`}>
-    <div className="tf-version-bar">
+    {studio && <div className="tf-version-bar">
       <div className="tf-versions" role="group" aria-label="FAQ visual direction">
         {(['cover', 'split'] as const).map((value, index) => <button type="button" key={value}
           aria-label={`${value === 'cover' ? 'Cover' : 'Side by side'} — Version ${index + 1}`}
@@ -96,7 +99,7 @@ export function TrustFaqSection() {
           <span aria-hidden="true">0{index + 1}</span><span className="tf-version-name" aria-hidden="true">{value === 'cover' ? 'Cover' : 'Side by side'}</span>
         </button>)}
       </div>
-    </div>
+    </div>}
     <div className="tf-inner" id={`${id}-content`}>
       <header className="tf-header">
         {split ? <img className="tf-split-art" src="/trustfaq/one-home-1200.webp"

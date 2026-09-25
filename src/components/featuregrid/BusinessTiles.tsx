@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef, useState } from 'react'
+import { useStudio } from '../studio'
 
 /** Figma `BusinessTiles` 4855:22868 — two still tiles. The left one (`Article` 4855:22869,
     521.51 × 600.28) holds the Members card, cut off by the tile and faded at the bottom; the right
@@ -132,9 +133,10 @@ function useFeatureTurns(count: number) {
 export function BusinessTiles({ scene, sceneId }: { scene: string; sceneId: string }) {
   const maskId = `fg-track-${useId().replace(/\W/g, '')}` // a plain id, safe inside url(#…)
   const turns = useFeatureTurns(FEATURES.length)
+  const studio = useStudio()
   return <div className="fg-row fg-row--business">
     <article className="fg-tile fg-accounts">
-      <div className="fg-tile-heading"><h4>Separate accounts.<br />One login.</h4><p>Switch between your everyday<br />and your business.</p></div>
+      <div className="fg-tile-heading"><h4>Separate accounts.<br />One login.</h4><p>Switch between your everyday<br />{' '}and your business.</p></div>
       <div className="fg-members" role="img" aria-label="Team members panel: Nina Kovač just invited, Marc Dubois as admin, Elena Duarte in finance, the support team and Lena Fischer without access, and Tom Bauer invited two days ago.">
         <div className="fg-members-header">
           <span className="fg-members-emblem" aria-hidden="true"><span className="fg-members-emblem-disc" /><img src="/featuregrid/users.svg" width="30" height="30" alt="" draggable="false" /></span>
@@ -147,7 +149,7 @@ export function BusinessTiles({ scene, sceneId }: { scene: string; sceneId: stri
     </article>
     <article className="fg-tile fg-workspace" data-scene={scene}>
       <div id={sceneId} className="fg-workspace-art" aria-hidden="true">
-        {BUSINESS_SCENES.map((item) => <img key={item.id}
+        {BUSINESS_SCENES.filter((item) => studio || item.id === scene).map((item) => <img key={item.id}
           className={`fg-workspace-scene fg-workspace-scene--${item.id}${scene === item.id ? ' is-selected' : ''}`} src={item.src}
           srcSet={`${item.small} 860w, ${item.src} 1720w`} sizes="(max-width: 900px) 100vw, 860px"
           width="1720" height="1200" loading="lazy" decoding="async" draggable="false" alt="" />)}

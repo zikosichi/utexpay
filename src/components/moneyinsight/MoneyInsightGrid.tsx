@@ -25,20 +25,39 @@ const GROUPS: { question: string; items: [string, string][] }[] = [
   ] },
 ]
 
-/* The ninth item has no row in the chart section's inventory, so its mark lives here: the
-   settlements stack in reverse — coins lift off one by one and an arrow carries them out. */
+/* The ninth item has no row in the chart section's inventory, so its mark lives here: the euro
+   tile settlements end on, carried by an arrow to a bank (the issuing-banks facade). */
 const EXTRA_MARKS: Record<string, React.ReactNode> = {
-  Payouts: <svg viewBox="0 0 48 28" fill="none" aria-hidden="true"><rect className="mi-coin-out" x="2" y="20" width="15" height="4.5" rx="2.25" fill="var(--mi-gold-3)" /><rect className="mi-coin-out" x="2" y="14.5" width="15" height="4.5" rx="2.25" fill="var(--mi-gold-2)" /><rect className="mi-coin-out" x="2" y="9" width="15" height="4.5" rx="2.25" fill="var(--mi-gold)" /><path className="mi-draw" pathLength="1" d="M22 22v-9c0-4.4 3.6-8 8-8h14" stroke="var(--mi-gold)" strokeWidth="1.6" strokeLinecap="round" /><path className="mi-draw mi-draw--late" pathLength="1" d="m40 .5 4.5 4.5L40 9.5" stroke="var(--mi-gold)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>,
+  Payouts: <svg viewBox="0 0 48 28" fill="none" aria-hidden="true"><g className="mi-land mi-land--first"><rect x="1" y="5" width="18" height="18" rx="4.5" fill="var(--mi-gold)" /><path d="M13.6 10a5.4 5.4 0 1 0 0 8M3.8 12.6h6.6M3.8 15.4h6.6" stroke="#1c170d" strokeWidth="1.7" strokeLinecap="round" /></g><path className="mi-draw" pathLength="1" d="M22 14h7" stroke="var(--mi-gold)" strokeWidth="1.7" strokeLinecap="round" /><path className="mi-draw mi-draw--late" pathLength="1" d="m26.3 11 3 3-3 3" stroke="var(--mi-gold)" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" /><rect x="32" y="22.5" width="15" height="2.5" rx="1" fill="var(--mi-dim)" /><rect className="mi-col" x="33.5" y="12.5" width="2.6" height="9" rx=".8" fill="var(--mi-gold)" /><rect className="mi-col" x="38.2" y="12.5" width="2.6" height="9" rx=".8" fill="var(--mi-gold)" /><rect className="mi-col" x="42.9" y="12.5" width="2.6" height="9" rx=".8" fill="var(--mi-gold)" /><path className="mi-roof" d="M39.5 4.5 47 10.5H32l7.5-6Z" fill="var(--mi-gold-2)" /></svg>,
 }
 const COLS = GROUPS.length
 const ROWS = 1 + Math.max(...GROUPS.map((g) => g.items.length))
 
-export type GridMode = 'lines' | 'plain' | 'rows'
+export type GridMode = 'lines' | 'plain' | 'rows' | 'list'
 
 export function GridTrack({ items, id, mode = 'lines' }: { items: LedgerItem[]; id: string; mode?: GridMode }) {
   const marks = new Map<string, React.ReactNode>([...Object.entries(EXTRA_MARKS), ...items.map((item) => [item.name, item.mark] as const)])
   const lines = mode === 'lines'
   let n = 0
+  if (mode === 'list') {
+    /* 07 · List. The same nine views without the question grouping: one flat grid, three across on
+       desktop and two on tablets and phones, with the Rows version's full-width rule above each row. */
+    const flat = GROUPS.flatMap((g) => g.items)
+    return <div className="mi-track mi-track--grid mi-track--rows mi-track--list" id={id}>
+      <div className="mi-track-head mi-track-head--blocks">
+        <p className="mi-track-eyebrow">Also on your dashboard</p>
+        <h3 className="mi-track-title"><span className="mig-count--9">Nine</span><span className="mig-count--8">Eight</span> more ways to read your money.</h3>
+        <p className="mi-track-lead">Every view below is cut from the same payments as the chart, from who pays you to when the money lands.</p>
+      </div>
+      <div className="mig mig--list" role="list">
+        {flat.map(([name, line], i) => <div key={name} role="listitem" className="mig-cell" tabIndex={0} style={{ '--i': i } as React.CSSProperties} onPointerEnter={playMark} onAnimationEnd={settleMark}>
+          <span className="mi-mark">{marks.get(name)}</span>
+          <strong>{name}</strong>
+          <p>{line}</p>
+        </div>)}
+      </div>
+    </div>
+  }
   if (mode === 'rows') {
     /* One grid, filled column by column, so the three item rows line up across the questions and a
        rule can run the full width above each row. Cells carry the rules; the column gap is padding. */

@@ -1,8 +1,11 @@
-import { useEffect, useId, useRef, useState } from 'react'
+import { Suspense, lazy, useEffect, useId, useRef, useState } from 'react'
 import { DashboardSceneImage, DashboardVisual } from './DashboardVisual'
-import { DashboardStackSection } from '#/components/dashboardstack/DashboardStackSection'
 import { FeatureGridSection } from '#/components/featuregrid/FeatureGridSection'
+import { isStudio, useStudio } from '#/components/studio'
 import './personal-banking.css'
+
+// Only reachable from the studio version bar, so it stays out of the page's first load.
+const DashboardStackSection = lazy(() => import('#/components/dashboardstack/DashboardStackSection').then((m) => ({ default: m.DashboardStackSection })))
 
 const SCENE = '/personalbanking/phone-scene-1254.webp'
 const SCENE_SET = '/personalbanking/phone-scene-640.webp 640w, /personalbanking/phone-scene-960.webp 960w, /personalbanking/phone-scene-1254.webp 1254w'
@@ -81,8 +84,10 @@ export function PersonalBankingSection({ initialVersion = 'features' }: { initia
   const section = useSceneDepth(version !== 'stack' && version !== 'features')
   const dialog = useRef<HTMLDialogElement>(null)
   const [previewOpen, setPreviewOpen] = useState(false)
+  const studio = useStudio()
 
   useEffect(() => {
+    if (!isStudio()) return
     const requested = new URLSearchParams(window.location.search).get('personal')
     if (requested === 'phone' || requested === 'dashboard' || requested === 'concept' || requested === 'stack' || requested === 'features') setVersion(requested)
   }, [])
@@ -104,7 +109,7 @@ export function PersonalBankingSection({ initialVersion = 'features' }: { initia
   const overview = version === 'stack' || version === 'features'
   return <section ref={section} className="personal-banking" id="banking" data-version={version} aria-labelledby={overview ? undefined : `${id}-heading`} aria-label={overview ? 'Banking and payments overview' : undefined}>
     <span id="why-utex" className="personal-banking__legacy-anchor" aria-hidden="true" />
-    <div className="personal-banking__version-bar">
+    {studio && <div className="personal-banking__version-bar">
       <div className="personal-banking__versions" role="group" aria-label="Personal banking visual direction">
         <button type="button" aria-label="Phone" aria-pressed={version === 'phone'} aria-controls={`${id}-content`} onClick={() => setVersion('phone')}><span aria-hidden="true">01</span><span className="personal-banking__version-name" aria-hidden="true">Phone</span></button>
         <button type="button" aria-label="Dashboard" aria-pressed={version === 'dashboard'} aria-controls={`${id}-content`} onClick={() => setVersion('dashboard')}><span aria-hidden="true">02</span><span className="personal-banking__version-name" aria-hidden="true">Dashboard</span></button>
@@ -112,9 +117,9 @@ export function PersonalBankingSection({ initialVersion = 'features' }: { initia
         <button type="button" aria-label="Dashboard stack" aria-pressed={version === 'stack'} aria-controls={`${id}-content`} onClick={() => setVersion('stack')}><span aria-hidden="true">04</span><span className="personal-banking__version-name" aria-hidden="true">Dashboard stack</span></button>
         <button type="button" aria-label="Feature grid — Version 5" aria-pressed={version === 'features'} aria-controls={`${id}-content`} onClick={() => setVersion('features')}><span aria-hidden="true">05</span><span className="personal-banking__version-name" aria-hidden="true">Feature grid</span></button>
       </div>
-    </div>
+    </div>}
     <div id={`${id}-content`}>
-    {version === 'features' ? <FeatureGridSection /> : version === 'stack' ? <div className="personal-banking__stack"><DashboardStackSection embedded /></div> : <>
+    {version === 'features' ? <FeatureGridSection /> : version === 'stack' ? <div className="personal-banking__stack"><Suspense fallback={null}><DashboardStackSection embedded /></Suspense></div> : <>
     <div className="personal-banking__inner">
       <div className="personal-banking__copy">
         <p className="personal-banking__eyebrow">Personal banking</p>

@@ -121,12 +121,18 @@ export function HeroNavigation() {
   </nav>
 }
 
-export function HeroIntroduction({ onExplore, headline = heroHeadline(DEFAULT_HERO_HEADLINE) }: { onExplore: () => void; headline?: HeroHeadline }) {
+export function HeroIntroduction({ onExplore, exploreHref, responsiveExploreHref, headline = heroHeadline(DEFAULT_HERO_HEADLINE) }: { onExplore?: () => void; exploreHref?: string; responsiveExploreHref?: string; headline?: HeroHeadline }) {
   return <div className="studio-copy">
     {/* Lines break where they were written on desktop; below 760px the break hides and the headline balances itself. */}
     <h1>{headline.lines.map((line, index) => <Fragment key={line}>{index > 0 && <br className="studio-desktop-break" />}{index > 0 && ' '}{line}</Fragment>)}</h1>
     <p className="studio-description">{headline.support}</p>
-    <div className="studio-actions" data-hero-actions><ButtonLink href="/#signup">Open an account</ButtonLink><Button variant="secondary" onClick={onExplore}>See how it works</Button></div>
+    <div className="studio-actions" data-hero-actions>
+      <ButtonLink href="/#signup">Open an account</ButtonLink>
+      {responsiveExploreHref ? <>
+        <ButtonLink className="ah-mobile-explore" variant="secondary" href={responsiveExploreHref}>Explore accounts</ButtonLink>
+        <ButtonLink className="ah-desktop-explore" variant="secondary" href="/#demo">Try live demo</ButtonLink>
+      </> : exploreHref ? <ButtonLink variant="secondary" href={exploreHref}>Explore accounts</ButtonLink> : <Button variant="secondary" onClick={onExplore}>Try live demo</Button>}
+    </div>
   </div>
 }
 

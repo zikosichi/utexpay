@@ -4,6 +4,8 @@
 
 .feature-grid { --fg-gold: #d6b77b; --fg-text: #f3f0e9; --fg-muted: #ada89f; position: relative; width: calc(100% - 2 * var(--banking-container-gutter, 48px)); max-width: var(--banking-container-width, 1280px); margin: 0 auto; padding: 40px 0 24px; color: var(--fg-text); font-family: 'Manrope', sans-serif; }
 .feature-grid .section-heading { margin-bottom: 56px; }
+/* Phones set the heading one sentence per line; wider screens pair the first two. */
+@media (min-width: 601px) { .fg-phone-break { display: none; } }
 /* Chapter index: three numbered columns between the heading and the first chapter. Same ledger
    grammar as the One account section (mono index, display name, muted line, hairline rules). */
 .fg-index { margin: 0 0 84px; }
@@ -36,12 +38,14 @@
 .fg-chapter-heading h3 { grid-area: title; align-self: start; }
 .fg-chapter-heading > p { display: flex; align-items: center; gap: 14px; margin: 0 0 14px; color: var(--fg-gold); font: 400 10px/1.5 'JetBrains Mono', monospace; letter-spacing: .18em; text-transform: uppercase; }
 .fg-chapter-heading > p::before { content: ''; width: 28px; height: 1px; background: currentColor; }
-.fg-chapter-heading h3 { margin: 0; font: 500 clamp(26px, 2.6vw, 40px)/1.22 'Plus Jakarta Sans', sans-serif; letter-spacing: -.045em; text-wrap: balance; }
+.fg-chapter-heading h3 { margin: 0; font: 500 clamp(26px, 2.6vw, 40px)/1.22 'Plus Jakarta Sans', sans-serif; letter-spacing: -.045em; word-spacing: .1em; text-wrap: balance; }
 .fg-row { display: grid; gap: 18px; }
 .fg-row--personal { grid-template-columns: 1.65fr 1fr; }
 .fg-tile { position: relative; isolation: isolate; overflow: hidden; min-width: 0; min-height: 500px; border: 1px solid #cbb0784d; border-radius: 18px; background: #181714; }
 .fg-tile-heading { position: relative; z-index: 2; padding: 32px; pointer-events: none; }
 .fg-tile-heading h4 { margin: 0; font: 500 clamp(23px, 2.1vw, 31px)/1.2 'Plus Jakarta Sans', sans-serif; letter-spacing: -.035em; }
+/* The tight tracking shrinks the space glyph too; give the gaps back without widening the letters. */
+.fg-tile h4, .fg-workspace-copy h4 { word-spacing: .1em; }
 .fg-tile-heading p { color: var(--fg-muted); font-size: 15px; line-height: 1.55; margin: 12px 0 0; }
 .fg-scene { position: absolute; z-index: -1; inset: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; user-select: none; }
 /* Personal money tile — Figma `Article` 4855:9675. The tile renders at exactly the design's
@@ -75,7 +79,7 @@
 /* Fill per Figma 4855:10478 — a warm radial wash at 20% over a flat white 5%. Figma states the
    wash as an SVG gradient matrix; its rotated ellipse is expressed here as CSS's axis-aligned
    equivalent (bounding extents), and the 20% layer opacity is folded into the stop alphas. */
-.fg-balance-panel { position: relative; display: flex; flex-direction: column; gap: 12px; padding: 16px; border-radius: 8px; background: radial-gradient(112.91% 97.96% at 96.52% 23.76%, #55483c33 0%, #39322d33 50%, #1d1d1d33 100%), #ffffff0d; --fg-stroke: linear-gradient(224.33deg, #ffffff33 1%, #9999991f 100%); }
+.fg-balance-panel { position: relative; display: flex; flex-direction: column; gap: 12px; padding: 16px; border-radius: 8px; backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); background: radial-gradient(112.91% 97.96% at 96.52% 23.76%, #55483c33 0%, #39322d33 50%, #1d1d1d33 100%), #ffffff0d; --fg-stroke: linear-gradient(224.33deg, #ffffff33 1%, #9999991f 100%); }
 .fg-balance-total { display: flex; flex-direction: column; gap: 2px; text-shadow: 0 1px 4px #00000040; }
 .fg-balance-label { margin: 0; color: #b5afa8; font: 400 14px/20px 'JetBrains Mono', monospace; }
 .fg-balance-amount { margin: 0; color: #fffbeb; font: 500 36px/49px 'Manrope', sans-serif; letter-spacing: -.3325px; }
@@ -90,18 +94,17 @@
 .fg-glass { position: relative; border: 1px solid transparent; background: var(--fg-panel-fill); border-radius: 8px; box-shadow: 0 10px 28px #0003; backdrop-filter: blur(14px); }
 .fg-glass::after { content: ''; position: absolute; z-index: 3; inset: -1px; padding: 1px; border-radius: inherit; background: var(--fg-panel-stroke); mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); mask-composite: exclude; pointer-events: none; }
 .feature-grid small { display: block; font-size: 10px; font-weight: 400; color: #aba89f; line-height: 1.6; }
-/* Spending tile — Figma 4855:10510 (521.51 × 656.98, the tile's exact width in the 1400px grid).
-   Figma offsets are measured from the frame's OUTER edge; the tile's real 1px border means every
-   CSS offset is 1px smaller. The scene is the design's 594 × 743 image at (-73, 0), clipped by
-   the tile. The receipt (307 × 70 at 196, 241) is right-anchored so it survives narrower tiles. */
-.fg-spending { min-height: 657px; }
-.fg-spending-scene { position: absolute; z-index: -1; top: -1px; left: -74px; width: 594px; max-width: none; height: 743px; object-fit: cover; pointer-events: none; user-select: none; }
+/* Photo and notification share the source image's 1122 × 1402 coordinate space.
+   The cup's back rim is at (805, 735); a percentage anchor follows it at every size. */
+.fg-spending { min-height: 657px; background: #090706; container-type: inline-size; }
+.fg-spending-art { position: absolute; top: -1px; left: -74px; width: 594px; aspect-ratio: 1122 / 1402; --receipt-width: 284px; }
+.fg-spending-scene { position: absolute; z-index: -1; inset: 0; width: 100%; height: 100%; max-width: none; object-fit: cover; mask-image: linear-gradient(to bottom, transparent, #000 64px); pointer-events: none; user-select: none; }
 .fg-spending .fg-tile-heading { padding: 59px 0 0 58.51px; }
 .fg-spending .fg-tile-heading h4 { font-size: 36px; line-height: 37.5px; letter-spacing: -1.085px; }
 .fg-spending .fg-tile-heading p { line-height: 23.25px; }
 /* Black 40% over a 27px backdrop blur; 1px inside stroke = white → #999999 at 30%, whose
    endpoints (304,1) → (280,125) convert to 191.1deg with the ramp starting at 1%. */
-.fg-receipt { position: absolute; z-index: 2; top: 240px; right: 17.5px; width: min(284px, calc(100% - 35px)); transform-origin: 50% 50%; transform: perspective(930px) translate3d(3px, 17px, 0) rotateX(-11.5deg) rotateY(-26.5deg); box-shadow: 0 24px 48px -22px #000c; animation: fg-levitate 7s ease-in-out infinite; display: flex; align-items: center; gap: 12px; padding: 13px; border-radius: 8px; background: #0006; backdrop-filter: blur(27px); -webkit-backdrop-filter: blur(27px); --fg-stroke: linear-gradient(191.1deg, #ffffff4d 1%, #9999994d 100%); }
+.fg-receipt { position: absolute; z-index: 2; bottom: 47.575%; left: min(71.747%, calc(100% - var(--receipt-width) / 2 - 12px)); width: var(--receipt-width); margin-left: calc(var(--receipt-width) / -2); transform-origin: 50% 50%; transform: perspective(930px) translate3d(3px, -24px, 0) rotateX(-11.5deg) rotateY(-26.5deg); box-shadow: 0 24px 48px -22px #000c; animation: fg-levitate 7s ease-in-out infinite; display: flex; align-items: center; gap: 12px; padding: 13px; border-radius: 8px; background: #0006; backdrop-filter: blur(27px); -webkit-backdrop-filter: blur(27px); --fg-stroke: linear-gradient(191.1deg, #ffffff4d 1%, #9999994d 100%); }
 /* Levitation rides on the `translate` property so it composes with the 3D pose instead of replacing it. */
 @keyframes fg-levitate { 0%, 100% { translate: 0 0; box-shadow: 0 24px 48px -22px #000c; } 50% { translate: 0 -7px; box-shadow: 0 32px 56px -24px #000a; } }
 /* Steam canvas sits between the scene and the receipt, so the receipt's backdrop blur softens it. */
@@ -114,7 +117,7 @@
 .fg-receipt > strong { margin-left: auto; white-space: nowrap; font-size: 13px; line-height: 20px; font-weight: 500; }
 .feature-grid button:focus-visible, .feature-grid input:focus-visible { outline: 2px solid #e8c987; outline-offset: 4px; }
 @keyframes fg-appear { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: translateY(0); } }
-@media (max-width: 900px) { .feature-grid { width: calc(100% - 56px); padding-top: 56px; } .fg-index ol { grid-template-columns: 1fr; gap: 0; } .fg-chapter-heading { grid-template-columns: 1fr; grid-template-areas: 'eyebrow' 'title' 'lead'; align-items: start; margin-bottom: 24px; } .fg-chapter-heading > p.fg-chapter-lead { max-width: 560px; } .fg-chapter-heading > p.fg-chapter-lead { margin-top: 14px; } .fg-index li + li { border-left: 0; border-top: 1px solid #2e2b26; padding-left: 0; } .fg-index a { padding: 20px 0 22px; } .fg-row--personal { grid-template-columns: 1.2fr 1fr; } .fg-tile { min-height: 470px; } .fg-tile-heading { padding: 24px; } .fg-money-ui { left: 24px; bottom: 24px; width: min(302px, 68%); } .fg-spending-scene { inset: 0; width: 100%; height: 100%; object-position: 50% 62%; } }
+@media (max-width: 900px) { .feature-grid { width: calc(100% - 56px); padding-top: 56px; } .fg-index ol { grid-template-columns: 1fr; gap: 0; } .fg-chapter-heading { grid-template-columns: 1fr; grid-template-areas: 'eyebrow' 'title' 'lead'; align-items: start; margin-bottom: 24px; } .fg-chapter-heading > p.fg-chapter-lead { max-width: 560px; } .fg-chapter-heading > p.fg-chapter-lead { margin-top: 14px; } .fg-index li + li { border-left: 0; border-top: 1px solid #2e2b26; padding-left: 0; } .fg-index a { padding: 20px 0 22px; } .fg-row--personal { grid-template-columns: 1.2fr 1fr; } .fg-tile { min-height: 470px; } .fg-tile-heading { padding: 24px; } .fg-money-ui { left: 24px; bottom: 24px; width: min(302px, 68%); } .fg-spending-art { inset: auto 0 calc(130px - 59.4cqw); width: 100%; } }
 @media (max-width: 620px) { .feature-grid { width: calc(100% - 40px); padding-top: 48px; } .feature-grid .section-heading { margin-bottom: 40px; } .fg-index { margin-bottom: 56px; } .fg-chapter-heading > p.fg-chapter-lead { font-size: 15px; line-height: 25px; } .fg-row--personal { grid-template-columns: 1fr; } .fg-tile { min-height: 460px; border-radius: 14px; } .fg-money-ui { width: min(302px, 72%); } .fg-tile-heading { padding: 24px; } .fg-chapter-heading h3 { font-size: 28px; } .fg-currencies { gap: 5px; } .fg-currencies button { padding-inline: 8px; } }
 @media (prefers-reduced-motion: reduce) { .feature-grid *, .feature-grid *::before, .feature-grid *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
 
@@ -181,13 +184,13 @@
 .fg-member-access--none > span:first-child { background: #5a5650; }
 .fg-member-chevron { display: block; flex-shrink: 0; width: 16px; height: 16px; }
 .fg-members-fade { position: absolute; z-index: 3; left: -1px; bottom: -1px; width: 522px; height: 117px; background: linear-gradient(#0000, #0b0b0bb3); pointer-events: none; }
-/* Right tile: two review backgrounds share the existing 860 × 600 desktop footprint.
-   Contain preserves object geometry; proportional copy placement protects its reserved space.
-   On phones the copy and artwork stack inside the same tile. */
+/* Right tile: review backgrounds cover the tile at every aspect ratio without distortion.
+   Bottom-left anchoring preserves the subject; proportional copy placement reserves its space.
+   On phones the artwork sits left of compact, right-aligned copy. */
 /* Same white → #999999 stroke at 30% as the left tile (Zviad, Sep 15), by the same padding-box trick. */
 .fg-workspace { container-type: inline-size; border-color: transparent; background: linear-gradient(#0b0b0b, #0b0b0b) padding-box, linear-gradient(#ffffff4d, #9999994d) border-box; }
 .fg-workspace-art { position: absolute; inset: 0; }
-.fg-workspace-scene { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; object-position: left bottom; opacity: 0; transition: opacity .3s ease; pointer-events: none; user-select: none; }
+.fg-workspace-scene { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: left bottom; opacity: 0; transition: opacity .3s ease; pointer-events: none; user-select: none; }
 .fg-workspace-scene.is-selected { opacity: 1; }
 .fg-workspace-scene--laptop { transform: translateX(-7%); }
 .fg-workspace-scene--handover, .fg-workspace-scene--overhead, .fg-workspace-scene--sculpture { object-fit: cover; object-position: center bottom; }
@@ -213,8 +216,6 @@
   .fg-money-ui { width: min(302px, 76%); }
   .fg-currencies button { font-size: 10px; gap: 7px; }
   .fg-spending { min-height: 470px; }
-  .fg-spending-scene { inset: 0; width: 100%; height: 100%; object-position: 62% 50%; }
-  .fg-receipt { top: 200px; right: 20px; width: min(307px, calc(100% - 40px)); }
   .fg-chapter + .fg-chapter { margin-top: 40px; padding-top: 34px; }
 }
 @media (max-width: 370px) {
@@ -229,9 +230,6 @@
   .fg-money .fg-money-phone { right: -10%; }
   .fg-money-ui { width: min(302px, 52%); }
 }
-@media (min-width: 621px) and (max-width: 900px) {
-  .fg-row--personal { grid-template-columns: 1fr; }
-}
 @media (max-width: 620px) {
   .fg-money { min-height: 460px; padding-bottom: 330px; }
   .fg-money .fg-money-phone { inset: auto 0 0; width: 100%; height: 350px; object-fit: contain; mask-image: linear-gradient(to bottom, transparent, #000 12%); transform: none; }
@@ -239,7 +237,7 @@
 }
 
 /* Business tiles below the 1400px grid: the card shrinks with its tile, the photo tile keeps its
-   right-anchored copy, and on phones both stack with the copy moved to the top. */
+   right-anchored copy, with a compact side-by-side composition on phones. */
 @media (max-width: 1100px) {
   .fg-row--business { grid-template-columns: 1fr 1fr; }
   .fg-accounts .fg-tile-heading { width: auto; right: 24px; }
@@ -259,18 +257,19 @@
   .fg-members-columns > span:nth-child(2) { width: auto; }
   .fg-member-access { width: auto; }
   .fg-member-name, .fg-member-detail { overflow: hidden; text-overflow: ellipsis; }
-  .fg-row--business .fg-workspace { height: 880px; }
-  .fg-workspace-art { top: auto; height: 360px; mask-image: linear-gradient(transparent, #000 15%); }
-  .fg-workspace-scene { object-fit: cover; object-position: left center; }
+  /* Keep the copy in flow so wrapped labels can grow the tile on narrow phones. */
+  .fg-row--business .fg-workspace { display: grid; grid-template-columns: 42% minmax(0, 1fr); min-height: 386px; }
+  .fg-workspace-art { position: absolute; inset: 0 auto 0 0; width: 65%; mask-image: linear-gradient(to right, #000 10%, transparent 100%); }
+  .fg-workspace-scene { object-fit: cover; object-position: 40% center; }
   .fg-workspace-scene--laptop { transform: none; }
-  .fg-workspace-copy { inset: 0; width: auto; height: auto; background: none; }
-  .fg-workspace-copy > div { position: static; width: auto; padding: 32px 24px 0; }
-  .fg-workspace-copy p { font-size: 16px; }
-  .fg-workspace-copy .fg-workspace-features li { font-size: 18px; gap: 16px; }
-  .fg-workspace-features { margin-top: 32px; gap: 14px; }
-  .fg-workspace-features li { font-size: 18px; gap: 16px; }
-  .fg-feature-icon { width: 42px; height: 42px; border-radius: 13px; }
-  .fg-feature-icon svg { width: 20px; height: 20px; }
+  .fg-workspace-copy { position: relative; inset: auto; grid-column: 2; align-self: center; min-width: 0; width: auto; height: auto; background: none; }
+  .fg-workspace-copy > div { position: static; width: auto; padding: 28px 16px 28px 0; }
+  .fg-workspace-copy h4 { font-size: clamp(21px, 6.4cqw, 27px); line-height: 1.15; letter-spacing: -.7px; }
+  .fg-workspace-copy p { margin-top: 10px; font-size: 13px; line-height: 19px; }
+  .fg-workspace-copy .fg-workspace-features li { font-size: 13px; line-height: 18px; gap: 8px; }
+  .fg-workspace-features { margin-top: 24px; gap: 12px; }
+  .fg-feature-icon { width: 32px; height: 32px; border-radius: 10px; }
+  .fg-feature-icon svg { width: 17px; height: 17px; }
 }
 @media (max-width: 480px) {
   .fg-member, .fg-members-columns { gap: 12px; padding-inline: 16px; }
@@ -304,6 +303,12 @@
   /* Loops start with `has-entered` and only PAUSE while the chapter is off-screen (`is-in` gone),
      so they resume in phase instead of restarting — restarting snapped every row to its rest state. */
   .fg-chapter:not(.is-in) .fg-members-emblem::before, .fg-chapter:not(.is-in) .fg-members-emblem-disc { animation-play-state: paused; }
+  /* Same for the loops that live outside this file: the levitating receipt, the floating payment
+     notification and the "Try it yourself" rim light and halo (checkout-scene.css). */
+  /* The product card's `animation` shorthand sits on a four-class selector in checkout-scene.css and
+     would reset the play state, hence the heavier selector here. */
+  .fg-chapter:not(.is-in) :is(.fg-receipt, .fg-checkout-replay), .fg-chapter:not(.is-in) .fg-checkout-replay::before,
+  .feature-grid .fg-chapter:not(.is-in) .fg-checkout-product[data-visible] { animation-play-state: paused; }
 
   /* Emblem: the angular ring turns once every 24s and the disc breathes with it. */
   .has-entered .fg-members-emblem::before { animation: fg-turn 24s linear infinite; }
@@ -351,6 +356,15 @@
 .fg-money-art { position: absolute; z-index: -1; inset: 0; }
 .fg-money .fg-money-phone { opacity: 0; transition: opacity .3s ease; }
 .fg-money .fg-money-phone.is-selected { opacity: 1; }
+/* Keep the supplied dashboard and physical card visible in this review direction. */
+@media (min-width: 621px) {
+  .fg-money-art[data-scene='approved-ui'] .fg-money-phone { top: 32px; left: auto; right: -32px; mask-image: linear-gradient(to right, transparent 0, #00000008 48px, #00000040 112px, #000000a6 180px, #000 250px), linear-gradient(to bottom, transparent, #000 24px); mask-composite: intersect; }
+  .fg-money-art[data-scene='full-composition'] .fg-money-phone {
+    top: -60px; left: auto; right: -52px; width: 696px; height: auto; object-fit: contain;
+    /* Headroom and rounded glow are in the full-resolution photograph; only blend its left edge. */
+    mask-image: linear-gradient(to right, transparent 0, #00000008 48px, #00000040 112px, #000000a6 180px, #000 250px);
+  }
+}
 @media (max-width: 1000px), (pointer: coarse) {
   .fg-chapter--directions { display: flex; flex-direction: column; }
   .fg-chapter--directions > .fg-chapter-heading { order: 0; }
@@ -359,4 +373,118 @@
   .fg-image-directions button { width: 44px; height: 44px; }
   .fg-image-directions button::after { top: auto; right: 16px; bottom: 3px; width: 12px; height: 2px; }
   .fg-image-direction-name { top: auto; bottom: 100%; right: 0; transform: none; }
+}
+/* Small phones: the Members card is under 300px wide, so its title steps down to stay inside it. */
+@media (max-width: 400px) {
+  .fg-members-title { width: auto; right: 16px; }
+  .fg-members-title > strong { font-size: 30px; line-height: 38px; }
+}
+/* Shared tablet sizing: one compact treatment for both stacked and side-by-side tiles. */
+@media (min-width: 621px) and (max-width: 1400px) {
+  .fg-row--personal { --personal-tile-height: clamp(480px, 43vw, 570px); }
+  .fg-row--personal > .fg-tile { min-height: var(--personal-tile-height); padding-bottom: 0; }
+  :is(.fg-money, .fg-spending) .fg-tile-heading { padding: 32px 28px 0; }
+  :is(.fg-money, .fg-spending) .fg-tile-heading h4 { font-size: 28px; line-height: 31px; letter-spacing: -.8px; }
+  :is(.fg-money, .fg-spending) .fg-tile-heading p { margin-top: 10px; font-size: 14px; line-height: 21px; }
+  .fg-money-ui { position: absolute; left: 28px; bottom: 28px; width: min(260px, 46%); margin: 0; }
+  .fg-balance-panel { gap: 10px; padding: 12px; }
+  .fg-balance-label { font-size: 12px; line-height: 18px; }
+  .fg-balance-amount { font-size: 28px; line-height: 36px; }
+  .fg-balance-accounts { gap: 8px; }
+  .fg-balance-account { gap: 8px; padding: 8px; }
+  .fg-balance-account-code { font-size: 14px; line-height: 20px; }
+  .fg-balance-account-value { font-size: 12px; line-height: 16px; }
+  .fg-currency-badge { width: 32px; height: 32px; }
+  .fg-currency-badge > span { font-size: 18px; }
+  .fg-money-art:is([data-scene='approved-ui'], [data-scene='full-composition']) .fg-money-phone {
+    inset: auto -100px -48px auto; width: auto; max-width: none; height: calc(100% + 145px);
+  }
+  .fg-spending-art { inset: auto 0 0; width: 100%; --receipt-width: 224px; }
+  .fg-receipt { gap: 10px; padding: 10px; }
+  .fg-receipt-avatar { width: 34px; height: 34px; }
+  .fg-receipt-text > small { font-size: 11px; line-height: 14px; }
+}
+
+/* Stacked tablet composition. Larger upright iPads use the same layout as narrow tablets. */
+@media (min-width: 621px) and (max-width: 900px),
+       (min-width: 901px) and (max-width: 1100px) and (orientation: portrait) {
+  .fg-row--personal { grid-template-columns: 1fr; --personal-tile-height: clamp(472px, 58vw, 520px); }
+  .fg-money-art:is([data-scene='approved-ui'], [data-scene='full-composition']) .fg-money-phone { right: -32px; }
+  /* Cap the photograph at its desktop size and align it to the right. Natural proportions keep
+     the whole cup visible; the existing image-relative notification needs no tablet offsets. */
+  .fg-spending-art { inset: auto 0 -24px auto; width: min(100%, 594px); }
+  .fg-spending-scene { mask-image: linear-gradient(to right, transparent 0 8%, #00000014 18%, #00000066 30%, #000 48%), linear-gradient(to bottom, transparent, #000 64px); mask-composite: intersect; }
+
+  .fg-row--business { grid-template-columns: 1fr; }
+  .fg-row--business .fg-accounts { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); grid-template-rows: minmax(0, 1fr); gap: 24px; height: 400px; padding: 32px; }
+  .fg-accounts .fg-tile-heading { position: static; width: auto; align-self: start; }
+  .fg-accounts .fg-tile-heading h4 { font-size: clamp(26px, 3.8vw, 36px); line-height: 1.2; }
+  .fg-accounts .fg-tile-heading p { font-size: 14px; line-height: 22px; }
+  .fg-accounts .fg-tile-heading p br { display: none; }
+  .fg-members { position: relative; inset: auto; width: 100%; min-width: 0; }
+  .fg-members-columns > span:nth-child(2) { width: 90px; }
+  .fg-member, .fg-members-columns { padding-inline: 16px; gap: 10px; }
+  .fg-member-identity { gap: 10px; }
+  .fg-member-avatar { width: 32px; height: 32px; font-size: 13px; }
+  .fg-member-name { font-size: 14px; }
+  .fg-member-detail { font-size: 12px; }
+  .fg-member-access { width: 72px; font-size: 12px; }
+  .fg-member-badge { padding: 3px 6px; font-size: 10px; }
+  .fg-members-title { left: 100px; }
+  .fg-members-title > strong { font-size: 28px; }
+  .fg-members-emblem { transform: scale(.8); transform-origin: left center; }
+  .fg-members-fade { display: none; }
+
+  .fg-row--business .fg-workspace { height: clamp(400px, 50vw, 440px); }
+  .fg-workspace-scene { object-fit: cover; }
+  .fg-workspace-copy > div { top: 28px; }
+  .fg-workspace-copy h4 { font-size: clamp(24px, 4.19cqw, 36px); }
+  .fg-workspace-copy p { font-size: clamp(13px, 1.95cqw, 16px); }
+  .fg-workspace-features { margin-top: 24px; gap: 10px; }
+  .fg-feature-icon { width: 36px; height: 36px; border-radius: 12px; }
+}
+
+/* Personal tiles on phones (Sep 25): the desktop sizes (36px headings, 58px insets, 68px account
+   rows) made each tile taller than the screen, so the tile read as a page rather than a glimpse.
+   Same parts, scaled to the phone: shared 24px inset, one-line account rows, shorter scenes. */
+@media (max-width: 620px) {
+  :is(.fg-money, .fg-spending) .fg-tile-heading { padding: 28px 24px 0; }
+  :is(.fg-money, .fg-spending) .fg-tile-heading h4 { font-size: 27px; line-height: 30px; letter-spacing: -.8px; }
+  :is(.fg-money, .fg-spending) .fg-tile-heading p { margin-top: 8px; font-size: 14px; line-height: 20px; }
+
+  /* Panel and photo side by side, as on desktop: the photo is anchored bottom-right and runs off
+     the tile's right edge so the phone sits beside the panel; its left edge fades under the panel. */
+  .fg-row--personal .fg-money { min-height: 386px; padding-bottom: 0; }
+  .fg-money .fg-money-phone { inset: auto -64px 0 auto; width: 85%; height: auto; aspect-ratio: 1168 / 1346; object-fit: contain; object-position: right bottom; left: auto; mask-image: linear-gradient(to right, transparent 0, #000 38%), linear-gradient(to bottom, transparent, #000 18%); mask-composite: intersect; }
+  .fg-money-ui { position: absolute; left: 20px; bottom: 24px; width: min(184px, 54%); margin: 0; }
+  .fg-balance-panel { gap: 8px; padding: 10px; }
+  .fg-balance-label { font-size: 11px; line-height: 14px; }
+  .fg-balance-amount { font-size: 22px; line-height: 28px; letter-spacing: -.2px; }
+  .fg-balance-accounts { gap: 6px; }
+  .fg-balance-account { align-items: center; gap: 8px; padding: 6px 8px 6px 6px; }
+  .fg-balance-account-info { flex-direction: row; align-items: baseline; justify-content: space-between; gap: 6px; }
+  .fg-balance-account-code { font-size: 13px; line-height: 18px; }
+  .fg-balance-account-value { font-size: 12px; line-height: 16px; }
+  .fg-currency-badge { width: 24px; height: 24px; }
+  .fg-currency-badge > span { font-size: 13px; }
+
+  /* Moving the photo also moves its cup-anchored notification. */
+  .fg-row--personal .fg-spending { min-height: 386px; }
+  .fg-spending-art { bottom: -84px; --receipt-width: min(224px, calc(100% - 24px)); }
+  .fg-receipt { gap: 10px; padding: 10px; }
+  .fg-receipt-avatar { width: 34px; height: 34px; }
+  .fg-receipt-avatar img { width: 16px; height: 16px; }
+  .fg-receipt-text > span { font-size: 14px; line-height: 18px; }
+  .fg-receipt-text > small { font-size: 11px; line-height: 14px; }
+  .fg-receipt > strong { font-size: 13px; }
+}
+
+/* Phones: the product name leads and the line becomes its eyebrow. The eyebrow and h3 trade
+   styles and places. The markup stays the same, so the h3 is still the section's heading. */
+@media (max-width: 620px) {
+  .fg-chapter-heading { grid-template-areas: 'title' 'eyebrow' 'lead'; }
+  .fg-chapter-heading > p:first-child { display: block; margin: 0; color: #f3f2ee; font: 500 32px/1.15 'Plus Jakarta Sans', sans-serif; letter-spacing: -.045em; word-spacing: .1em; text-transform: none; }
+  .fg-chapter-heading > p:first-child::before { content: none; }
+  .fg-chapter-heading h3 { display: flex; align-items: center; gap: 14px; margin: 0 0 14px; color: var(--fg-gold); font: 400 10px/1.5 'JetBrains Mono', monospace; letter-spacing: .18em; word-spacing: 0; text-transform: uppercase; }
+  .fg-chapter-heading h3::before { content: ''; flex-shrink: 0; width: 28px; height: 1px; background: currentColor; }
 }

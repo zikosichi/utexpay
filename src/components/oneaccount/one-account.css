@@ -28,17 +28,52 @@
 .oa-lead p + p { margin-top: 16px; color: var(--oa-text); }
 
 .oa-ledger { list-style: none; margin: clamp(48px, 5vw, 80px) 0 0; padding: 0; border-top: 1px solid var(--oa-rule); }
-.oa-row { display: grid; grid-template-columns: 72px 220px minmax(0, 1fr) 150px; column-gap: 24px; align-items: start; padding: 30px 0; border-bottom: 1px solid var(--oa-rule); }
-.oa-index { color: #77736b; font: 400 12px/26px 'JetBrains Mono', monospace; letter-spacing: .08em; }
-.oa-verb { margin: .08em 0 0; font: 500 clamp(24px, 2vw, 32px)/1 'Plus Jakarta Sans', sans-serif; letter-spacing: -.03em; transition: color 220ms ease; }
-.oa-row:hover .oa-verb { color: var(--oa-gold); }
+.oa-row { display: grid; grid-template-columns: 72px 220px minmax(0, 1fr) 150px; column-gap: 24px; align-items: start; padding: var(--oa-row-pad) 0; border-bottom: 1px solid var(--oa-rule); }
+.oa-index { color: #8f8a7e; font: 300 clamp(20px, 1.6vw, 26px)/1 'Onest', sans-serif; letter-spacing: -.04em; padding-top: .26em; }
+.oa-verb { margin: .08em 0 0; font: 500 clamp(24px, 2vw, 32px)/1 'Plus Jakarta Sans', sans-serif; letter-spacing: -.03em; }
 .oa-text { margin: 0; max-width: 640px; color: var(--oa-muted); font-size: 16px; line-height: 26px; text-wrap: pretty; }
 .oa-status { display: inline-flex; align-items: center; justify-content: flex-end; gap: 10px; color: #9a9690; font: 400 12px/26px 'JetBrains Mono', monospace; letter-spacing: .1em; text-transform: uppercase; white-space: nowrap; }
 .oa-status[data-on] { color: var(--oa-gold); }
-/* The fourth row's switch: the one capability you add rather than open with. */
-.oa-toggle { position: relative; width: 28px; height: 16px; border-radius: 999px; background: #c9a56733; box-shadow: inset 0 0 0 1px #c9a56760; }
-.oa-toggle::after { content: ''; position: absolute; top: 3px; left: 3px; width: 10px; height: 10px; border-radius: 50%; background: var(--oa-gold); box-shadow: 0 0 8px #d6b77b99; transform: translateX(0); transition: transform 420ms var(--oa-ease); }
-.one-account.is-in .oa-toggle::after { transform: translateX(12px); transition-delay: 900ms; }
+/* The fourth row's switch: the one capability you add rather than open with. In the ledger it is a
+   real control (off until clicked); in the accordion it sits inside the row button, so it stays a
+   static "on" picture there. */
+.oa-toggle { position: relative; flex: none; width: 28px; height: 16px; border-radius: 999px; background: #c9a56733; box-shadow: inset 0 0 0 1px #c9a56760; transition: background 320ms var(--oa-ease), box-shadow 320ms var(--oa-ease); }
+.oa-toggle::after { content: ''; position: absolute; top: 3px; left: 3px; width: 10px; height: 10px; border-radius: 50%; background: var(--oa-gold); box-shadow: 0 0 8px #d6b77b99; transform: translateX(12px); transition: transform 420ms var(--oa-ease), background 320ms var(--oa-ease), box-shadow 320ms var(--oa-ease); }
+.oa-switch { margin: -9px -10px -9px 0; padding: 9px 10px; justify-self: end; border: 0; border-radius: 6px; background: transparent; color: #cdbb94; cursor: pointer; transition: color 320ms var(--oa-ease), background 200ms; }
+/* Touch screens keep :hover after a tap, which would leave the tinted box on; mouse only. */
+@media (hover: hover) { .oa-switch:hover { background: #d6b77b0f; color: var(--oa-gold); } }
+.oa-switch:focus-visible { outline: 2px solid var(--oa-gold); outline-offset: 0; }
+.oa-switch[aria-checked='false'] .oa-toggle { background: #ffffff0a; box-shadow: inset 0 0 0 1px #ffffff2e; }
+.oa-switch[aria-checked='false'] .oa-toggle::after { transform: none; background: #8f8a81; box-shadow: none; }
+@media (hover: hover) { .oa-switch:hover[aria-checked='false'] .oa-toggle { box-shadow: inset 0 0 0 1px #d6b77b80; } }
+.oa-switch[aria-checked='true'] { color: var(--oa-gold); }
+/* Switched on, the row lights like an open accordion row: the capability is now part of the account. */
+.oa-row .oa-verb, .oa-row .oa-index, .oa-row .oa-text { transition: color 420ms var(--oa-ease); }
+.oa-row[data-live] :is(.oa-verb, .oa-index) { color: var(--oa-gold); }
+.oa-row[data-live] .oa-text { color: var(--oa-text); }
+
+/* The payment feed under Get paid: its height is reserved in both states so switching never shifts
+   the page. Off it stays empty; on, a stack of chips — the newest drops in front, the older ones
+   recede behind and below it (into the row's bottom padding) and fade, slowly. */
+.oa-feed { position: relative; grid-row: 2; grid-column: 3; height: 32px; margin: 12px 0 0; perspective: 700px; perspective-origin: 30% 0; color: var(--oa-muted); font: 400 12px/20px 'JetBrains Mono', monospace; letter-spacing: .02em; white-space: nowrap; }
+.oa-feed-item { position: absolute; top: 0; left: 0; display: inline-flex; align-items: center; gap: 12px; height: 32px; }
+/* Fixed mono columns (amount 8ch, method 18ch), so every chip is the same width and the stack
+   shows only edges behind the front one, never a longer chip's text. */
+.oa-feed-item { display: inline-grid; grid-template-columns: 6px auto 8ch 18ch auto; padding: 0 14px 0 12px; border-radius: 8px; background: #141417; box-shadow: inset 0 0 0 1px #ffffff14, 0 10px 24px #0008;
+  transform-origin: 50% 0; transition: transform 1200ms var(--oa-ease), opacity 1200ms var(--oa-ease); animation: oa-feed-in 700ms var(--oa-ease) backwards; }
+.oa-feed-item[data-depth='0'] { z-index: 4; }
+.oa-feed-item[data-depth='1'] { z-index: 3; transform: translate3d(0, 12px, -60px); opacity: .6; }
+.oa-feed-item[data-depth='2'] { z-index: 2; transform: translate3d(0, 22px, -120px); opacity: .28; }
+.oa-feed-item[data-depth='3'] { z-index: 1; transform: translate3d(0, 30px, -180px); opacity: 0; }
+/* Behind the front chip only the card edges show: its content fades as it recedes. */
+.oa-feed-item > * { transition: opacity 600ms ease; }
+.oa-feed-item:not([data-depth='0']) > * { opacity: 0; }
+.oa-feed-item b { color: var(--oa-text); font-weight: 500; }
+.oa-feed-to { color: var(--oa-gold); }
+.oa-feed-short { display: none; }
+.oa-feed-dot { flex: none; width: 6px; height: 6px; border-radius: 50%; background: var(--oa-gold); box-shadow: 0 0 0 0 #d6b77b66; animation: oa-feed-ping 1.6s ease-out infinite; }
+@keyframes oa-feed-in { from { opacity: 0; transform: translate3d(0, -12px, 60px); } }
+@keyframes oa-feed-ping { 0% { box-shadow: 0 0 0 0 #d6b77b66; } 100% { box-shadow: 0 0 0 7px #d6b77b00; } }
 
 .oa-strip { display: flex; flex-wrap: wrap; gap: 6px 0; margin: 28px 0 0; color: #77736b; font: 400 11px/20px 'JetBrains Mono', monospace; letter-spacing: .14em; text-transform: uppercase; }
 .oa-dot { margin: 0 14px; color: #4f4b45; }
@@ -57,7 +92,8 @@
   .oa-header { grid-template-columns: 1fr; gap: 28px; align-items: start; }
   .oa-heading .section-heading__title { max-width: 20ch; }
   .oa-lead { max-width: 560px; }
-  .oa-row { grid-template-columns: 48px minmax(0, 1fr) auto; grid-template-areas: 'index verb status' 'index text text'; row-gap: 10px; padding: 26px 0; }
+  .oa-row { grid-template-columns: 48px minmax(0, 1fr) auto; grid-template-areas: 'index verb status' 'index text text' 'index feed feed'; row-gap: 10px; }
+  .oa-feed { grid-area: feed; margin-top: 4px; }
   .oa-index { grid-area: index; }
   .oa-verb { grid-area: verb; }
   .oa-text { grid-area: text; }
@@ -67,13 +103,22 @@
   .one-account { --oa-gutter: 20px; padding-top: 96px; }
   .oa-heading .section-heading__title { font-size: clamp(31px, 8.8vw, 46px); max-width: none; }
   .oa-lead p { font-size: 15px; }
-  .oa-row { grid-template-columns: 36px minmax(0, 1fr); grid-template-areas: 'index verb' 'index text' 'index status'; row-gap: 8px; }
+  .oa-row { grid-template-columns: 36px minmax(0, 1fr); grid-template-areas: 'index verb' 'index text' 'index status' 'index feed'; row-gap: 8px; }
   .oa-status { justify-content: flex-start; margin-top: 4px; }
+  .oa-feed-method { display: none; }
+  .oa-feed { font-size: 11px; }
+  .oa-feed-item { gap: 9px; }
+  .oa-feed-item { grid-template-columns: 6px auto 8ch auto; padding: 0 11px 0 10px; }
+  .oa-feed-long { display: none; }
+  .oa-feed-short { display: inline; }
+  .oa-switch { justify-self: start; margin: -5px 0 -9px; padding: 9px 0; }
   .oa-text { font-size: 15px; line-height: 25px; }
   .oa-dot { margin: 0 10px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .oa-header, .oa-row, .oa-strip, .oa-toggle::after { transition: none !important; opacity: 1; transform: none; }
+  .oa-header, .oa-row, .oa-strip { transition: none !important; opacity: 1; transform: none; }
+  .oa-toggle, .oa-toggle::after, .oa-switch, .oa-row :is(.oa-verb, .oa-index, .oa-text) { transition: none !important; }
+  .oa-feed-item, .oa-feed-dot { animation: none; transition: none; }
 }
 
 /* ---- Version rail (01 Ledger / 02 Accordion), same grammar as the personal-banking rail. ---- */
@@ -143,9 +188,22 @@
   .oa-row-head { grid-template-columns: 36px minmax(0, 1fr); grid-template-areas: 'index verb' 'index text' 'index status'; row-gap: 8px; }
   .oa-row-head .oa-status { justify-content: flex-start; margin-top: 4px; }
   .oa-panel-inner { grid-template-columns: 36px minmax(0, 1fr); }
-  .oa-window { aspect-ratio: 1 / 1; }
+  .one-account { --oa-row-pad: 28px; padding-bottom: 64px; }
+  .oa-window { grid-column: 1 / -1; aspect-ratio: 1 / 1; }
   .oa-screen { left: -30%; width: 130%; }
+  /* The strip wraps on phones, and a wrapped line must not start with a separator: two columns,
+     each item with its own small marker instead of dots between them. */
+  .oa-strip { display: grid; grid-template-columns: repeat(2, max-content); gap: 10px 28px; margin-top: 24px; font-size: 10px; letter-spacing: .12em; }
+  .oa-strip > span { display: inline-flex; align-items: center; gap: 10px; }
+  .oa-strip > span::before { content: ''; width: 4px; height: 4px; border-radius: 50%; background: #6b5a3a; }
+  .oa-strip .oa-dot { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
   .oa-panel, .oa-window, .oa-details { transition: none; }
+}
+
+/* Phones: a fixed column just wide enough for "04", so the verbs line up down the rows. */
+@media (max-width: 620px) {
+  .oa-row, .oa-row-head { grid-template-columns: 36px minmax(0, 1fr); column-gap: 14px; }
+  .oa-index { font-size: 28px; padding-top: 2px; }
 }

@@ -12,7 +12,7 @@ import { useEffect, useRef } from 'react'
  */
 
 /** Cup geometry in the 1122 × 1402 source image (`coffee-card-scene`): the crema's centre and the rim's half-width. */
-const CUP = { x: 805, y: 790, halfWidth: 150 }
+const CUP = { x: 805, y: 835, halfWidth: 150 }
 const SPRITE = 96
 
 interface Wisp {

@@ -37,7 +37,10 @@ export async function createPhotoScene(canvas: HTMLCanvasElement, source: HTMLIm
     removeListeners()
     resources.forEach((resource) => resource.dispose())
     renderer.dispose()
-    renderer.forceContextLoss()
+    // React can restart an effect on the same canvas while an earlier async scene
+    // is still cancelling. Losing that shared context also kills the new renderer.
+    // Explicitly release the context only after the canvas has left the document.
+    if (!canvas.isConnected) renderer.forceContextLoss()
   }
   try {
     const loader = new THREE.TextureLoader()
@@ -144,6 +147,7 @@ export async function createPhotoScene(canvas: HTMLCanvasElement, source: HTMLIm
     const entranceProgress = () => reduced.matches ? 1 : introEase(introTime / introDuration)
     let options = { ...DEFAULT_OPTIONS }, targetX = 0, targetY = 0, x = 0, y = 0
     let visible = !document.hidden, initialized = false, viewportWidth = 1, viewportHeight = 1
+    let canvasWidth = 0, canvasHeight = 0
     const sculptureViewport = new THREE.Vector4()
     let detailMix = DEFAULT_OPTIONS.focus === 'full' ? 0 : 1
     function framing() {
@@ -241,7 +245,11 @@ export async function createPhotoScene(canvas: HTMLCanvasElement, source: HTMLIm
       const bounds = canvas.getBoundingClientRect(), stageBounds = stage.getBoundingClientRect()
       viewportWidth = Math.max(1, stageBounds.width); viewportHeight = Math.max(1, stageBounds.height)
       const width = Math.max(1, bounds.width), height = Math.max(1, bounds.height)
-      renderer.setSize(width, height, false)
+      // Reallocating the drawing buffer and targets is the expensive part; the stage alone
+      // resizes every frame during a framing tween (the canvas is pinned meanwhile).
+      const canvasResized = width !== canvasWidth || height !== canvasHeight
+      canvasWidth = width; canvasHeight = height
+      if (canvasResized) renderer.setSize(width, height, false)
       sculptureViewport.set(stageBounds.left - bounds.left, 0, stageBounds.width, Math.max(1, bounds.bottom - stageBounds.top))
       // Extend the canvas over the whole hero while preserving the original
       // stage's exact composition, scale and responsive camera framing.
@@ -251,9 +259,12 @@ export async function createPhotoScene(canvas: HTMLCanvasElement, source: HTMLIm
       lightingCamera.top = fullWidth * viewportHeight / viewportWidth / 2; lightingCamera.bottom = -lightingCamera.top
       lightingCamera.setViewOffset(viewportWidth, viewportHeight, bounds.left - stageBounds.left, bounds.top - stageBounds.top, width, height)
       environment.frameOverhead(lightingCamera)
-      environment.resize(width, height)
-      card.reflection.resize(width, height)
-      const targetWorldWidth = (options.focus === 'full' ? fullWorldWidth(viewportWidth, viewportHeight) : Math.max(5.2,5.5*viewportWidth/viewportHeight)) / COMPOSITION_SCALE
+      if (canvasResized) { environment.resize(width, height); card.reflection.resize(width, height) }
+      // Size the panels for where a framing tween (AccountsHero) ends, not for each of its frames.
+      const tween = stage.getAnimations().find((animation) => animation.id === 'framing')
+      const tweenEnd = (tween?.effect as KeyframeEffect | null)?.getKeyframes().at(-1)?.height
+      const settledHeight = typeof tweenEnd === 'string' ? parseFloat(tweenEnd) : viewportHeight
+      const targetWorldWidth = (options.focus === 'full' ? fullWorldWidth(viewportWidth, settledHeight) : Math.max(5.2,5.5*viewportWidth/settledHeight)) / COMPOSITION_SCALE
       live.resize(width,height,viewportWidth,targetWorldWidth,{ top: stageBounds.top-bounds.top, left: stageBounds.left-bounds.left, right: bounds.right-stageBounds.right })
       framing()
       invalidate()

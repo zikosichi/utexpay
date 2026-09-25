@@ -14,6 +14,25 @@ const LAYERS = [
     verb: 'Connect', title: 'Bring it together.', description: 'Banking and payments, connected.' },
 ]
 
+// Where the sticky card rides, as a fraction of the viewport height from the top: 45% from the
+// bottom on desktop, 40% on phones and portrait tablets. Must match --mc-card-y in the CSS.
+const CARD_Y_DESKTOP = .55
+const CARD_Y_COMPACT = .6
+// Rasterize at the largest pose, then animate down from it to keep the bitmap sharp.
+const CARD_FAN_SCALE = 1.24
+const COMPACT_LAYOUT_QUERY = '(max-width: 760px), (min-width: 761px) and (max-width: 1100px) and (orientation: portrait)'
+function useCardY() {
+  const [cardY, setCardY] = useState(() => typeof window !== 'undefined' && window.matchMedia(COMPACT_LAYOUT_QUERY).matches ? CARD_Y_COMPACT : CARD_Y_DESKTOP)
+  useEffect(() => {
+    const query = window.matchMedia(COMPACT_LAYOUT_QUERY)
+    const update = () => setCardY(query.matches ? CARD_Y_COMPACT : CARD_Y_DESKTOP)
+    update()
+    query.addEventListener('change', update)
+    return () => query.removeEventListener('change', update)
+  }, [])
+  return cardY
+}
+
 function Chapter({ layer, charge }: { layer: typeof LAYERS[number]; charge: MotionValue<number> }) {
   const reduced = useReducedMotion()
   return <motion.div className="mc-chapter" style={{ '--mc-charge': reduced ? 1 : charge } as MotionStyle}>
@@ -32,14 +51,15 @@ function Chapter({ layer, charge }: { layer: typeof LAYERS[number]; charge: Moti
 
 /** Each tile scrolls with the document. The two SVG halves have identical geometry,
  * with the sticky card between them in the stacking order. Labels live on the front face. */
-function Layer({ layer, backClip, frontClip }: {
+function Layer({ layer, backClip, frontClip, cardY }: {
   layer: typeof LAYERS[number]
   backClip: string
   frontClip: string
+  cardY: number
 }) {
   const tile = useRef<HTMLDivElement>(null)
   const reduced = useReducedMotion()
-  const { scrollYProgress } = useScroll({ target: tile, offset: ['0.38 65%', '0.38 35%'] })
+  const { scrollYProgress } = useScroll({ target: tile, offset: [[.38, cardY + .15], [.38, cardY - .15]] })
   const [lit, setLit] = useState(false)
   const charge = useMotionValue(0)
   const glow = useMotionValue(0)
@@ -90,55 +110,61 @@ function Layer({ layer, backClip, frontClip }: {
   </>
 }
 
-/** Exact Figma artwork, rotated as a whole so its proportions and lettering stay intact. */
+/** Rotate the original card artwork as a whole through the slots. */
 function Card({ tier }: { tier: 'gold' | 'obsidian' | 'platinum' }) {
-  return <image className="mc-card-art" href={`/magneticclosing/card-${tier}.png`}
-    width="480" height="305.586" transform="translate(305.586 0) rotate(90)" />
+  return <img className="mc-card-art" src={`/magneticclosing/card-${tier}.png`}
+    width="999" height="636" alt="" draggable={false} />
 }
 
 export function MagneticClosingSection() {
   const clearMarker = useRef<HTMLDivElement>(null)
   const reduced = useReducedMotion()
   const id = useId().replace(/:/g, '')
+  const cardY = useCardY()
   // Card pose follows scroll directly, with no spring or motion after scrolling stops.
-  const { scrollYProgress } = useScroll({ target: clearMarker, offset: ['start 32%', 'start 16%'] })
+  const { scrollYProgress } = useScroll({ target: clearMarker, offset: [[0, cardY - .18], [0, cardY - .34]] })
   const fan = useTransform(scrollYProgress, [0, 1], [0, 1], { ease: (v) => v * v * (3 - 2 * v) })
-  const cardLift = useTransform(fan, [0, .45, 1], [0, 0, -100])
-  const leftX = useTransform(fan, [0, 1], [0, -310])
-  const rightX = useTransform(fan, [0, 1], [0, 310])
-  const sideY = useTransform(fan, [0, 1], [0, 40])
+  // The fixed frame is laid out at the largest pose; translation retains the original
+  // SVG distance while each card can be composited independently.
+  const finalLift = `${-100 / (480 * CARD_FAN_SCALE) * 100}%`
+  const cardLift = useTransform(fan, [0, .45, 1], ['0%', '0%', finalLift])
+  const leftX = useTransform(fan, value => `calc(${-value} * var(--mc-fan-spread))`)
+  const rightX = useTransform(fan, value => `calc(${value} * var(--mc-fan-spread))`)
+  const sideY = useTransform(fan, [0, 1], ['0%', `${40 / 480 * 100}%`])
+  // Transparent render margins differ slightly; keep the hidden variants from
+  // peeking past the gold silhouette while the cards travel as a single card.
+  const sideOpacity = useTransform(fan, [0, .12], [0, 1])
   // A vertical shear matches the slot slope while keeping both side edges vertical.
   // Remove the shear as the cards open into their normal landscape poses.
   const cardShear = useTransform(fan, [0, 1], [5, 0])
   const leftRotate = useTransform(fan, [0, 1], [0, -102])
   const rightRotate = useTransform(fan, [0, 1], [0, -78])
   const mainRotate = useTransform(fan, [0, 1], [0, -90])
-  const cardScale = useTransform(fan, [0, 1], [1, 1.08])
+  const cardScale = useTransform(fan, [0, 1], [1 / CARD_FAN_SCALE, 1])
 
   return <section id="grow-with-utex" className="magnetic-closing" aria-labelledby="mc-title">
     <div className="mc-atmosphere" aria-hidden="true" />
     <p className="mc-chapters-eyebrow">One account. Three possibilities.</p>
     <div className="mc-journey">
-      {LAYERS.map(layer => <Layer key={layer.name} layer={layer} backClip={`${id}-back`} frontClip={`${id}-front`} />)}
+      <svg className="mc-clip-defs" width="0" height="0" aria-hidden="true" focusable="false">
+        <defs>
+          <clipPath id={`${id}-back`}><polygon points="0,0 1635,0 1635,514 0,384" /></clipPath>
+          <clipPath id={`${id}-front`}><polygon points="0,383 1635,513 1635,962 0,962" /></clipPath>
+        </defs>
+      </svg>
+      {LAYERS.map(layer => <Layer key={`${layer.name}-${cardY}`} layer={layer} cardY={cardY} backClip={`${id}-back`} frontClip={`${id}-front`} />)}
       <div className="mc-card-sticky">
-        <svg className="mc-card-scene" viewBox="0 0 1635 650" role="img" aria-labelledby={`${id}-title`}>
-          <title id={`${id}-title`}>A UTEX card connecting personal banking, business and payments</title>
-          <defs>
-            <clipPath id={`${id}-back`}><polygon points="0,0 1635,0 1635,514 0,384" /></clipPath>
-            <clipPath id={`${id}-front`}><polygon points="0,383 1635,513 1635,962 0,962" /></clipPath>
-          </defs>
-          <g transform="translate(666 85)">
-            <motion.g style={{ y: reduced ? -100 : cardLift, skewY: reduced ? 0 : cardShear, scale: reduced ? 1 : cardScale, originX: .5, originY: .5 }}>
-              <motion.g style={{ x: reduced ? -310 : leftX, y: reduced ? 30 : sideY, rotate: reduced ? -102 : leftRotate, originX: .5, originY: .5 }}>
-                <Card tier="obsidian" />
-              </motion.g>
-              <motion.g style={{ x: reduced ? 310 : rightX, y: reduced ? 30 : sideY, rotate: reduced ? -78 : rightRotate, originX: .5, originY: .5 }}>
-                <Card tier="platinum" />
-              </motion.g>
-              <motion.g style={{ rotate: reduced ? -90 : mainRotate, originX: .5, originY: .5 }}><Card tier="gold" /></motion.g>
-            </motion.g>
-          </g>
-        </svg>
+        <div className="mc-card-scene" role="img" aria-label="A UTEX card connecting personal banking, business and payments" style={{ '--mc-fan-scale': CARD_FAN_SCALE } as MotionStyle}>
+          <motion.div className="mc-card-pose" style={{ y: reduced ? finalLift : cardLift, skewY: reduced ? 0 : cardShear, scale: reduced ? 1 : cardScale }}>
+            <motion.div className="mc-card" style={{ opacity: reduced ? 1 : sideOpacity, x: reduced ? 'calc(-1 * var(--mc-fan-spread))' : leftX, y: reduced ? `${30 / 480 * 100}%` : sideY, rotate: reduced ? -102 : leftRotate }}>
+              <Card tier="obsidian" />
+            </motion.div>
+            <motion.div className="mc-card" style={{ opacity: reduced ? 1 : sideOpacity, x: reduced ? 'var(--mc-fan-spread)' : rightX, y: reduced ? `${30 / 480 * 100}%` : sideY, rotate: reduced ? -78 : rightRotate }}>
+              <Card tier="platinum" />
+            </motion.div>
+            <motion.div className="mc-card" style={{ rotate: reduced ? -90 : mainRotate }}><Card tier="gold" /></motion.div>
+          </motion.div>
+        </div>
       </div>
       <div ref={clearMarker} className="mc-clear-marker" aria-hidden="true" />
     </div>
@@ -157,7 +183,7 @@ export function MagneticClosingSection() {
       </SectionHeading>
       <div className="mc-actions">
         <ButtonLink href="/#signup">Open an account</ButtonLink>
-        <ButtonLink href="mailto:hello@utexpay.com" variant="secondary">Talk to us</ButtonLink>
+        <ButtonLink href="/#demo" variant="secondary">Try live demo</ButtonLink>
       </div>
       <p className="mc-products">Personal <span>·</span> Business <span>·</span> Payments</p>
     </motion.div>

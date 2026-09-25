@@ -1,11 +1,12 @@
 import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react'
+import { isStudio, useStudio } from '../studio'
 import '../section-heading.css'
 import './one-account.css'
 
 // Pillar 1 — "One platform, not a stack" (Landing/03-messaging-pillars). Copy is the page-safe
 // version: no named competitors, no "worldwide" in the headline.
-// Two versions share the header: 01 Ledger is text-only (the section that says in words what the
-// hero and tiles show); 02 Accordion, the default, opens one row at a time and shows the matching product
+// Two versions share the header: 01 Ledger, the default (picked Sep 22), is text-only (the section that says in words what the
+// hero and tiles show); 02 Accordion opens one row at a time and shows the matching product
 // screen inside it (the Bank / Move / Get paid windows from the dashboard stack, reused). Rows start
 // collapsed; hovering a closed row peeks the top edge of its screen, clicking opens it fully.
 export type AccountVersion = 'ledger' | 'accordion'
@@ -47,6 +48,16 @@ const VERBS: Verb[] = [
     ] },
 ]
 const STRIP = ['One signup', 'One login', 'One ledger', 'Nothing to migrate']
+// With the Get paid switch on, one line under the row cycles through incoming card payments, each
+// landing in the same EUR account the Bank row opened. Methods match the accordion's Methods list.
+const PAYMENTS = [
+  { amount: '+€48.00', method: 'Visa ·· 4242' },
+  { amount: '+€120.00', method: 'Apple Pay' },
+  { amount: '+€19.90', method: 'Mastercard ·· 5100' },
+  { amount: '+€264.50', method: 'iDEAL' },
+  { amount: '+€75.00', method: 'Google Pay' },
+]
+const PAYMENT_MS = 2600
 
 // Hover peek: the hovered closed row shows the top PEEK px of its window while the other closed rows
 // give up padding so the ledger keeps its height. Both values are tweened here, from one clock, so
@@ -58,16 +69,28 @@ const easeOut = (t: number) => 1 - Math.pow(1 - t, 3.4)
 type RowMetrics = { pad: number; peek: number }
 
 export function parseAccountVersion(value: unknown): AccountVersion {
-  return value === 'ledger' || value === '1' || value === '01' ? 'ledger' : 'accordion'
+  return value === 'accordion' || value === '2' || value === '02' ? 'accordion' : 'ledger'
 }
 
-export function OneAccountSection({ initialVersion = 'accordion' }: { initialVersion?: AccountVersion }) {
+export function OneAccountSection({ initialVersion = 'ledger' }: { initialVersion?: AccountVersion }) {
   const id = useId()
   const ref = useRef<HTMLElement>(null)
+  const studio = useStudio()
   const [version, setVersion] = useState<AccountVersion>(initialVersion)
   // -1 = all collapsed (the default); hovering a closed row peeks the top of its screen.
   const [open, setOpen] = useState(-1)
   const [hovered, setHovered] = useState(-1)
+  // Ledger only: the Get paid switch is a real control, off until the visitor flips it — the row's
+  // own "switch it on the day you're ready", acted out. Lights the row when on.
+  const [paidOn, setPaidOn] = useState(false)
+  const [payment, setPayment] = useState(0)
+  // First payment of the current "on" run: switching on starts a fresh stack of one.
+  const [paidFrom, setPaidFrom] = useState(0)
+  useEffect(() => {
+    if (!paidOn) return
+    const timer = window.setInterval(() => { if (!document.hidden) setPayment((n) => n + 1) }, PAYMENT_MS)
+    return () => window.clearInterval(timer)
+  }, [paidOn])
   const ledger = useRef<HTMLDivElement>(null)
   const tween = useRef<{ raf: number; values: RowMetrics[] }>({ raf: 0, values: [] })
   const hoverCapable = useRef(false)
@@ -131,8 +154,9 @@ export function OneAccountSection({ initialVersion = 'accordion' }: { initialVer
     return () => ro.disconnect()
   }, [version])
 
-  // `/?account=ledger` opens the text-only version 01 on the main route; accordion is the default.
+  // `/?studio&account=accordion` opens version 02 (product screens); the text-only ledger is the default.
   useEffect(() => {
+    if (!isStudio()) return
     const requested = new URLSearchParams(window.location.search).get('account')
     if (requested) setVersion(parseAccountVersion(requested))
   }, [])
@@ -148,10 +172,10 @@ export function OneAccountSection({ initialVersion = 'accordion' }: { initialVer
   }, [])
 
   return <section id="one-account" ref={ref} className="one-account" data-version={version} aria-labelledby={`${id}-title`}>
-    <div className="oa-versions" role="group" aria-label="One account section version">
+    {studio && <div className="oa-versions" role="group" aria-label="One account section version">
       <button type="button" aria-label="Ledger" aria-pressed={version === 'ledger'} onClick={() => setVersion('ledger')}><span aria-hidden="true">01</span><span className="oa-version-name" aria-hidden="true">Ledger</span></button>
       <button type="button" aria-label="Accordion with product screens" aria-pressed={version === 'accordion'} onClick={() => setVersion('accordion')}><span aria-hidden="true">02</span><span className="oa-version-name" aria-hidden="true">Accordion</span></button>
-    </div>
+    </div>}
     <div className="oa-inner">
       <header className="oa-header">
         <div className="oa-heading">
@@ -165,13 +189,25 @@ export function OneAccountSection({ initialVersion = 'accordion' }: { initialVer
       </header>
 
       {version === 'ledger' ? <ol className="oa-ledger">
-        {VERBS.map(({ verb, text, status, on }, i) => <li key={verb} className="oa-row" style={{ '--i': i } as React.CSSProperties}>
+        {VERBS.map(({ verb, text, status, on }, i) => <li key={verb} className="oa-row" data-live={(on && paidOn) || undefined} style={{ '--i': i } as React.CSSProperties}>
           <span className="oa-index" aria-hidden="true">0{i + 1}</span>
           <h3 className="oa-verb">{verb}</h3>
           <p className="oa-text">{text}</p>
-          <span className="oa-status" data-on={on || undefined}>
-            {on && <span className="oa-toggle" aria-hidden="true" />}{status}
-          </span>
+          {on && <p className="oa-feed" aria-hidden="true">{paidOn
+            // A stack: the newest chip in front, the previous two receding behind it, a fourth fading out.
+            // Keyed by payment number, so each chip keeps its element and transitions between depths.
+            ? [3, 2, 1, 0].map((depth) => payment - depth).filter((n) => n >= paidFrom).map((n) => {
+              const { amount, method } = PAYMENTS[n % PAYMENTS.length]
+              return <span key={n} className="oa-feed-item" data-depth={payment - n}>
+                <span className="oa-feed-dot" /><span className="oa-feed-long">Payment received</span><span className="oa-feed-short">Received</span>
+                <b>{amount}</b><span className="oa-feed-method">{method}</span><span className="oa-feed-to">→ EUR account</span>
+              </span>
+            })
+            : null}</p>}
+          {on ? <button type="button" className="oa-status oa-switch" role="switch" aria-checked={paidOn}
+            aria-label="Take card payments into this account" onClick={() => { if (!paidOn) setPaidFrom(payment); setPaidOn(!paidOn) }}>
+            <span className="oa-toggle" aria-hidden="true" />{paidOn ? 'Live' : status}
+          </button> : <span className="oa-status">{status}</span>}
         </li>)}
       </ol> : <div className="oa-ledger oa-accordion" ref={ledger}>
         {VERBS.map(({ verb, text, status, on, screen, details }, i) => {

@@ -3,7 +3,7 @@
 /* The hero's own bottom padding, tightened from the shared `.photo-hero` value so the plinth's
    fade runs into the next section instead of a long dark gap. The section below adds its own
    entry space, so the two together still read as a clear break. Other hero routes keep theirs. */
-.accounts-hero { padding-bottom: clamp(24px, 2.5vw, 44px); background: var(--page-background); }
+.accounts-hero.photo-hero { padding-bottom: clamp(24px, 2.5vw, 44px); background: var(--page-background); }
 /* Let the studio floor disappear gradually into the shared page surface. */
 .accounts-hero::after {
   content: '';
@@ -20,65 +20,43 @@
 .accounts-controls { width: 300px; max-width: calc(100vw - 32px); }
 .accounts-hero .studio-controls :focus-visible { outline-offset: 2px; }
 
-/* Responsive hero (Sep 18 review: "you need to scroll to see the full picture"; Zviad Sep 22:
-   breakpoints, not fluid shrinking; the sculpture as wide as the 1400px section container when
-   the screen is tall enough, "big screen" judged by height as well as width, and the bottom 20%
-   of the composition — shadow and reflection under the plinth — may sit below the fold).
-   The stage frames the sculpture tightly (scene.ts): the sculpture is ~87% of the stage width, so
-   a 1610px stage puts it at the 1400px container the sections below use. Each viewport-height
-   band picks the widest stage whose top 80% still fits above the fold at the band's shortest
-   screen. Inside a band nothing scales with height. Copy tightens in the same bands; tall
-   screens get more room above the headline. */
-/* Zviad, Sep 22: the copy sits a little lower with more air between its lines, and the stage is
-   pulled up by the same amount so the sculpture does not move — the stage has empty headroom
-   above the boxes (about 9% of its height) that the copy can use. */
-.accounts-hero .photo-stage { aspect-ratio: 2.15; width: min(100%, 1610px); margin-top: -8px; }
-.accounts-hero .studio-copy { margin-top: clamp(88px, 6.6vw, 124px); }
-.accounts-hero .studio-description { margin-top: 20px; }
-.accounts-hero .studio-actions { margin-top: 30px; }
-@media (min-width: 761px) and (max-height: 1319px) {
-  .accounts-hero .studio-copy { margin-top: 64px; }
-  .accounts-hero .studio-description { margin-top: 18px; }
-  .accounts-hero .studio-actions { margin-top: 26px; }
-  .accounts-hero .photo-stage { margin-top: -12px; }
-}
-@media (min-width: 761px) and (max-height: 1159px) {
-  .accounts-hero .studio-copy { margin-top: 48px; }
-  .accounts-hero h1 { font-size: min(4.18vw, 64px); }
-  .accounts-hero .studio-description { font-size: min(1.25vw, 18px); margin-top: 14px; }
-  .accounts-hero .studio-actions { margin-top: 24px; }
-  .accounts-hero .photo-stage { margin-top: -22px; }
-  .accounts-hero .studio-actions .utex-button { --button-height: 48px; --button-padding: 24px; --button-font-size: 15px; }
-}
-@media (min-width: 761px) and (max-height: 1039px) {
-  .accounts-hero .photo-stage { margin-top: -18px; }
-  .accounts-hero .studio-copy { margin-top: 32px; }
-  .accounts-hero h1 { font-size: min(4.18vw, 56px); }
-  .accounts-hero .studio-description { font-size: 16px; margin-top: 10px; }
-  .accounts-hero .studio-actions { margin-top: 20px; }
-  .accounts-hero .studio-actions .utex-button { --button-height: 46px; --button-padding: 22px; --button-font-size: 14px; }
-}
-@media (min-width: 761px) and (max-height: 959px) {
-  .accounts-hero .photo-stage { width: min(100%, 1440px); }
-}
-@media (min-width: 761px) and (max-height: 859px) {
-  .accounts-hero .photo-stage { width: min(100%, 1220px); }
-}
-@media (min-width: 761px) and (max-height: 779px) {
-  .accounts-hero .photo-stage { width: min(100%, 1000px); }
-}
-/* Portrait (tablets held upright, phones): there is more height than the sculpture needs, so the
-   hero ends after its fade instead of holding a dark gap until the screen is full. */
-@media (orientation: portrait) {
-  .accounts-hero { min-height: 0; }
+/* The stage's camera already fits the sculpture to both dimensions. Desktop reserves the
+   remaining height for its top 83%; floor/shadow may extend below the fold as before.
+   Scope copy rules to this hero so shared studio styles cannot override them when 3D loads. */
+.accounts-hero .photo-stage { width: min(100%, 1610px); margin-top: -8px; }
+.accounts-hero.photo-hero .photo-stage:not(.photo-stage--detail) { aspect-ratio: 2.15; }
+@media (min-width: 761px) and (min-height: 600px),
+       (min-width: 761px) and (hover: hover) and (pointer: fine) {
+  .accounts-hero.photo-hero { --hero-floor-fade: 16%; display: grid; grid-template-rows: auto minmax(0, 1fr); height: 100svh; min-height: 0; padding-bottom: 0; }
+  .accounts-hero.photo-hero .studio-copy { width: 100%; margin: clamp(16px, 3svh, 32px) auto 0; }
+  .accounts-hero .studio-copy h1 { font-size: clamp(38px, min(4vw, 6svh), 60px); line-height: 1.085; }
+  .accounts-hero.photo-hero .studio-description { max-width: 640px; font-size: clamp(14px, 1.8svh, 18px); margin-top: 12px; }
+  .accounts-hero.photo-hero .studio-actions { margin-top: clamp(14px, 2.4svh, 24px); }
+  .accounts-hero .studio-actions .utex-button { --button-height: 48px; --button-padding: 26px; --button-font-size: 16px; }
+  .accounts-hero.photo-hero .photo-stage { align-self: start; height: 100%; min-height: 0; margin: 0 auto; }
+  /* Reserve 83% above the fold. Cap at natural framing so tall screens add no empty space. */
+  .accounts-hero.photo-hero .photo-stage:not(.photo-stage--detail) { height: calc(100% / .83); max-height: calc(min(100vw, 1610px) / 2.15); aspect-ratio: auto; }
+  /* A failed renderer falls back to a still plus account panels in normal page flow. */
+  .accounts-hero.photo-hero:has(.ah-live-layer.is-fallback) { display: block; height: auto; }
+  .accounts-hero.photo-hero:has(.ah-live-layer.is-fallback) .photo-stage { height: auto; aspect-ratio: 2.15; }
 }
 @media (max-width: 760px) {
   .accounts-hero { min-height: 0; }
   .accounts-hero .photo-stage { margin-top: 22px; }
   .accounts-hero .photo-stage--detail { aspect-ratio: 1.1; }
 }
-/* The floor fade is sized against the hero, so a shorter stage never loses its base under it. */
-.accounts-hero::after { height: min(clamp(180px, 24vw, 420px), 34%); }
+/* Upright tablets spend their extra height on spacing, with a restrained headline size. */
+@media (min-width: 621px) and (max-width: 1100px) and (orientation: portrait) {
+  .accounts-hero.photo-hero { --hero-floor-fade: 34%; display: block; height: auto; min-height: 0; padding-bottom: 64px; }
+  .accounts-hero.photo-hero .studio-copy { margin-top: clamp(96px, 11svh, 160px); padding-inline: 32px; }
+  .accounts-hero .studio-copy h1 { max-width: 920px; font-size: clamp(44px, 5.8vw, 56px); line-height: 1.12; }
+  .accounts-hero.photo-hero .studio-description { max-width: 560px; font-size: 18px; margin-top: 28px; }
+  .accounts-hero.photo-hero .studio-actions { margin-top: 36px; }
+  .accounts-hero.photo-hero .photo-stage { margin-top: clamp(44px, 6svh, 88px); }
+  .accounts-hero.photo-hero .photo-stage:not(.photo-stage--detail) { height: auto; max-height: none; aspect-ratio: 2.15; }
+}
+/* Keep the fade on the floor when the wider sculpture reaches toward the bottom edge. */
+.accounts-hero::after { height: min(clamp(180px, 24vw, 420px), var(--hero-floor-fade, 34%)); }
 
 .ah-live-layer { position: absolute; inset: 0; z-index: 2; visibility: hidden; pointer-events: none; overflow: hidden; }
 .ah-live-panel { position: absolute; top: 0; left: 0; transform-origin: 0 0; pointer-events: auto; }
@@ -98,3 +76,25 @@
 .accounts-card-settings:disabled { opacity: .45; }
 .accounts-hint-settings .studio-view-switch { margin-bottom: 4px; }
 .accounts-hint-settings small { margin-top: 8px; }
+
+/* Phone framing switch under the sculpture (desktop uses the pointer and the boxes' own UI). */
+.ah-phone-framing { display: none; }
+@media (max-width: 760px) {
+  .ah-phone-framing { position: relative; z-index: 4; display: flex; gap: 2px; width: fit-content; max-width: calc(100% - 32px); margin: 4px auto 0; padding: 3px; border: 1px solid #ffffff14; border-radius: 999px; background: #12110fcc; backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+  .ah-phone-framing button { min-height: 36px; padding: 0 14px; border: 0; border-radius: 999px; background: transparent; color: #a19c91; font: 500 13px/1 var(--hero-body-font, 'Onest', sans-serif); letter-spacing: -.01em; cursor: pointer; transition: background .2s ease, color .2s ease; }
+  .ah-phone-framing button[aria-pressed='true'] { background: #2c2922; color: #f1e8d5; box-shadow: inset 0 0 0 1px #d6b77b33; }
+  .ah-phone-framing button:focus-visible { outline: 2px solid #d6b77b; outline-offset: 1px; }
+}
+@media (max-width: 359px) { .ah-phone-framing button { padding: 0 10px; font-size: 12px; } }
+
+/* Mobile-only artwork. Desktop never shows the poster, including before hydration. */
+.ah-scene-poster { display: block; position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; mask-image: linear-gradient(to bottom, transparent, #000 8%, #000 92%, transparent); }
+.accounts-hero--static .photo-stage { pointer-events: none; }
+/* The exported stage already includes the floor fade from the live scene. */
+.accounts-hero--static::after { display: none; }
+.accounts-hero .utex-button.ah-desktop-explore { display: none; }
+/* Keep this in sync with INTERACTIVE_HERO_MEDIA in poster.ts. */
+@media (min-width: 761px) and (hover: hover) and (pointer: fine) {
+  .accounts-hero .ah-scene-poster, .accounts-hero .utex-button.ah-mobile-explore { display: none; }
+  .accounts-hero .utex-button.ah-desktop-explore { display: inline-flex; }
+}
