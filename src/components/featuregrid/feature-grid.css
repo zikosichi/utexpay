@@ -185,18 +185,18 @@
 .fg-member-chevron { display: block; flex-shrink: 0; width: 16px; height: 16px; }
 .fg-members-fade { position: absolute; z-index: 3; left: -1px; bottom: -1px; width: 522px; height: 117px; background: linear-gradient(#0000, #0b0b0bb3); pointer-events: none; }
 /* Right tile: review backgrounds cover the tile at every aspect ratio without distortion.
-   Bottom-left anchoring preserves the subject; proportional copy placement reserves its space.
+   Centering keeps the physical card left of the copy as the crop narrows; the mask ends at the copy.
    On phones the artwork sits left of compact, right-aligned copy. */
 /* Same white → #999999 stroke at 30% as the left tile (Zviad, Sep 15), by the same padding-box trick. */
-.fg-workspace { container-type: inline-size; border-color: transparent; background: linear-gradient(#0b0b0b, #0b0b0b) padding-box, linear-gradient(#ffffff4d, #9999994d) border-box; }
-.fg-workspace-art { position: absolute; inset: 0; }
-.fg-workspace-scene { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: left bottom; opacity: 0; transition: opacity .3s ease; pointer-events: none; user-select: none; }
+.fg-workspace { --workspace-copy-width: 37.2%; --workspace-copy-right: 5.1%; --workspace-copy-start: calc(100% - var(--workspace-copy-width) - var(--workspace-copy-right)); container-type: inline-size; border-color: transparent; background: linear-gradient(#0b0b0b, #0b0b0b) padding-box, linear-gradient(#ffffff4d, #9999994d) border-box; }
+.fg-workspace-art { position: absolute; inset: 0; mask-image: linear-gradient(to right, #000 calc(var(--workspace-copy-start) - 7.7%), transparent var(--workspace-copy-start)); }
+.fg-workspace-scene { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center bottom; opacity: 0; transition: opacity .3s ease; pointer-events: none; user-select: none; }
 .fg-workspace-scene.is-selected { opacity: 1; }
 .fg-workspace-scene--laptop { transform: translateX(-7%); }
 .fg-workspace-scene--handover, .fg-workspace-scene--overhead, .fg-workspace-scene--sculpture { object-fit: cover; object-position: center bottom; }
 .fg-workspace-copy { position: absolute; z-index: 1; inset: 0; background: linear-gradient(to left, #0006, #0000 45%); }
 @media (prefers-reduced-motion: reduce) { .fg-workspace-scene { transition: none; } }
-.fg-workspace-copy > div { position: absolute; top: 68px; right: 5.1%; width: 37.2%; }
+.fg-workspace-copy > div { position: absolute; top: 68px; right: var(--workspace-copy-right); width: var(--workspace-copy-width); }
 .fg-workspace-copy h4 { font-size: clamp(24px, 4.19cqw, 36px); line-height: 1.25; }
 .fg-workspace-copy p { font-size: clamp(12px, 1.95cqw, 16px); line-height: 1.45; }
 .fg-workspace-copy .fg-workspace-features li { font-size: clamp(14px, 2.45cqw, 20px); gap: min(20px, 2.33cqw); }
