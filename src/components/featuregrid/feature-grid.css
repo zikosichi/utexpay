@@ -189,7 +189,7 @@
    On phones the artwork sits left of compact, right-aligned copy. */
 /* Same white → #999999 stroke at 30% as the left tile (Zviad, Sep 15), by the same padding-box trick. */
 .fg-workspace { --workspace-copy-width: 37.2%; --workspace-copy-right: 5.1%; --workspace-copy-start: calc(100% - var(--workspace-copy-width) - var(--workspace-copy-right)); container-type: inline-size; border-color: transparent; background: linear-gradient(#0b0b0b, #0b0b0b) padding-box, linear-gradient(#ffffff4d, #9999994d) border-box; }
-.fg-workspace-art { position: absolute; inset: 0; mask-image: linear-gradient(to right, #000 calc(var(--workspace-copy-start) - 7.7%), transparent var(--workspace-copy-start)); }
+.fg-workspace-art { position: absolute; inset: 0; mask-image: linear-gradient(to right, #000 calc(var(--workspace-copy-start) - 20%), #000000f5 calc(var(--workspace-copy-start) - 15%), #000000c7 calc(var(--workspace-copy-start) - 10%), #00000066 calc(var(--workspace-copy-start) - 5%), #0000001a var(--workspace-copy-start), transparent calc(var(--workspace-copy-start) + 4%)); }
 .fg-workspace-scene { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center bottom; opacity: 0; transition: opacity .3s ease; pointer-events: none; user-select: none; }
 .fg-workspace-scene.is-selected { opacity: 1; }
 .fg-workspace-scene--laptop { transform: translateX(-7%); }
