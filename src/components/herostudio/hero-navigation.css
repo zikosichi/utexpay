@@ -107,37 +107,27 @@
 }
 .studio-nav-action .utex-button { margin: 1px; }
 
+/* Phone menu button: no chrome, just a larger two-line mark that folds into an X. */
 .studio .studio-nav-toggle {
   display: none;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 48px;
+  margin-right: -12px;
   padding: 0;
-  border: 1px solid #ffffff19;
-  border-radius: 8px;
-  background: #ffffff05;
-  color: #e8e4df;
+  border: 0;
+  border-radius: 10px;
+  background: none;
+  color: #efebe4;
+  touch-action: manipulation;
 }
-.studio-nav-toggle > span { position: relative; width: 16px; height: 12px; }
-.studio-nav-toggle i { position: absolute; left: 0; top: 3px; width: 16px; height: 1px; background: currentColor; transition: transform .18s ease; }
-.studio-nav-toggle i:last-child { top: 9px; }
-.studio-nav-toggle[aria-expanded=true] i:first-child { transform: translateY(3px) rotate(45deg); }
-.studio-nav-toggle[aria-expanded=true] i:last-child { transform: translateY(-3px) rotate(-45deg); }
+.studio-nav-toggle > span { position: relative; width: 24px; height: 14px; pointer-events: none; }
+.studio-nav-toggle i { position: absolute; left: 0; top: 2px; width: 24px; height: 1.5px; border-radius: 1px; background: currentColor; transition: transform .45s var(--nav-ease); }
+.studio-nav-toggle i:last-child { top: 10.5px; }
+.studio-nav-toggle[aria-expanded=true] i:first-child { transform: translateY(4.25px) rotate(45deg); }
+.studio-nav-toggle[aria-expanded=true] i:last-child { transform: translateY(-4.25px) rotate(-45deg); }
 .studio-mobile-menu { display: none; }
-.studio-mobile-menu::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  padding: 1px;
-  border-radius: inherit;
-  background: linear-gradient(130deg, #d6c8a54d, #ffffff0a 42%, #ffffff08 65%, #b4a58933);
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  pointer-events: none;
-}
 
 @media (max-width: 1100px) and (min-width: 901px) {
   .studio-nav { gap: 12px; padding-inline: 24px; }
@@ -147,32 +137,57 @@
   .studio-nav .studio-nav-link { padding-inline: 11px; }
 }
 @media (max-width: 900px) {
-  .studio-nav { display: flex; justify-content: space-between; min-height: 76px; padding: 16px 24px; gap: 16px; }
+  .studio-nav { display: flex; justify-content: space-between; min-height: 76px; padding: 14px 24px; gap: 16px; }
   .studio-nav-links, .studio-nav-divider, .studio-nav-account .studio-nav-login { display: none; }
   .studio .studio-nav-toggle { display: inline-flex; }
-  .studio-mobile-menu:not([hidden]) {
-    position: absolute;
-    top: calc(100% + 10px);
-    left: 12px;
-    right: 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    padding: 12px;
-    border-radius: 14px;
-    background: linear-gradient(145deg, #1b1a17, #10100f);
-    box-shadow: 0 24px 60px #0009;
+
+  /* The bar grows downward to hold the menu: a full-width row after the brand line whose
+     height animates 0fr → 1fr. The page behind dims through a spread shadow. */
+  .studio-nav { flex-wrap: wrap; align-content: flex-start; row-gap: 0; box-shadow: 0 0 0 100vmax #0000; transition: background .4s var(--nav-ease), -webkit-backdrop-filter .4s var(--nav-ease), backdrop-filter .4s var(--nav-ease), box-shadow .45s var(--nav-ease); }
+  .studio-nav[data-open=true] { background: linear-gradient(180deg, #161613f7, #0d0d0cf2); box-shadow: 0 0 0 100vmax #000000a6; }
+  .studio-mobile-menu {
+    display: grid;
+    flex-basis: 100%;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows .38s var(--nav-ease);
   }
-  .studio-mobile-menu > a:not(.utex-button) { display: flex; align-items: center; justify-content: space-between; padding: 14px 12px; border-radius: 8px; color: #e8e4df; font-family: 'Manrope', 'DM Sans', sans-serif; font-size: 16px; font-weight: 500; letter-spacing: -.15px; }
-  .studio-mobile-menu > a:not(.utex-button):hover { background: #ffffff08; }
-  .studio-mobile-menu > a > span { color: #8b8679; font-size: 15px; }
-  .studio-mobile-menu .utex-button { margin-top: 8px; }
+  .studio-mobile-menu[data-open=true] { grid-template-rows: 1fr; transition-duration: .6s; }
+  .studio-mobile-menu-inner { display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
+  .studio-mobile-menu-inner > * {
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity .18s ease, transform .3s var(--nav-ease);
+  }
+  .studio-mobile-menu[data-open=true] .studio-mobile-menu-inner > * {
+    opacity: 1;
+    transform: none;
+    transition: opacity .4s ease calc(.1s + var(--i) * .05s), transform .6s var(--nav-ease) calc(.1s + var(--i) * .05s);
+  }
+  .studio-mobile-menu-inner > a:not(.utex-button) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 31px 0;
+    border-bottom: 1px solid #ffffff12;
+    color: #f1ede6;
+    font-family: var(--hero-display-font, 'DM Sans', sans-serif);
+    font-variation-settings: var(--hero-display-variation, normal);
+    font-size: 30px;
+    font-weight: 500;
+    letter-spacing: -.03em;
+    line-height: 1.1;
+  }
+  .studio-mobile-menu-inner > a:first-child { margin-top: 10px; }
+  .studio-mobile-menu-inner > a:not(.utex-button):active { color: #b8b4a9; }
+  .studio-menu-arrow { width: 24px; height: 24px; flex-shrink: 0; color: #9a9488; }
+  .studio-mobile-menu-inner .utex-button { --button-height: 54px; --button-font-size: 16px; margin: 32px 0 14px; }
 }
 @media (max-width: 480px) {
-  .studio-nav { min-height: 72px; padding: 16px; gap: 10px; }
+  .studio-nav { min-height: 72px; padding: 12px 16px; gap: 10px; row-gap: 0; }
+  .studio-mobile-menu-inner > a:not(.utex-button) { font-size: 28px; padding-block: 27px; }
   .studio-brand img { width: 122px; }
   .studio-nav-action .utex-button { --button-height: 40px; --button-padding: 12px; --button-font-size: 13px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .studio-nav, .studio-nav::before, .studio-nav-spot, .studio-nav-action, .studio-nav-action > div, .studio-nav .studio-nav-link, .studio-nav .studio-nav-login { transition: none; }
+  .studio-nav, .studio-nav::before, .studio-nav-spot, .studio-mobile-menu, .studio-mobile-menu-inner > *, .studio-mobile-menu[data-open=true] .studio-mobile-menu-inner > *, .studio-nav-toggle i, .studio-nav-action, .studio-nav-action > div, .studio-nav .studio-nav-link, .studio-nav .studio-nav-login { transition: none; }
 }

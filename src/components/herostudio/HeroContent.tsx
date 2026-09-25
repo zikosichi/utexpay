@@ -1,5 +1,5 @@
 import { Fragment, useEffect, useId, useRef, useState } from 'react'
-import type { FocusEvent, PointerEvent } from 'react'
+import type { CSSProperties, FocusEvent, PointerEvent } from 'react'
 import { Button, ButtonLink } from '../Button'
 import { DEFAULT_HERO_HEADLINE, HERO_HEADLINES, heroHeadline } from './heroHeadlines'
 import type { HeroHeadline, HeroHeadlineId } from './heroHeadlines'
@@ -62,13 +62,17 @@ function NavLinks() {
 export function HeroNavigation() {
   const [menuOpen, setMenuOpen] = useState(false)
   const menuId = useId()
-  const nav = useRef<HTMLElement>(null), menu = useRef<HTMLDivElement>(null), toggle = useRef<HTMLButtonElement>(null)
+  const nav = useRef<HTMLElement>(null), toggle = useRef<HTMLButtonElement>(null)
   const scrolled = useScrolled()
   const showAction = useHeroActionHidden(scrolled)
   useEffect(() => {
     if (!menuOpen) return
-    menu.current?.querySelector('a')?.focus({ preventScroll: true })
     const outside = (event: globalThis.PointerEvent) => {
+      if (event.target instanceof Node && !nav.current?.contains(event.target)) setMenuOpen(false)
+    }
+    // Close only when focus actually arrives outside. Safari can emit transient
+    // blur events during a tap; those must not compete with the toggle's click.
+    const focusOutside = (event: globalThis.FocusEvent) => {
       if (event.target instanceof Node && !nav.current?.contains(event.target)) setMenuOpen(false)
     }
     const escape = (event: KeyboardEvent) => {
@@ -79,17 +83,18 @@ export function HeroNavigation() {
     const desktop = window.matchMedia('(min-width: 901px)')
     const closeOnDesktop = () => { if (desktop.matches) setMenuOpen(false) }
     document.addEventListener('pointerdown', outside)
+    document.addEventListener('focusin', focusOutside)
     document.addEventListener('keydown', escape)
     desktop.addEventListener('change', closeOnDesktop)
     return () => {
       document.removeEventListener('pointerdown', outside)
+      document.removeEventListener('focusin', focusOutside)
       document.removeEventListener('keydown', escape)
       desktop.removeEventListener('change', closeOnDesktop)
     }
   }, [menuOpen])
-  return <nav ref={nav} className="studio-nav" aria-label="Main navigation" data-raised={showAction || menuOpen} onBlur={(event) => {
-    if (!event.currentTarget.contains(event.relatedTarget)) setMenuOpen(false)
-  }}>
+  // Opening keeps focus on the toggle; Tab naturally reaches the first menu link.
+  return <nav ref={nav} className="studio-nav" aria-label="Main navigation" data-raised={showAction || menuOpen} data-open={menuOpen}>
     <a className="studio-brand" href="/" aria-label="UTEX Pay home">
       <img src="/brand/utex-pay-white.svg" width="886" height="174" alt="UTEX Pay" />
     </a>
@@ -101,14 +106,17 @@ export function HeroNavigation() {
         <div className="studio-nav-action" data-show={showAction} aria-hidden={!showAction}>
           <div><ButtonLink size="md" href="/#signup" tabIndex={showAction ? undefined : -1}>Open an account</ButtonLink></div>
         </div>
-        <button ref={toggle} className="studio-nav-toggle" type="button" aria-expanded={menuOpen} aria-controls={menuId} aria-label={menuOpen ? 'Close menu' : 'Open menu'} onClick={() => setMenuOpen(!menuOpen)}>
+        <button ref={toggle} className="studio-nav-toggle" type="button" aria-expanded={menuOpen} aria-controls={menuId} aria-label={menuOpen ? 'Close menu' : 'Open menu'} onClick={() => setMenuOpen((open) => !open)}>
           <span aria-hidden="true"><i /><i /></span>
         </button>
       </div>
     </div>
-    <div ref={menu} id={menuId} className="studio-mobile-menu" hidden={!menuOpen}>
-      {NAV_LINKS.map(({ label, href }) => <a key={label} href={href} onClick={() => setMenuOpen(false)}>{label}<span aria-hidden="true">↗</span></a>)}
-      <ButtonLink variant="secondary" href="/#login" onClick={() => setMenuOpen(false)}>Log in</ButtonLink>
+    {/* Phones: the bar itself grows to hold the menu (0fr → 1fr rows), so it stays mounted and is inert while shut. */}
+    <div id={menuId} className="studio-mobile-menu" data-open={menuOpen} inert={!menuOpen}>
+      <div className="studio-mobile-menu-inner">
+        {NAV_LINKS.map(({ label, href }, index) => <a key={label} href={href} style={{ '--i': index } as CSSProperties} onClick={() => setMenuOpen(false)}>{label}<svg className="studio-menu-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14m-6-6 6 6-6 6" /></svg></a>)}
+        <ButtonLink variant="secondary" href="/#login" style={{ '--i': NAV_LINKS.length } as CSSProperties} onClick={() => setMenuOpen(false)}>Log in</ButtonLink>
+      </div>
     </div>
   </nav>
 }

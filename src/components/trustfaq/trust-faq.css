@@ -92,8 +92,19 @@
   .tf-header::after { background: linear-gradient(90deg, #080808d9, #08080899 38%, #08080826 68%, transparent); }
   .tf-cover-copy { width: 72%; padding: 32px; }
   .tf-heading .section-heading__title { font-size: clamp(34px, 4.8vw, 44px); }
-  .tf-panel { grid-template-columns: 1fr; gap: 36px; min-height: 0; }
-  .tf-example { max-width: 520px; width: 100%; }
+  .tf-panel { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 24px; min-height: 0; }
+}
+/* Portrait tablets: give the licence its own row and balance the introduction
+   against the facts, including the larger iPad's 1024px portrait viewport. */
+@media (min-width: 621px) and (max-width: 900px), (min-width: 901px) and (max-width: 1100px) and (orientation: portrait) {
+  .tf-panel { grid-template-columns: minmax(0, 1fr); gap: 36px; }
+  .tf-example-card { display: grid; grid-template-columns: minmax(0, .95fr) minmax(0, 1.15fr); grid-template-areas: 'heading facts' 'note facts'; gap: 24px 32px; padding: 32px; }
+  .tf-example-heading { grid-area: heading; flex-direction: column; align-items: flex-start; gap: 16px; }
+  .tf-example-heading h3 { max-width: 250px; }
+  .tf-example dl { grid-area: facts; align-self: center; margin: 0; padding-left: 32px; border-left: 1px solid #ffffff12; }
+  .tf-example dl > div:first-child { border-top: 0; }
+  .tf-example dd { min-width: 0; flex-shrink: 1; }
+  .tf-example-card > p { grid-area: note; }
 }
 @media (max-width: 620px) {
   .trust-faq { --tf-gutter: 20px; --tf-top-space: 96px; padding-block: var(--tf-top-space) 72px; }
@@ -105,7 +116,8 @@
   .tf-heading .section-heading__eyebrow { font-size: 9px; letter-spacing: .16em; }
   .tf-intro { margin-top: 20px; }
   .tf-intro p { font-size: 15px; }
-  .tf-panel { padding-top: 28px; }
+  .tf-panel { grid-template-columns: 1fr; gap: 36px; padding-top: 28px; }
+  .tf-example { max-width: 520px; width: 100%; }
   .tf-question h3 button { font-size: 16px; line-height: 26px; gap: 16px; padding-block: 20px; }
   .tf-question[data-open='true'] h3 button { font-size: 20px; line-height: 29px; }
   .tf-answer-content { padding-right: 0; padding-bottom: 24px; }
