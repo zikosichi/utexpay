@@ -4,8 +4,6 @@
 
 .feature-grid { --fg-gold: #d6b77b; --fg-text: #f3f0e9; --fg-muted: #ada89f; position: relative; width: calc(100% - 2 * var(--banking-container-gutter, 48px)); max-width: var(--banking-container-width, 1280px); margin: 0 auto; padding: 40px 0 24px; color: var(--fg-text); font-family: 'Manrope', sans-serif; }
 .feature-grid .section-heading { margin-bottom: 56px; }
-/* Phones set the heading one sentence per line; wider screens pair the first two. */
-@media (min-width: 601px) { .fg-phone-break { display: none; } }
 /* Chapter index: three numbered columns between the heading and the first chapter. Same ledger
    grammar as the One account section (mono index, display name, muted line, hairline rules). */
 .fg-index { margin: 0 0 84px; }
@@ -23,27 +21,25 @@
 .fg-index-text { grid-area: text; color: var(--fg-muted); font-size: 15px; line-height: 24px; text-wrap: pretty; }
 .fg-index a:hover .fg-index-name, .fg-index a:focus-visible .fg-index-name { color: var(--fg-gold); }
 .fg-index a:focus-visible { outline: 2px solid var(--fg-gold); outline-offset: 6px; border-radius: 4px; }
-.fg-chapter-heading > p.fg-chapter-lead { grid-area: lead; align-self: end; display: block; margin: 0; max-width: none; padding: 0; font: 400 16px/26px 'Manrope', sans-serif; letter-spacing: 0; text-transform: none; text-wrap: pretty;
+.fg-chapter-heading > p.fg-chapter-lead { display: block; margin: 0; padding: 0; font: 400 16px/26px 'Manrope', sans-serif; letter-spacing: 0; text-transform: none; text-wrap: pretty;
   /* Quieter than the flat muted grey: a warm gradient that fades toward the end of the paragraph. */
   color: #8f8a82; background: linear-gradient(135deg, #b5afa5 0%, #948e85 55%, #736e66 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
 .fg-chapter-heading > p.fg-chapter-lead::before { content: none; }
 .fg-chapter + .fg-chapter { margin-top: 52px; border-top: 1px solid #ffffff13; padding-top: 44px; }
 #feature-personal, #feature-business { scroll-margin-top: 104px; }
-/* Chapter header = the One account header grammar: eyebrow across the top, heading left, lead
-   right and bottom-aligned, a hairline under both. Fills the row instead of stacking on the left. */
-/* The lead column is the personal row's right tile: same 1.65fr / 1fr split and 18px gap, so the
-   text's left edge and width match that tile exactly. */
-.fg-chapter-heading { display: grid; grid-template-columns: 1.65fr 1fr; grid-template-areas: 'eyebrow lead' 'title lead'; column-gap: 18px; align-items: center; margin-bottom: 32px; }
-.fg-chapter-heading > p:first-child { grid-area: eyebrow; align-self: end; margin-bottom: 14px; }
-.fg-chapter-heading h3 { grid-area: title; align-self: start; }
-.fg-chapter-heading > p { display: flex; align-items: center; gap: 14px; margin: 0 0 14px; color: var(--fg-gold); font: 400 10px/1.5 'JetBrains Mono', monospace; letter-spacing: .18em; text-transform: uppercase; }
-.fg-chapter-heading > p::before { content: ''; width: 28px; height: 1px; background: currentColor; }
-.fg-chapter-heading h3 { margin: 0; font: 500 clamp(26px, 2.6vw, 40px)/1.22 'Plus Jakarta Sans', sans-serif; letter-spacing: -.045em; word-spacing: .1em; text-wrap: balance; }
+/* Chapter header, stacked at every width (Sep 25 review): the product name leads, so it answers the
+   Personal / Business / Payments index above; the tagline sits under it as a gold line, then the
+   lead. Nothing shares a line with the title, so it can't be read as one sentence. */
+.fg-chapter-heading { display: grid; grid-template-columns: minmax(0, 1fr); margin-bottom: 32px; }
+.fg-chapter-heading h3 { margin: 0; color: #f3f2ee; font: 500 clamp(26px, 2.6vw, 36px)/1.15 'Plus Jakarta Sans', sans-serif; letter-spacing: -.045em; word-spacing: .1em; text-wrap: balance; }
+.fg-chapter-heading > p.fg-chapter-tagline { display: flex; align-items: center; gap: 14px; margin: 14px 0 0; color: var(--fg-gold); font: 400 10px/1.5 'JetBrains Mono', monospace; letter-spacing: .18em; text-transform: uppercase; }
+.fg-chapter-heading > p.fg-chapter-tagline::before { content: ''; flex-shrink: 0; width: 28px; height: 1px; background: currentColor; }
+.fg-chapter-heading > p.fg-chapter-lead { max-width: 600px; margin-top: 14px; }
 .fg-row { display: grid; gap: 18px; }
 .fg-row--personal { grid-template-columns: 1.65fr 1fr; }
 .fg-tile { position: relative; isolation: isolate; overflow: hidden; min-width: 0; min-height: 500px; border: 1px solid #cbb0784d; border-radius: 18px; background: #181714; }
 .fg-tile-heading { position: relative; z-index: 2; padding: 32px; pointer-events: none; }
-.fg-tile-heading h4 { margin: 0; font: 500 clamp(23px, 2.1vw, 31px)/1.2 'Plus Jakarta Sans', sans-serif; letter-spacing: -.035em; }
+.fg-tile-heading h4 { margin: 0; font: 500 clamp(22px, 1.9vw, 28px)/1.2 'Plus Jakarta Sans', sans-serif; letter-spacing: -.035em; }
 /* The tight tracking shrinks the space glyph too; give the gaps back without widening the letters. */
 .fg-tile h4, .fg-workspace-copy h4 { word-spacing: .1em; }
 .fg-tile-heading p { color: var(--fg-muted); font-size: 15px; line-height: 1.55; margin: 12px 0 0; }
@@ -54,7 +50,7 @@
 .fg-money { min-height: 657px; background: #050505; }
 .fg-money-ui { position: absolute; z-index: 2; left: 48.44px; bottom: 48.42px; width: 302px; }
 .fg-money .fg-tile-heading { padding: 58.44px 48.44px 0; }
-.fg-money .fg-tile-heading h4 { font-size: 36px; line-height: 37.2px; letter-spacing: -1.085px; }
+.fg-money .fg-tile-heading h4 { font-size: 28px; line-height: 32px; letter-spacing: -.85px; }
 .fg-money .fg-money-phone { inset: -.56px auto auto 332.44px; width: 628px; height: 656px; object-fit: cover; mask-image: linear-gradient(to right, transparent, #000 71px); }
 
 /* Frosted panel: total on top, then one row per currency account. */
@@ -100,7 +96,7 @@
 .fg-spending-art { position: absolute; top: -1px; left: -74px; width: 594px; aspect-ratio: 1122 / 1402; --receipt-width: 284px; }
 .fg-spending-scene { position: absolute; z-index: -1; inset: 0; width: 100%; height: 100%; max-width: none; object-fit: cover; mask-image: linear-gradient(to bottom, transparent, #000 64px); pointer-events: none; user-select: none; }
 .fg-spending .fg-tile-heading { padding: 59px 0 0 58.51px; }
-.fg-spending .fg-tile-heading h4 { font-size: 36px; line-height: 37.5px; letter-spacing: -1.085px; }
+.fg-spending .fg-tile-heading h4 { font-size: 28px; line-height: 32px; letter-spacing: -.85px; }
 .fg-spending .fg-tile-heading p { line-height: 23.25px; }
 /* Black 40% over a 27px backdrop blur; 1px inside stroke = white → #999999 at 30%, whose
    endpoints (304,1) → (280,125) convert to 191.1deg with the ramp starting at 1%. */
@@ -117,8 +113,8 @@
 .fg-receipt > strong { margin-left: auto; white-space: nowrap; font-size: 13px; line-height: 20px; font-weight: 500; }
 .feature-grid button:focus-visible, .feature-grid input:focus-visible { outline: 2px solid #e8c987; outline-offset: 4px; }
 @keyframes fg-appear { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: translateY(0); } }
-@media (max-width: 900px) { .feature-grid { width: calc(100% - 56px); padding-top: 56px; } .fg-index ol { grid-template-columns: 1fr; gap: 0; } .fg-chapter-heading { grid-template-columns: 1fr; grid-template-areas: 'eyebrow' 'title' 'lead'; align-items: start; margin-bottom: 24px; } .fg-chapter-heading > p.fg-chapter-lead { max-width: 560px; } .fg-chapter-heading > p.fg-chapter-lead { margin-top: 14px; } .fg-index li + li { border-left: 0; border-top: 1px solid #2e2b26; padding-left: 0; } .fg-index a { padding: 20px 0 22px; } .fg-row--personal { grid-template-columns: 1.2fr 1fr; } .fg-tile { min-height: 470px; } .fg-tile-heading { padding: 24px; } .fg-money-ui { left: 24px; bottom: 24px; width: min(302px, 68%); } .fg-spending-art { inset: auto 0 calc(130px - 59.4cqw); width: 100%; } }
-@media (max-width: 620px) { .feature-grid { width: calc(100% - 40px); padding-top: 48px; } .feature-grid .section-heading { margin-bottom: 40px; } .fg-index { margin-bottom: 56px; } .fg-chapter-heading > p.fg-chapter-lead { font-size: 15px; line-height: 25px; } .fg-row--personal { grid-template-columns: 1fr; } .fg-tile { min-height: 460px; border-radius: 14px; } .fg-money-ui { width: min(302px, 72%); } .fg-tile-heading { padding: 24px; } .fg-chapter-heading h3 { font-size: 28px; } .fg-currencies { gap: 5px; } .fg-currencies button { padding-inline: 8px; } }
+@media (max-width: 900px) { .feature-grid { width: calc(100% - 56px); padding-top: 56px; } .fg-index ol { grid-template-columns: 1fr; gap: 0; } .fg-chapter-heading { margin-bottom: 24px; } .fg-chapter-heading > p.fg-chapter-lead { max-width: 560px; } .fg-index li + li { border-left: 0; border-top: 1px solid #2e2b26; padding-left: 0; } .fg-index a { padding: 20px 0 22px; } .fg-row--personal { grid-template-columns: 1.2fr 1fr; } .fg-tile { min-height: 470px; } .fg-tile-heading { padding: 24px; } .fg-money-ui { left: 24px; bottom: 24px; width: min(302px, 68%); } .fg-spending-art { inset: auto 0 calc(130px - 59.4cqw); width: 100%; } }
+@media (max-width: 620px) { .feature-grid { width: calc(100% - 40px); padding-top: 48px; } .feature-grid .section-heading { margin-bottom: 40px; } .fg-index { margin-bottom: 56px; } .fg-chapter-heading > p.fg-chapter-lead { font-size: 15px; line-height: 25px; } .fg-row--personal { grid-template-columns: 1fr; } .fg-tile { min-height: 460px; border-radius: 14px; } .fg-money-ui { width: min(302px, 72%); } .fg-tile-heading { padding: 24px; } .fg-currencies { gap: 5px; } .fg-currencies button { padding-inline: 8px; } }
 @media (prefers-reduced-motion: reduce) { .feature-grid *, .feature-grid *::before, .feature-grid *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
 
 /* Business tiles — Figma `BusinessTiles` 4855:22868: 521.51 + 18 + 860.49 = 1400, both 600.28
@@ -132,7 +128,7 @@
    through the transparent border (a pseudo-element ring would be clipped by overflow: hidden). */
 .fg-accounts { border-color: transparent; background: radial-gradient(701.62px 807.59px at 51.15px 599.28px, #352c1c77 0%, #352c1c00 70%) padding-box, linear-gradient(#141414, #141414) padding-box, linear-gradient(#ffffff4d, #9999994d) border-box; }
 .fg-accounts .fg-tile-heading { position: absolute; left: 49px; top: 49.47px; width: 432px; padding: 0; }
-.fg-accounts .fg-tile-heading h4, .fg-workspace-copy h4 { margin: 0; font: 500 36px/45px 'Plus Jakarta Sans', sans-serif; letter-spacing: -1.085px; }
+.fg-accounts .fg-tile-heading h4, .fg-workspace-copy h4 { margin: 0; font: 500 28px/35px 'Plus Jakarta Sans', sans-serif; letter-spacing: -1.085px; }
 .fg-accounts .fg-tile-heading p, .fg-workspace-copy p { margin: 13px 0 0; color: var(--fg-muted); font-size: 16px; line-height: 23.25px; }
 /* Members card (`Card · Members` 4855:22870, 442 × 506 at 40, 227.47). Fill = Figma's rotated
    radial (#352f29 → #1d1d1d, matrix 187.3 443.2 −387.1 167.9 at 96.1, 5.5) fitted to the nearest
@@ -197,7 +193,7 @@
 .fg-workspace-copy { position: absolute; z-index: 1; inset: 0; background: linear-gradient(to left, #0006, #0000 45%); }
 @media (prefers-reduced-motion: reduce) { .fg-workspace-scene { transition: none; } }
 .fg-workspace-copy > div { position: absolute; top: 68px; right: var(--workspace-copy-right); width: var(--workspace-copy-width); }
-.fg-workspace-copy h4 { font-size: clamp(24px, 4.19cqw, 36px); line-height: 1.25; }
+.fg-workspace-copy h4 { font-size: clamp(21px, 3.26cqw, 28px); line-height: 1.25; }
 .fg-workspace-copy p { font-size: clamp(12px, 1.95cqw, 16px); line-height: 1.45; }
 .fg-workspace-copy .fg-workspace-features li { font-size: clamp(14px, 2.45cqw, 20px); gap: min(20px, 2.33cqw); }
 .fg-workspace-copy p { max-width: 297px; }
@@ -252,7 +248,7 @@
   .fg-row--business .fg-tile { height: auto; min-height: 0; }
   .fg-row--business .fg-accounts { height: 560px; }
   .fg-accounts .fg-tile-heading { left: 24px; top: 32px; }
-  .fg-accounts .fg-tile-heading h4, .fg-workspace-copy h4 { font-size: 30px; line-height: 37px; letter-spacing: -.9px; }
+  .fg-accounts .fg-tile-heading h4, .fg-workspace-copy h4 { font-size: 24px; line-height: 30px; letter-spacing: -.7px; }
   .fg-members { left: 24px; top: 196px; width: calc(100% - 48px); }
   .fg-members-columns > span:nth-child(2) { width: auto; }
   .fg-member-access { width: auto; }
@@ -264,7 +260,7 @@
   .fg-workspace-scene--laptop { transform: none; }
   .fg-workspace-copy { position: relative; inset: auto; grid-column: 2; align-self: center; min-width: 0; width: auto; height: auto; background: none; }
   .fg-workspace-copy > div { position: static; width: auto; padding: 28px 16px 28px 0; }
-  .fg-workspace-copy h4 { font-size: clamp(21px, 6.4cqw, 27px); line-height: 1.15; letter-spacing: -.7px; }
+  .fg-workspace-copy h4 { font-size: clamp(20px, 5.6cqw, 23px); line-height: 1.15; letter-spacing: -.6px; }
   .fg-workspace-copy p { margin-top: 10px; font-size: 13px; line-height: 19px; }
   .fg-workspace-copy .fg-workspace-features li { font-size: 13px; line-height: 18px; gap: 8px; }
   .fg-workspace-features { margin-top: 24px; gap: 12px; }
@@ -384,7 +380,7 @@
   .fg-row--personal { --personal-tile-height: clamp(480px, 43vw, 570px); }
   .fg-row--personal > .fg-tile { min-height: var(--personal-tile-height); padding-bottom: 0; }
   :is(.fg-money, .fg-spending) .fg-tile-heading { padding: 32px 28px 0; }
-  :is(.fg-money, .fg-spending) .fg-tile-heading h4 { font-size: 28px; line-height: 31px; letter-spacing: -.8px; }
+  :is(.fg-money, .fg-spending) .fg-tile-heading h4 { font-size: 24px; line-height: 28px; letter-spacing: -.7px; }
   :is(.fg-money, .fg-spending) .fg-tile-heading p { margin-top: 10px; font-size: 14px; line-height: 21px; }
   .fg-money-ui { position: absolute; left: 28px; bottom: 28px; width: min(260px, 46%); margin: 0; }
   .fg-balance-panel { gap: 10px; padding: 12px; }
@@ -418,7 +414,7 @@
   .fg-row--business { grid-template-columns: 1fr; }
   .fg-row--business .fg-accounts { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); grid-template-rows: minmax(0, 1fr); gap: 24px; height: 400px; padding: 32px; }
   .fg-accounts .fg-tile-heading { position: static; width: auto; align-self: start; }
-  .fg-accounts .fg-tile-heading h4 { font-size: clamp(26px, 3.8vw, 36px); line-height: 1.2; }
+  .fg-accounts .fg-tile-heading h4 { font-size: clamp(23px, 3vw, 28px); line-height: 1.2; }
   .fg-accounts .fg-tile-heading p { font-size: 14px; line-height: 22px; }
   .fg-accounts .fg-tile-heading p br { display: none; }
   .fg-members { position: relative; inset: auto; width: 100%; min-width: 0; }
@@ -438,7 +434,7 @@
   .fg-row--business .fg-workspace { height: clamp(400px, 50vw, 440px); }
   .fg-workspace-scene { object-fit: cover; }
   .fg-workspace-copy > div { top: 28px; }
-  .fg-workspace-copy h4 { font-size: clamp(24px, 4.19cqw, 36px); }
+  .fg-workspace-copy h4 { font-size: clamp(21px, 3.26cqw, 28px); }
   .fg-workspace-copy p { font-size: clamp(13px, 1.95cqw, 16px); }
   .fg-workspace-features { margin-top: 24px; gap: 10px; }
   .fg-feature-icon { width: 36px; height: 36px; border-radius: 12px; }
@@ -449,7 +445,7 @@
    Same parts, scaled to the phone: shared 24px inset, one-line account rows, shorter scenes. */
 @media (max-width: 620px) {
   :is(.fg-money, .fg-spending) .fg-tile-heading { padding: 28px 24px 0; }
-  :is(.fg-money, .fg-spending) .fg-tile-heading h4 { font-size: 27px; line-height: 30px; letter-spacing: -.8px; }
+  :is(.fg-money, .fg-spending) .fg-tile-heading h4 { font-size: 23px; line-height: 27px; letter-spacing: -.65px; }
   :is(.fg-money, .fg-spending) .fg-tile-heading p { margin-top: 8px; font-size: 14px; line-height: 20px; }
 
   /* Panel and photo side by side, as on desktop: the photo is anchored bottom-right and runs off
@@ -479,12 +475,3 @@
   .fg-receipt > strong { font-size: 13px; }
 }
 
-/* Phones: the product name leads and the line becomes its eyebrow. The eyebrow and h3 trade
-   styles and places. The markup stays the same, so the h3 is still the section's heading. */
-@media (max-width: 620px) {
-  .fg-chapter-heading { grid-template-areas: 'title' 'eyebrow' 'lead'; }
-  .fg-chapter-heading > p:first-child { display: block; margin: 0; color: #f3f2ee; font: 500 32px/1.15 'Plus Jakarta Sans', sans-serif; letter-spacing: -.045em; word-spacing: .1em; text-transform: none; }
-  .fg-chapter-heading > p:first-child::before { content: none; }
-  .fg-chapter-heading h3 { display: flex; align-items: center; gap: 14px; margin: 0 0 14px; color: var(--fg-gold); font: 400 10px/1.5 'JetBrains Mono', monospace; letter-spacing: .18em; word-spacing: 0; text-transform: uppercase; }
-  .fg-chapter-heading h3::before { content: ''; flex-shrink: 0; width: 28px; height: 1px; background: currentColor; }
-}

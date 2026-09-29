@@ -4,7 +4,7 @@
 .fg-checkout-scene { position: absolute; z-index: 0; inset: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; user-select: none; }
 .fg-checkout-shade { position: absolute; z-index: 1; inset: 0; background: linear-gradient(#0007, transparent 42%); pointer-events: none; }
 .fg-checkout-copy { position: absolute; z-index: 2; top: 8%; left: 0; right: 0; display: flex; flex-direction: column; align-items: center; gap: .9cqw; padding: 0 24px; text-align: center; }
-.fg-checkout-copy h4 { margin: 0; font: 600 3cqw/1.26 'Plus Jakarta Sans', sans-serif; letter-spacing: -.0775cqw; color: var(--fg-text); text-wrap: balance; }
+.fg-checkout-copy h4 { margin: 0; font: 600 2.3cqw/1.26 'Plus Jakarta Sans', sans-serif; letter-spacing: -.0775cqw; color: var(--fg-text); text-wrap: balance; }
 .fg-checkout-copy p { margin: 0; font: 400 1.143cqw/1.45 'Manrope', sans-serif; color: #d2cbc0; text-wrap: balance; }
 .fg-checkout-product, .fg-checkout-form, .fg-checkout-confirmation { position: absolute; z-index: 2; box-sizing: border-box; font: 400 1.1cqw/1.4 'Manrope', sans-serif; -webkit-font-smoothing: antialiased; }
 .fg-checkout-product, .fg-checkout-confirmation { color: #f5eee5; background: linear-gradient(135deg, #373027f5, #141310fa 80%); border: 1px solid #b7935e; box-shadow: inset 0 1px 1px #ffe2b630, var(--tune-edge-x, 3px) var(--tune-edge-y, -3px) 0 #66513b, var(--tune-shadow, 0 -.8cqw 1.6cqw -.8cqw #0008), 0 .3cqw .5cqw -.25cqw #000b; }
@@ -78,7 +78,7 @@
   .fg-tile.fg-checkout { aspect-ratio: auto; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.12fr); grid-template-areas: '. copy' 'receipt form'; gap: 20px 24px; padding: 24px; }
   .fg-checkout-scene { object-position: 32% center; }
   .fg-checkout-copy { position: relative; inset: auto; grid-area: copy; gap: 8px; padding: 0; }
-  .fg-checkout-copy h4 { font-size: clamp(28px, 4cqw, 36px); }
+  .fg-checkout-copy h4 { font-size: clamp(23px, 3.2cqw, 28px); }
   .fg-checkout-copy p { font-size: 14px; }
   .fg-checkout-product, .fg-checkout-form, .fg-checkout-confirmation { position: relative; inset: auto; width: 100%; min-width: 0; font-size: 14px; border-radius: 10px; }
   .fg-checkout-form { grid-area: form; padding: 16px; }
@@ -114,7 +114,7 @@
 @media (max-width: 620px) {
   .fg-tile.fg-checkout { aspect-ratio: auto; display: grid; grid-template-columns: minmax(0, 1fr); grid-template-areas: 'copy' 'scene' 'form'; padding: 0 20px 20px; }
   .fg-checkout-copy { position: relative; inset: auto; grid-area: copy; padding: 28px 0 0; gap: 10px; }
-  .fg-checkout-copy h4 { font-size: 27px; line-height: 34px; letter-spacing: -.8px; }
+  .fg-checkout-copy h4 { font-size: 23px; line-height: 29px; letter-spacing: -.65px; }
   .fg-checkout-copy p { font-size: 14px; line-height: 21px; }
   .fg-checkout-scene { position: relative; inset: auto; grid-area: scene; width: calc(100% + 40px); max-width: none; height: 255px; margin: 12px -20px 0; object-fit: cover; object-position: 28% center; mask-image: linear-gradient(transparent, #000 30px, #000 82%, transparent); }
   .fg-checkout-shade { display: none; }

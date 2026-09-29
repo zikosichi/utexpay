@@ -46,7 +46,7 @@ export function FeatureGridSection() {
 
   return <div className="feature-grid" ref={grid} aria-labelledby={`${id}-title`}>
     <SectionHeading id={`${id}-title`} eyebrow="Banking & payments" description="Three ways to use UTEX. One account underneath all of them.">
-      For you. <br className="fg-phone-break" />For your business.<br />For your customers.
+      Everything your money does,<br />in one place.
     </SectionHeading>
     <nav className="fg-index" aria-label="In this section">
       <ol>
@@ -57,7 +57,7 @@ export function FeatureGridSection() {
     </nav>
     <section className="fg-chapter fg-chapter--directions" id="feature-personal" aria-labelledby={`${id}-personal`}>
       <ImageDirections label="Personal image direction" controls={`${id}-personal-scene`} options={PERSONAL_SCENES} selected={personalScene} onSelect={selectPersonalScene} />
-      <header className="fg-chapter-heading"><p>Personal banking</p><h3 id={`${id}-personal`}>Make room for everyday life.</h3><p className="fg-chapter-lead">Accounts in the currencies you use and a card ready the day you open it. Balances and spending in one view.</p></header>
+      <header className="fg-chapter-heading"><h3 id={`${id}-personal`}>Personal banking</h3><p className="fg-chapter-tagline">Make room for everyday life.</p><p className="fg-chapter-lead">Accounts in the currencies you use and a card ready the day you open it. Balances and spending in one view.</p></header>
       <div className="fg-row fg-row--personal">
         <article className="fg-tile fg-money" data-scene={personalScene}>
           <div id={`${id}-personal-scene`} className="fg-money-art" data-scene={personalScene}>
@@ -92,12 +92,12 @@ export function FeatureGridSection() {
       </div>
     </section>
     <section className="fg-chapter fg-chapter--directions" id="feature-business" aria-labelledby={`${id}-business`}>
-      <header className="fg-chapter-heading"><p>Business banking</p><h3 id={`${id}-business`}>Give your business its own space.</h3><p className="fg-chapter-lead">Open it to run the business. Everything you need next is something you switch on, not somewhere you move to.</p></header>
+      <header className="fg-chapter-heading"><h3 id={`${id}-business`}>Business banking</h3><p className="fg-chapter-tagline">Give your business its own space.</p><p className="fg-chapter-lead">Open it to run the business. Everything you need next is something you switch on, not somewhere you move to.</p></header>
       <ImageDirections label="Business image direction" controls={`${id}-business-scene`} options={BUSINESS_SCENES} selected={businessScene} onSelect={selectBusinessScene} />
       <BusinessTiles scene={businessScene} sceneId={`${id}-business-scene`} />
     </section>
     <section className="fg-chapter" id="feature-payments" aria-labelledby={`${id}-payments`}>
-      <header className="fg-chapter-heading"><p>Payment processing</p><h3 id={`${id}-payments`}>From checkout to confirmation.</h3><p className="fg-chapter-lead">What your customers pay lands in the account you already run. Yours the moment it clears, no payout to wait for.</p></header>
+      <header className="fg-chapter-heading"><h3 id={`${id}-payments`}>Payment processing</h3><p className="fg-chapter-tagline">From checkout to confirmation.</p><p className="fg-chapter-lead">What your customers pay lands in the account you already run. Yours the moment it clears, no payout to wait for.</p></header>
       <CheckoutScene />
     </section>
   </div>

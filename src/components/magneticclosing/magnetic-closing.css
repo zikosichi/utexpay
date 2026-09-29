@@ -98,7 +98,7 @@
 .mc-tile-detail { fill: inherit; opacity: .72; font-size: 22px; }
 .mc-closing-copy { position: relative; z-index: 4; margin-top: calc(var(--mc-width) * -.02); padding: 20px 24px clamp(32px, 3vw, 48px); text-align: center; }
 .magnetic-closing .section-heading { max-width: 1000px; }
-.magnetic-closing .section-heading__title { font-size: clamp(32px, 3.6vw, 56px); }
+.magnetic-closing .section-heading__title { font-size: calc(clamp(32px, 3.6vw, 56px) * var(--section-title-scale)); }
 .magnetic-closing .section-heading__eyebrow { margin-bottom: 16px; }
 .magnetic-closing .section-heading__description { margin-top: 16px; max-width: 640px; font-size: 16px; }
 .mc-actions { display: flex; justify-content: center; gap: 12px; margin-top: 28px; }
@@ -149,12 +149,12 @@
 }
 @media (min-width: 621px) and (max-width: 1100px) and (orientation: portrait) {
   .magnetic-closing { --mc-container: calc(100vw - 56px); --mc-width: var(--mc-container); }
-  .magnetic-closing .section-heading__title { font-size: clamp(44px, 6vw, 64px); max-width: 800px; margin-inline: auto; }
+  .magnetic-closing .section-heading__title { font-size: calc(clamp(44px, 6vw, 64px) * var(--section-title-scale)); max-width: 800px; margin-inline: auto; }
   .magnetic-closing .section-heading__description { font-size: 18px; }
 }
 @media (max-width: 600px) {
   .mc-closing-copy { padding-inline: 20px; }
-  .magnetic-closing .section-heading__title { font-size: clamp(30px, 8.5vw, 42px); max-width: 360px; margin-inline: auto; }
+  .magnetic-closing .section-heading__title { font-size: calc(clamp(30px, 8.5vw, 42px) * var(--section-title-scale)); max-width: 360px; margin-inline: auto; }
   .magnetic-closing .section-heading__description { max-width: 320px; font-size: 14px; }
   .mc-actions { gap: 8px; }
   .mc-actions .utex-button { --button-height: 54px; --button-padding: 20px; --button-font-size: 15px; }

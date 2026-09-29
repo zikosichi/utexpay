@@ -91,7 +91,7 @@
   .tf-cover { object-position: 65% center; }
   .tf-header::after { background: linear-gradient(90deg, #080808d9, #08080899 38%, #08080826 68%, transparent); }
   .tf-cover-copy { width: 72%; padding: 32px; }
-  .tf-heading .section-heading__title { font-size: clamp(34px, 4.8vw, 44px); }
+  .tf-heading .section-heading__title { font-size: calc(clamp(34px, 4.8vw, 44px) * var(--section-title-scale)); }
   .tf-panel { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 24px; min-height: 0; }
 }
 /* Portrait tablets: give the licence its own row and balance the introduction
@@ -112,7 +112,7 @@
   .tf-cover { top: auto; bottom: 0; height: 310px; object-position: right center; mask-image: linear-gradient(180deg, transparent, #000 24%); }
   .tf-header::after { background: linear-gradient(180deg, #100e0c 0%, #100e0c 43%, #100e0ce6 49%, #100e0c00 69%); }
   .tf-cover-copy { width: 100%; padding: 32px 24px 320px; }
-  .tf-heading .section-heading__title { font-size: clamp(31px, 8.8vw, 46px); }
+  .tf-heading .section-heading__title { font-size: calc(clamp(31px, 8.8vw, 46px) * var(--section-title-scale)); }
   .tf-heading .section-heading__eyebrow { font-size: 9px; letter-spacing: .16em; }
   .tf-intro { margin-top: 20px; }
   .tf-intro p { font-size: 15px; }
@@ -126,7 +126,7 @@
 }
 @media (max-width: 370px) {
   .tf-cover-copy { padding-inline: 20px; }
-  .tf-heading .section-heading__title { font-size: 29px; text-wrap: balance; }
+  .tf-heading .section-heading__title { font-size: calc(29px * var(--section-title-scale)); text-wrap: balance; }
 }
 /* The same discreet numbered rail used by the banking section. */
 .tf-version-bar { position: absolute; z-index: 5; top: calc(var(--tf-top-space) + 32px); right: 0; }
@@ -145,7 +145,7 @@
 .trust-faq[data-version='split'] .tf-header { display: flex; flex-direction: column; align-items: stretch; min-height: 0; overflow: visible; border: 0; border-radius: 0; background: none; }
 .trust-faq[data-version='split'] .tf-header::before, .trust-faq[data-version='split'] .tf-header::after { content: none; }
 .trust-faq[data-version='split'] .tf-cover-copy { order: 0; width: 100%; padding: 0; }
-.trust-faq[data-version='split'] .tf-heading .section-heading__title { font-size: clamp(38px, 3.55vw, 56px); }
+.trust-faq[data-version='split'] .tf-heading .section-heading__title { font-size: calc(clamp(38px, 3.55vw, 56px) * var(--section-title-scale)); }
 .trust-faq[data-version='split'] .tf-intro { max-width: 460px; margin-top: 24px; }
 .tf-split-art { order: 1; display: block; width: calc(100% + 48px); max-width: none; height: auto; margin: 0 -24px; object-fit: contain; mask-image: linear-gradient(to bottom, transparent, #000 8%, #000 90%, transparent), linear-gradient(to right, transparent, #000 8%, #000 92%, transparent); mask-composite: intersect; }
 .trust-faq[data-version='split'] .tf-content { min-width: 0; padding-top: 4px; }
@@ -157,14 +157,14 @@
 @media (max-width: 900px) {
   .tf-versions button { width: 24px; }
   .trust-faq[data-version='split'] .tf-inner { grid-template-columns: minmax(0, 1fr); gap: 40px; }
-  .trust-faq[data-version='split'] .tf-heading .section-heading__title { font-size: clamp(34px, 5.7vw, 48px); }
+  .trust-faq[data-version='split'] .tf-heading .section-heading__title { font-size: calc(clamp(34px, 5.7vw, 48px) * var(--section-title-scale)); }
   .tf-split-art { width: 100%; max-width: 680px; margin: 8px auto 0; }
   .trust-faq[data-version='split'] .tf-panel { min-height: 0; }
 }
 @media (max-width: 620px) {
   .tf-version-bar { top: calc(var(--tf-top-space) + 16px); }
   .tf-versions button { width: 20px; }
-  .trust-faq[data-version='split'] .tf-heading .section-heading__title { font-size: clamp(29px, 8.2vw, 46px); }
+  .trust-faq[data-version='split'] .tf-heading .section-heading__title { font-size: calc(clamp(29px, 8.2vw, 46px) * var(--section-title-scale)); }
   .trust-faq[data-version='split'] .tf-cover-copy { padding-right: 8px; }
   .trust-faq[data-version='split'] .tf-inner { gap: 28px; }
   .trust-faq[data-version='split'] .tf-panel { padding-top: 8px; }
