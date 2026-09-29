@@ -349,7 +349,7 @@ try {
   }
   assert.equal((await state()).phase, 'success')
   assert.ok(pressedAt - completedAt >= 500 && pressedAt - completedAt < 1200, 'completed form uses the shorter pre-Pay pause')
-  assert.ok(Date.now() - processingAt >= 1650, 'processing receives the longer pause')
+  assert.ok(Date.now() - processingAt >= 1150, 'processing receives the longer pause')
   assert.equal(stages.has(1) && stages.has(2) && stages.has('pay'), true, 'intro types expiry and CVC then presses Pay')
   await sleep(750)
   assert.match(await evaluate(`getComputedStyle(document.querySelector('.fg-checkout-product')).animationName`), /checkout-notification-arrive/, 'the whole notification rises and settles')

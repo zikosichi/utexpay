@@ -33,6 +33,8 @@ function CardMark({ brand }: { brand: CardBrand }) {
 
 type Field = 'card' | 'expiry' | 'cvc'
 type Phase = 'preview' | 'editing' | 'processing' | 'success'
+/** Phone and tablet layouts — keep in step with checkout-scene.css. Touch keyboards make typing a pain there. */
+const COMPACT_QUERY = '(max-width: 900px), (min-width: 901px) and (max-width: 1100px) and (orientation: portrait)'
 const BRAND_NAMES = { visa: 'Visa', mastercard: 'Mastercard', amex: 'American Express', unknown: 'Card' }
 
 /** Local interaction only: values stay in component memory; no payment SDK, storage or requests. */
@@ -69,13 +71,13 @@ export function CheckoutScene() {
 
   useEffect(() => {
     if (phase !== 'processing') return
-    const timer = window.setTimeout(() => setPhase('success'), 1800)
+    const timer = window.setTimeout(() => setPhase('success'), 1300)
     return () => window.clearTimeout(timer)
   }, [phase])
   useEffect(() => {
     if (phase !== 'success') { setReceiptVisible(false); return }
     if (!automaticPayment.current) replayRef.current?.focus({ preventScroll: true })
-    const timer = window.setTimeout(() => setReceiptVisible(true), 650)
+    const timer = window.setTimeout(() => setReceiptVisible(true), 500)
     return () => window.clearTimeout(timer)
   }, [phase])
 
@@ -101,7 +103,7 @@ export function CheckoutScene() {
     const number = '4242424242424242'
     const date = `12${String(new Date().getFullYear() + 2).slice(-2)}`
     const steps: { at: number; run: () => void }[] = []
-    let at = 500
+    let at = 300
     const type = (value: string, field: Field, apply: (value: string) => void, interval: number) => {
       steps.push({ at, run: () => setDemoField(field) })
       for (let i = 1; i <= value.length; i++) {
@@ -109,19 +111,19 @@ export function CheckoutScene() {
         const partial = value.slice(0, i)
         steps.push({ at, run: () => apply(partial) })
       }
-      at += 250
+      at += 200
     }
     if (reduceMotion) {
       steps.push({ at: 250, run: () => { setCard(formatCard(number)); setExpiry(formatExpiry(date)); setCvc('123') } })
       at = 600
     } else {
-      type(number, 'card', value => setCard(formatCard(value)), 90)
-      type(date, 'expiry', value => setExpiry(formatExpiry(value)), 130)
-      type('123', 'cvc', setCvc, 130)
+      type(number, 'card', value => setCard(formatCard(value)), 60)
+      type(date, 'expiry', value => setExpiry(formatExpiry(value)), 95)
+      type('123', 'cvc', setCvc, 95)
       steps.push({ at, run: () => setDemoField(null) })
-      at += 450
+      at += 400
       steps.push({ at, run: () => setDemoField('pay') })
-      at += 180
+      at += 150
     }
     steps.push({ at, run: () => { setDemoField(null); setIntro('done'); setPhase('processing') } })
     let frame = 0, previous = performance.now(), elapsed = 0, next = 0
@@ -220,7 +222,7 @@ export function CheckoutScene() {
   }
 
   function reset() {
-    const replay = window.matchMedia('(max-width: 620px)').matches
+    const replay = window.matchMedia(COMPACT_QUERY).matches
     introStarted.current = true
     automaticPayment.current = replay
     setIntro(replay ? 'running' : 'manual'); setDemoField(null); setReceiptVisible(false)
@@ -228,7 +230,7 @@ export function CheckoutScene() {
     if (!replay) requestAnimationFrame(() => cardRef.current?.focus({ preventScroll: true }))
   }
 
-  // Phones replay the automatic demo without focusing an input or opening the keyboard.
+  // Phones and tablets replay the automatic demo without focusing an input or opening the keyboard.
   // Desktop invites manual entry after the first demo, then offers "Try again".
   const status = phase === 'processing' ? 'Confirming payment' : phase === 'editing' ? ready ? 'Ready to pay' : 'Your secure checkout' : 'Payment successful'
 
