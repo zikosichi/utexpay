@@ -5,12 +5,13 @@ import './trust-faq.css'
 
 type Question = { question: string; answer: string }
 // Product examples, not live account settings. Confirm regulatory and pricing copy before launch.
+// Ordered as a visitor thinks it through: is it for me, is it safe, what does it take.
 const QUESTIONS: Question[] = [
-  { question: 'How do I keep control of my account?', answer: 'Use two-step verification for account access, manage your cards, and give each team member the permissions they need. Your security controls live alongside your everyday banking.' },
-  { question: 'How is my money protected?', answer: 'For details about how customer funds are held and the protections that apply to your account, talk to our team. We can help you understand the arrangements before you get started.' },
   { question: 'Who is UTEX for?', answer: 'UTEX brings accounts and payment acceptance together for businesses and entrepreneurs. Whether you’re building a team or selling online, you can manage money in and money out in one place.' },
-  { question: 'What do I need to get started?', answer: 'You’ll be asked for information about yourself and your business, along with documents to verify those details. The requirements depend on your business and where it is registered.' },
   { question: 'Can I bank and accept payments in one place?', answer: 'Yes. UTEX brings your business account and payment acceptance together. Customer payments settle into the account you use to run your business, so money in and money out stay in one place.' },
+  { question: 'How is my money protected?', answer: 'For details about how customer funds are held and the protections that apply to your account, talk to our team. We can help you understand the arrangements before you get started.' },
+  { question: 'How do I keep control of my account?', answer: 'Use two-step verification for account access, manage your cards, and give each team member the permissions they need. Your security controls live alongside your everyday banking.' },
+  { question: 'What do I need to get started?', answer: 'You’ll be asked for information about yourself and your business, along with documents to verify those details. The requirements depend on your business and where it is registered.' },
   { question: 'What will I pay?', answer: 'Pricing depends on the services your business needs. Talk to our team about your account, payment methods and expected volume for the fees that apply to your setup.' },
 ]
 
@@ -105,14 +106,17 @@ export function TrustFaqSection() {
         {split ? <img className="tf-split-art" src="/trustfaq/one-home-1200.webp"
           srcSet="/trustfaq/one-home-640.webp 640w, /trustfaq/one-home-1200.webp 1200w"
           sizes="(max-width: 900px) calc(100vw - 56px), (max-width: 1496px) 56vw, 800px"
-          width="1200" height="900" loading="lazy" decoding="async" alt="" aria-hidden="true" /> : <img className="tf-cover" src="/trustfaq/doorway-cover-physics-1600.webp"
+          width="1200" height="900" loading="lazy" decoding="async" alt="" aria-hidden="true" /> : <picture>
+          <source media="(max-width: 620px)" srcSet="/trustfaq/doorway-portrait-640.webp 640w, /trustfaq/doorway-portrait-1122.webp 1122w"
+            sizes="calc(100vw - 40px)" width="1122" height="1402" />
+          <img className="tf-cover" src="/trustfaq/doorway-cover-physics-1600.webp"
           srcSet="/trustfaq/doorway-cover-physics-960.webp 960w, /trustfaq/doorway-cover-physics-1600.webp 1600w, /trustfaq/doorway-cover-physics-2125.webp 2125w"
           sizes="(max-width: 620px) 920px, (max-width: 900px) 1300px, (max-width: 1496px) calc(100vw - 96px), 1400px"
-          width="2125" height="740" loading="lazy" decoding="async" alt="" aria-hidden="true" />}
+          width="2125" height="740" loading="lazy" decoding="async" alt="" aria-hidden="true" /></picture>}
         <div className="tf-cover-copy">
           <div className="tf-heading"><p className="section-heading__eyebrow">Your questions, answered</p>
             <h2 id={`${id}-title`} className="section-heading__title">Feel at home.<br />Before you move in.</h2></div>
-          <div className="tf-intro"><p>How your money works. How access is protected. What happens next.</p></div>
+          <div className="tf-intro"><p>What people ask before they open an account.</p></div>
         </div>
       </header>
       <div className="tf-content">

@@ -417,3 +417,16 @@
   .fg-checkout-paid[data-visible="true"] .fg-checkout-replay::after { animation: checkout-replay-shimmer 3.2s ease-in-out 1.8s infinite; }
   .fg-chapter:not(.is-in) .fg-checkout-paid .fg-checkout-replay::after { animation-play-state: paused; }
 }
+
+/* Phones: the whole tile fits one screen below the sticky nav (Sandro, iPhone Safari, Sep 29).
+   The order total joins the merchant row, so the form loses a row, and the photo band gives up
+   height on short viewports: 100svh minus the 72px nav, a little air and the ~400px rest of the tile. */
+@media (max-width: 620px) {
+  .fg-checkout-scene { height: clamp(128px, calc(100svh - 490px), 196px); }
+  .fg-checkout-merchant { padding: 0 96px 12px 0; margin-bottom: 12px; border-bottom: 1px solid #81705b22; }
+  .fg-checkout-total { position: absolute; top: -58px; right: 0; height: 34px; padding: 0; margin: 0; border: 0; }
+  .fg-checkout-total > span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .fg-checkout-paid { justify-content: flex-start; padding-top: 16px; border-top: 0; }
+  .fg-checkout-paid .fg-checkout-replay, .fg-checkout-paid .fg-checkout-replay[data-invite] { margin-top: 8px; }
+  .fg-checkout-paid-badge { margin-bottom: 14px; }
+}

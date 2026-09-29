@@ -34,10 +34,10 @@
 .trust-faq button:focus-visible { outline: 2px solid var(--tf-gold); outline-offset: 5px; }
 .tf-panel { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); gap: clamp(48px, 5.5vw, 80px); align-items: start; padding-top: 48px; min-height: 448px; }
 .tf-question { border-top: 1px solid var(--tf-line); }
-.tf-question:first-child { border-top: 0; }
+.tf-question:first-of-type { border-top: 0; }
 .tf-question h3 { margin: 0; }
 .tf-question h3 button { display: flex; justify-content: space-between; align-items: center; gap: 24px; width: 100%; padding: 24px 0; border: 0; background: none; color: var(--tf-text); text-align: left; font: 400 18px/28px 'Manrope', sans-serif; letter-spacing: 0; cursor: pointer; transition: font-size var(--tf-duration) var(--tf-ease), line-height var(--tf-duration) var(--tf-ease), letter-spacing var(--tf-duration) var(--tf-ease), color 200ms ease; }
-.tf-question:first-child h3 button { padding-top: 0; }
+.tf-question:first-of-type h3 button { padding-top: 0; }
 .tf-question h3 button:hover { color: var(--tf-gold); }
 .tf-question[data-open='true'] h3 button { font-size: 24px; line-height: 34px; letter-spacing: -.025em; }
 .tf-plus { width: 24px; height: 24px; flex-shrink: 0; stroke: var(--tf-muted); stroke-width: 1.5; }
@@ -107,11 +107,13 @@
   .tf-example-card > p { grid-area: note; }
 }
 @media (max-width: 620px) {
-  .trust-faq { --tf-gutter: 20px; --tf-top-space: 96px; padding-block: var(--tf-top-space) 72px; }
-  .tf-header { min-height: 620px; align-items: flex-start; border-radius: 16px; }
-  .tf-cover { top: auto; bottom: 0; height: 310px; object-position: right center; mask-image: linear-gradient(180deg, transparent, #000 24%); }
-  .tf-header::after { background: linear-gradient(180deg, #100e0c 0%, #100e0c 43%, #100e0ce6 49%, #100e0c00 69%); }
-  .tf-cover-copy { width: 100%; padding: 32px 24px 320px; }
+  .trust-faq { --tf-gutter: 20px; --tf-top-space: 24px; padding-block: var(--tf-top-space) 72px; }
+  /* Portrait artwork composed for phones: the quiet wall carries the copy,
+     the whole doorway sits in the lower half. Grows if the copy runs long. */
+  .tf-header { min-height: 0; aspect-ratio: 3 / 4; align-items: flex-start; border-radius: 16px; }
+  .tf-cover { object-position: 50% 100%; }
+  .tf-header::after { background: linear-gradient(180deg, #0a0807b3 0%, #0a080759 30%, transparent 46%); }
+  .tf-cover-copy { width: 100%; padding: 28px 24px 0; }
   .tf-heading .section-heading__title { font-size: calc(clamp(31px, 8.8vw, 46px) * var(--section-title-scale)); }
   .tf-heading .section-heading__eyebrow { font-size: 9px; letter-spacing: .16em; }
   .tf-intro { margin-top: 20px; }

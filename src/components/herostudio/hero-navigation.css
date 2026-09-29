@@ -19,10 +19,12 @@
   background: linear-gradient(180deg, #16161300, #0d0d0c00);
   transition: background .4s var(--nav-ease), -webkit-backdrop-filter .4s var(--nav-ease), backdrop-filter .4s var(--nav-ease);
 }
+/* Raised = opaque. Safari 26+ on iPhone paints the status-bar/URL-pill strip above a
+   fixed top bar with that bar's solid background-color; a translucent gradient gives it
+   nothing to sample, so the page scrolled visibly through the strip. */
 .studio-nav[data-raised=true] {
-  background: linear-gradient(180deg, #161613e8, #0d0d0cda);
-  -webkit-backdrop-filter: blur(20px) saturate(115%);
-  backdrop-filter: blur(20px) saturate(115%);
+  background-color: #11110f;
+  background-image: linear-gradient(180deg, #161613, #0d0d0c);
 }
 .studio-nav::before {
   content: '';
@@ -141,50 +143,70 @@
   .studio-nav-links, .studio-nav-divider, .studio-nav-account .studio-nav-login { display: none; }
   .studio .studio-nav-toggle { display: inline-flex; }
 
-  /* The bar grows downward to hold the menu: a full-width row after the brand line whose
-     height animates 0fr → 1fr. The page behind dims through a spread shadow. */
-  .studio-nav { flex-wrap: wrap; align-content: flex-start; row-gap: 0; box-shadow: 0 0 0 100vmax #0000; transition: background .4s var(--nav-ease), -webkit-backdrop-filter .4s var(--nav-ease), backdrop-filter .4s var(--nav-ease), box-shadow .45s var(--nav-ease); }
-  .studio-nav[data-open=true] { background: linear-gradient(180deg, #161613f7, #0d0d0cf2); box-shadow: 0 0 0 100vmax #000000a6; }
+  /* The menu fills the screen under the bar: links at the top, Log in pinned to the bottom.
+     The page underneath is scroll-locked while it is open (see HeroNavigation). */
+  .studio-nav { --nav-h: 76px; transition: background .4s var(--nav-ease), -webkit-backdrop-filter .4s var(--nav-ease), backdrop-filter .4s var(--nav-ease); }
+  .studio-nav[data-open=true] { background: #11110f; -webkit-backdrop-filter: none; backdrop-filter: none; }
   .studio-mobile-menu {
-    display: grid;
-    flex-basis: 100%;
-    grid-template-rows: 0fr;
-    transition: grid-template-rows .38s var(--nav-ease);
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    display: block;
+    height: calc(100dvh - var(--nav-h));
+    padding: 8px 24px calc(24px + env(safe-area-inset-bottom));
+    background: #11110f;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .2s ease, visibility 0s linear .2s;
   }
-  .studio-mobile-menu[data-open=true] { grid-template-rows: 1fr; transition-duration: .6s; }
-  .studio-mobile-menu-inner { display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
+  .studio-mobile-menu[data-open=true] {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity .25s ease, visibility 0s;
+  }
+  .studio-mobile-menu-inner { display: flex; flex-direction: column; min-height: 100%; }
   .studio-mobile-menu-inner > * {
     opacity: 0;
-    transform: translateY(-10px);
-    transition: opacity .18s ease, transform .3s var(--nav-ease);
+    transform: translateY(-8px);
+    transition: opacity .12s ease, transform .2s var(--nav-ease);
   }
   .studio-mobile-menu[data-open=true] .studio-mobile-menu-inner > * {
     opacity: 1;
     transform: none;
-    transition: opacity .4s ease calc(.1s + var(--i) * .05s), transform .6s var(--nav-ease) calc(.1s + var(--i) * .05s);
+    transition: opacity .3s ease calc(.06s + var(--i) * .035s), transform .45s var(--nav-ease) calc(.06s + var(--i) * .035s);
   }
   .studio-mobile-menu-inner > a:not(.utex-button) {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 31px 0;
+    gap: 16px;
+    padding: 20px 0;
     border-bottom: 1px solid #ffffff12;
-    color: #f1ede6;
-    font-family: var(--hero-display-font, 'DM Sans', sans-serif);
-    font-variation-settings: var(--hero-display-variation, normal);
-    font-size: 30px;
+    color: #ece8e1;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 20px;
     font-weight: 500;
-    letter-spacing: -.03em;
-    line-height: 1.1;
+    letter-spacing: -.012em;
+    line-height: 22px;
   }
-  .studio-mobile-menu-inner > a:first-child { margin-top: 10px; }
   .studio-mobile-menu-inner > a:not(.utex-button):active { color: #b8b4a9; }
-  .studio-menu-arrow { width: 24px; height: 24px; flex-shrink: 0; color: #9a9488; }
-  .studio-mobile-menu-inner .utex-button { --button-height: 54px; --button-font-size: 16px; margin: 32px 0 14px; }
+  .studio-menu-label { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .studio-menu-label small { color: #8f8a80; font-size: 14px; font-weight: 400; letter-spacing: -.005em; line-height: 20px; }
+  .studio-menu-arrow { width: 20px; height: 20px; flex-shrink: 0; color: #8a857b; }
+  .studio-mobile-menu-inner .utex-button { --button-height: 54px; --button-font-size: 16px; margin: auto 0 0; }
+}
+/* Tablets: the full-screen menu holds the links as a 2 × 2 grid instead of one long column. */
+@media (min-width: 621px) and (max-width: 900px) {
+  .studio-mobile-menu-inner { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto auto 1fr; column-gap: 40px; }
+  .studio-mobile-menu-inner .utex-button { grid-column: 1 / -1; align-self: end; }
 }
 @media (max-width: 480px) {
   .studio-nav { min-height: 72px; padding: 12px 16px; gap: 10px; row-gap: 0; }
-  .studio-mobile-menu-inner > a:not(.utex-button) { font-size: 28px; padding-block: 27px; }
+  .studio-nav { --nav-h: 72px; }
+  .studio-mobile-menu { padding-inline: 16px; }
   .studio-brand img { width: 122px; }
   .studio-nav-action .utex-button { --button-height: 40px; --button-padding: 12px; --button-font-size: 13px; }
 }

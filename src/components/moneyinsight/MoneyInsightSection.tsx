@@ -241,11 +241,14 @@ function useHover(plot: React.RefObject<HTMLDivElement | null>, chart: React.Ref
     setIndex(next)
     if (!frame.current) frame.current = requestAnimationFrame(tick)
   }, [plot, chart, tick, columns])
-  const onPointerLeave = useCallback(() => { wasPointing.current = false; setPointing(false) }, [])
+  /* A finger can't hover: the reading shows while the finger is down (tap or sideways scrub) and
+     goes when it lifts, or when the swipe turns into a page scroll (pointercancel). */
+  const clear = useCallback(() => { wasPointing.current = false; setPointing(false) }, [])
+  const onPointerUp = useCallback((event: React.PointerEvent) => { if (event.pointerType !== 'mouse') clear() }, [clear])
 
   useEffect(() => () => { if (frame.current) cancelAnimationFrame(frame.current) }, [])
 
-  return { index, pointing, onPointerMove, onPointerLeave }
+  return { index, pointing, onPointerMove, onPointerUp, onPointerLeave: clear }
 }
 
 function ModeToggle({ mode, onChange }: { mode: Mode; onChange: (mode: Mode) => void }) {
@@ -294,7 +297,7 @@ export function MoneyInsightSection() {
   }, [mode, switching])
   useEffect(() => () => window.clearTimeout(switchTimer.current), [])
   const view = VIEWS[mode]
-  const { index: rawIndex, pointing, onPointerMove, onPointerLeave } = useHover(plot, chart, view.columns)
+  const { index: rawIndex, pointing, onPointerMove, onPointerUp, onPointerLeave } = useHover(plot, chart, view.columns)
   useEntrance(section)
 
   const index = Math.min(rawIndex, view.columns - 1)
@@ -319,7 +322,7 @@ export function MoneyInsightSection() {
       </SectionHeading>
 
       <figure ref={chart} className={`mi-chart${switching ? ' is-switching' : ''}`} data-mode={mode} data-pointing={pointing || undefined} style={{ '--mi-center': center, '--mi-index': index, '--mi-cols': view.columns, '--mi-down-px': view.downPx } as React.CSSProperties}>
-        <figcaption className="mi-sr-only">{mode === 'processing' ? 'Card payment volume over the last 24 hours: successful payments above the line, declined and cancelled below.' : 'Business account cash flow over nine months: income above the line, spending below.'} Move across the chart to read any column.</figcaption>
+        <figcaption className="mi-sr-only">{mode === 'processing' ? 'Card payment volume over the last 24 hours: successful payments above the line, declined and cancelled below.' : 'Business account cash flow over nine months: income above the line, spending below.'} Move across or tap the chart to read any column.</figcaption>
         <div className="mi-chart-head">
           <div key={mode} className="mi-legend" aria-hidden="true">
             {view.legend.map(({ swatch, label }) => <span key={label}><i className={`mi-swatch mi-swatch--${swatch}`} />{label}</span>)}
@@ -330,7 +333,7 @@ export function MoneyInsightSection() {
           <div className="mi-ylabels" aria-hidden="true">
             {GRID_YS.map((y) => { const line = view.yLines.find((l) => l.y === y); return <span key={y} className={line ? undefined : 'is-off'} style={{ '--y': y } as React.CSSProperties}>{line && <i key={line.label}>{line.label}</i>}</span> })}
           </div>
-          <div ref={plot} className="mi-plot" onPointerMove={onPointerMove} onPointerLeave={onPointerLeave}>
+          <div ref={plot} className="mi-plot" onPointerDown={onPointerMove} onPointerMove={onPointerMove} onPointerUp={onPointerUp} onPointerLeave={onPointerLeave} onPointerCancel={onPointerLeave}>
             {GRID_YS.filter((y) => y !== 0).map((y) => <div key={y} className={`mi-gridline${view.yLines.some((l) => l.y === y) ? '' : ' is-off'}`} style={{ '--y': y } as React.CSSProperties} aria-hidden="true" />)}
             <div className="mi-bars mi-bars--up" aria-hidden="true">
               {view.up.map((h, i) => <span key={`${mode}-${i}`} className={`mi-bar${state(i)}${h === 0 ? ' is-empty' : ''}`} style={{ '--h': h, '--i': i } as React.CSSProperties} />)}

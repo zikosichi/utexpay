@@ -35,3 +35,18 @@
   .studio-tools, .studio-headline-bar, .personal-banking__version-bar, .fg-image-directions, .oa-versions,
   .mi-version-bar, .tf-version-bar, .gh-settings, .checkout-controls-toggle { display: none !important; }
 }
+
+/* Presenting the phone and tablet layouts in a narrow desktop window: a slim, phone-like
+   scrollbar over a transparent track instead of the wide light system bar. Real phones use
+   overlay scrollbars and ignore this. Chrome/Safari take the -webkit rules; Firefox the standard pair. */
+@media (max-width: 900px) {
+  /* The full-screen menu locks scrolling (overflow: hidden); keep the bar's space so the page doesn't jump. */
+  html { scrollbar-gutter: stable; }
+  ::-webkit-scrollbar { width: 6px; height: 6px; background: transparent; }
+  ::-webkit-scrollbar-track, ::-webkit-scrollbar-corner { background: transparent; }
+  ::-webkit-scrollbar-thumb { border-radius: 3px; background: #ffffff2e; }
+  ::-webkit-scrollbar-thumb:hover { background: #ffffff4d; }
+  @supports not selector(::-webkit-scrollbar) {
+    html { scrollbar-width: thin; scrollbar-color: #ffffff2e transparent; }
+  }
+}

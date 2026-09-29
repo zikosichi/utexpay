@@ -6,10 +6,10 @@ import type { HeroHeadline, HeroHeadlineId } from './heroHeadlines'
 import './hero-navigation.css'
 
 const NAV_LINKS = [
-  { label: 'Banking', href: '/#banking' },
-  { label: 'Payments', href: '/#payments' },
-  { label: 'Developers', href: '/#developers' },
-  { label: 'Pricing', href: '/#pricing' },
+  { label: 'Banking', href: '/#banking', note: 'Personal and business accounts' },
+  { label: 'Payments', href: '/#payments', note: 'Accept cards and get paid' },
+  { label: 'Developers', href: '/#developers', note: 'APIs, SDKs and docs' },
+  { label: 'Pricing', href: '/#pricing', note: 'Plans and fees' },
 ]
 
 const NAV_HEIGHT = 88
@@ -82,6 +82,9 @@ export function HeroNavigation() {
     }
     const desktop = window.matchMedia('(min-width: 901px)')
     const closeOnDesktop = () => { if (desktop.matches) setMenuOpen(false) }
+    // Full-screen menu: the page behind must not scroll under it.
+    const root = document.documentElement, overflow = root.style.overflow
+    root.style.overflow = 'hidden'
     document.addEventListener('pointerdown', outside)
     document.addEventListener('focusin', focusOutside)
     document.addEventListener('keydown', escape)
@@ -91,6 +94,7 @@ export function HeroNavigation() {
       document.removeEventListener('focusin', focusOutside)
       document.removeEventListener('keydown', escape)
       desktop.removeEventListener('change', closeOnDesktop)
+      root.style.overflow = overflow
     }
   }, [menuOpen])
   // Opening keeps focus on the toggle; Tab naturally reaches the first menu link.
@@ -111,10 +115,10 @@ export function HeroNavigation() {
         </button>
       </div>
     </div>
-    {/* Phones: the bar itself grows to hold the menu (0fr → 1fr rows), so it stays mounted and is inert while shut. */}
+    {/* Phones and tablets: a full-screen panel under the bar with Log in at the bottom; it stays mounted and is inert while shut. */}
     <div id={menuId} className="studio-mobile-menu" data-open={menuOpen} inert={!menuOpen}>
       <div className="studio-mobile-menu-inner">
-        {NAV_LINKS.map(({ label, href }, index) => <a key={label} href={href} style={{ '--i': index } as CSSProperties} onClick={() => setMenuOpen(false)}>{label}<svg className="studio-menu-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14m-6-6 6 6-6 6" /></svg></a>)}
+        {NAV_LINKS.map(({ label, href, note }, index) => <a key={label} href={href} style={{ '--i': index } as CSSProperties} onClick={() => setMenuOpen(false)}><span className="studio-menu-label">{label}<small>{note}</small></span><svg className="studio-menu-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14m-6-6 6 6-6 6" /></svg></a>)}
         <ButtonLink variant="secondary" href="/#login" style={{ '--i': NAV_LINKS.length } as CSSProperties} onClick={() => setMenuOpen(false)}>Log in</ButtonLink>
       </div>
     </div>

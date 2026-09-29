@@ -17,7 +17,7 @@ type Verb = { verb: string; text: string; status: string; on?: boolean; screen: 
 
 const SCREENS = '/dashboardstack/'
 const VERBS: Verb[] = [
-  { verb: 'Bank', text: 'Personal and business accounts with their own IBANs, in the currencies you work in. Open one on day one, add another when the business needs it.', status: 'Day one',
+  { verb: 'Bank', text: 'Personal and business accounts with their own IBANs, in the currencies you work in. Open one on day one, add another when the business needs it.', status: 'IBAN at signup',
     screen: { image: 'bank-window.png', width: 1840, height: 1586, alt: 'UTEX Pay banking dashboard with a €23,787.55 balance, currency accounts, cash flow and a gold Mastercard.' },
     details: [
       { label: 'Accounts', value: 'Personal, business, or both under one login' },
@@ -25,14 +25,14 @@ const VERBS: Verb[] = [
       { label: 'Details', value: 'Own IBAN and BIC for every account' },
     ] },
   // No dedicated Cards export yet: the banking dashboard cropped to its Accounts, Cash Flow and Cards widgets stands in.
-  { verb: 'Spend', text: 'Cards for you and your team, with limits, roles and approvals. One activity log, so you know who spent what without asking.', status: 'Day one',
+  { verb: 'Spend', text: 'Cards for you and your team, with limits, roles and approvals. One activity log, so you know who spent what without asking.', status: 'Cards at signup',
     screen: { image: 'bank-window.png', width: 1840, height: 1586, alt: 'UTEX Pay banking dashboard, the Accounts, Cash Flow and Cards widgets.', focus: 'cards' },
     details: [
       { label: 'Cards', value: 'Physical and virtual, one per person' },
       { label: 'Controls', value: 'Limits, roles and approvals per card' },
       { label: 'Log', value: 'Every card payment in one activity log' },
     ] },
-  { verb: 'Send', text: 'SEPA, SWIFT and UTEX-to-UTEX transfers in 30+ currencies. Pay a supplier from the same balance your customers paid into.', status: 'Day one',
+  { verb: 'Send', text: 'SEPA, SWIFT and UTEX-to-UTEX transfers in 30+ currencies. Pay a supplier from the same balance your customers paid into.', status: 'Transfers at signup',
     screen: { image: 'move-window.png', width: 1863, height: 1620, alt: 'UTEX Pay accounts screen with euro and pound balances, Send, Request, Deposit and Convert actions, euro account details and recent transactions.' },
     details: [
       { label: 'Rails', value: 'SEPA, SWIFT and UTEX-to-UTEX' },
@@ -48,6 +48,12 @@ const VERBS: Verb[] = [
     ] },
 ]
 const STRIP = ['One signup', 'One login', 'One ledger', 'Nothing to migrate']
+// The "… at signup" rows carry a check, the counterpart to Get paid's switch: these come with
+// the account, that one you turn on. A bare "Day one" read as a label, not a status (Sep 25 review).
+function ReadyMark() {
+  return <svg className="oa-ready" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="7.5" /><path d="m5 8.2 2 2 4-4.4" /></svg>
+}
+
 // With the Get paid switch on, one line under the row cycles through incoming card payments, each
 // landing in the same EUR account the Bank row opened. Methods match the accordion's Methods list.
 const PAYMENTS = [
@@ -207,7 +213,7 @@ export function OneAccountSection({ initialVersion = 'ledger' }: { initialVersio
           {on ? <button type="button" className="oa-status oa-switch" role="switch" aria-checked={paidOn}
             aria-label="Take card payments into this account" onClick={() => { if (!paidOn) setPaidFrom(payment); setPaidOn(!paidOn) }}>
             <span className="oa-toggle" aria-hidden="true" />{paidOn ? 'Live' : status}
-          </button> : <span className="oa-status">{status}</span>}
+          </button> : <span className="oa-status"><ReadyMark />{status}</span>}
         </li>)}
       </ol> : <div className="oa-ledger oa-accordion" ref={ledger}>
         {VERBS.map(({ verb, text, status, on, screen, details }, i) => {
@@ -233,7 +239,7 @@ export function OneAccountSection({ initialVersion = 'ledger' }: { initialVersio
                 <span className="oa-verb">{verb}</span>
                 <span className="oa-text">{text}</span>
                 <span className="oa-status" data-on={on || undefined}>
-                  {on && <span className="oa-toggle" aria-hidden="true" />}{status}
+                  {on ? <span className="oa-toggle" aria-hidden="true" /> : <ReadyMark />}{status}
                 </span>
               </button>
             </h3>

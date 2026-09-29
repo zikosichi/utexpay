@@ -34,6 +34,9 @@
 .oa-text { margin: 0; max-width: 640px; color: var(--oa-muted); font-size: 16px; line-height: 26px; text-wrap: pretty; }
 .oa-status { display: inline-flex; align-items: center; justify-content: flex-end; gap: 10px; color: #9a9690; font: 400 12px/26px 'JetBrains Mono', monospace; letter-spacing: .1em; text-transform: uppercase; white-space: nowrap; }
 .oa-status[data-on] { color: var(--oa-gold); }
+.oa-ready { flex: none; width: 16px; height: 16px; }
+.oa-ready circle { fill: #c9a5671f; stroke: #c9a56766; stroke-width: 1; }
+.oa-ready path { stroke: var(--oa-gold); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
 /* The fourth row's switch: the one capability you add rather than open with. In the ledger it is a
    real control (off until clicked); in the accordion it sits inside the row button, so it stays a
    static "on" picture there. */

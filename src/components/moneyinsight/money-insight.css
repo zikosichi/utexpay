@@ -344,14 +344,24 @@
   .mi-axis { grid-row: 3; }
   .mi-axis > span:not(.mi-pill) { left: calc(36px + (100% - 36px) * (var(--col) + .5) / var(--mi-cols)); }
   .mi-axis > span:not(.mi-pill):nth-child(even) { display: none; }
-  .mi-pill { left: calc(36px + (100% - 36px) * (var(--mi-index) + .5) / var(--mi-cols)); }
-  /* On a phone the ledger would cover the bars, so it sits under the legend instead and the figure
-     reserves the room. Both flip states collapse to the same full-width block. */
-  .mi-chart { transition: padding-bottom .3s ease; }
-  .mi-chart[data-pointing] { padding-bottom: 236px; }
-  .mi-tooltip { top: calc(100% + 92px); left: 0 !important; right: 0; width: auto; padding: 12px 14px; }
-  .mi-tooltip-rows { gap: 8px; }
-  .mi-tooltip-rows dt, .mi-tooltip-rows dd { font-size: 13px; }
+  .mi-pill { left: clamp(64px, calc(36px + (100% - 36px) * (var(--mi-index) + .5) / var(--mi-cols)), calc(100% - 28px)); }
+  /* On a phone the finger sits on the bars, so the reading floats above the plot instead: centred
+     on the tapped column, held inside the plot's edges, and tied to it by the dashed line, which
+     reaches up to meet it. It covers the toggle only while it's open. The rows turn into columns
+     so the card stays short. */
+  .mi-chart { --mi-tip-w: min(272px, 100%); }
+  .mi-tooltip { top: auto; bottom: calc(100% + 14px); left: clamp(0px, calc(var(--mi-center) - var(--mi-tip-w) / 2), calc(100% - var(--mi-tip-w))) !important; width: var(--mi-tip-w); padding: 10px 12px 11px; border-radius: 10px; will-change: auto; transition: left var(--mi-glide), opacity .25s ease; }
+  .mi-chart[data-pointing] .mi-hover-line { top: -14px; }
+  .mi-chart[data-pointing] .mi-tooltip { transition: left var(--mi-glide), opacity .25s ease; }
+  .mi-tooltip-title { margin-bottom: 8px; padding-bottom: 8px; font-size: 13px; line-height: 18px; }
+  .mi-tooltip-rows:not(.mi-tooltip-rows--total) { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 10px; }
+  .mi-tooltip-rows:not(.mi-tooltip-rows--total) div { flex-direction: column; align-items: flex-start; gap: 2px; }
+  .mi-tooltip-rows:not(.mi-tooltip-rows--total) dt { gap: 6px; font-size: 11px; line-height: 14px; }
+  .mi-tooltip-rows:not(.mi-tooltip-rows--total) .mi-swatch { width: 8px; height: 8px; border-radius: 2px; }
+  .mi-tooltip-rows:not(.mi-tooltip-rows--total) dd { font-size: 14px; line-height: 18px; }
+  .mi-tooltip-rows--total { margin-top: 8px; padding-top: 8px; gap: 3px; }
+  .mi-tooltip-rows--total dt, .mi-tooltip-rows--total dd { font-size: 13px; line-height: 18px; }
+  .mi-tooltip-rows .is-minor dt { font-size: 12px; line-height: 16px; }
   .mi-track { padding: 36px 4px 0; }
   .mi-track-list { grid-template-columns: 1fr; gap: 24px; }
   .mi-track--blocks { padding: 36px 0 0; }
