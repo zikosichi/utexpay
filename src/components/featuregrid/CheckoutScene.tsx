@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState } from 'react'
-import type { ChangeEvent, FormEvent, KeyboardEvent } from 'react'
+import type { ChangeEvent, FormEvent, KeyboardEvent, PointerEvent } from 'react'
 import { cardBrand, caretAfterDigits, digitsOnly, formatCard, formatExpiry, validCard, validCvc, validExpiry } from './checkout-fields'
 import type { CardBrand } from './checkout-fields'
 import { Button } from '#/components/Button'
@@ -145,6 +145,12 @@ export function CheckoutScene() {
     setCard(''); setExpiry(''); setCvc(''); setTouched({})
   }
 
+  // A finger landing on the form is usually the start of a scroll, not a turn at the checkout, so
+  // touch never takes over here; tapping an actual field still does, through the focus handler.
+  function pointerTakeOver(event: PointerEvent<HTMLFormElement>) {
+    if (event.pointerType === 'mouse') takeOver()
+  }
+
   function edit(field: Field, value: string) {
     setPhase('editing')
     setTouched(previous => ({ ...previous, [field]: false }))
@@ -255,7 +261,7 @@ export function CheckoutScene() {
       </div>}
     </div>
 
-    <form ref={formRef} onPointerDownCapture={takeOver} onFocusCapture={takeOver} className="fg-checkout-form" style={tuning.styles.form} data-tuning={tuning.selected === 'form'} aria-label="Interactive checkout demo" aria-describedby={`${id}-demo`} autoComplete="off" noValidate onSubmit={submit}>
+    <form ref={formRef} onPointerDownCapture={pointerTakeOver} onFocusCapture={takeOver} className="fg-checkout-form" style={tuning.styles.form} data-tuning={tuning.selected === 'form'} aria-label="Interactive checkout demo" aria-describedby={`${id}-demo`} autoComplete="off" noValidate onSubmit={submit}>
       <div className="fg-checkout-merchant"><span className="fg-checkout-lock"><LockIcon /></span><span><strong>Northstar Store</strong><span>Secure payment</span></span></div>
       <div className="fg-checkout-total"><span>Order total</span><strong>€48.00</strong></div>
       <div className="fg-checkout-fields">
