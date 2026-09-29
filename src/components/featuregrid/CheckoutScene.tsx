@@ -58,6 +58,7 @@ export function CheckoutScene() {
   const cvcRef = useRef<HTMLInputElement>(null)
   const payRef = useRef<HTMLButtonElement>(null)
   const replayRef = useRef<HTMLButtonElement>(null)
+  const paidReplayRef = useRef<HTMLButtonElement>(null)
   const brand = cardBrand(card)
   const cardOk = validCard(card)
   const expiryOk = validExpiry(expiry)
@@ -76,7 +77,8 @@ export function CheckoutScene() {
   }, [phase])
   useEffect(() => {
     if (phase !== 'success') { setReceiptVisible(false); return }
-    if (!automaticPayment.current) replayRef.current?.focus({ preventScroll: true })
+    // Focus whichever Replay this layout shows: the desktop card's or the one inside the form.
+    if (!automaticPayment.current) [replayRef.current, paidReplayRef.current].find(button => button?.offsetParent)?.focus({ preventScroll: true })
     const timer = window.setTimeout(() => setReceiptVisible(true), 500)
     return () => window.clearTimeout(timer)
   }, [phase])
@@ -263,6 +265,7 @@ export function CheckoutScene() {
 
     <form ref={formRef} onPointerDownCapture={pointerTakeOver} onFocusCapture={takeOver} className="fg-checkout-form" style={tuning.styles.form} data-tuning={tuning.selected === 'form'} aria-label="Interactive checkout demo" aria-describedby={`${id}-demo`} autoComplete="off" noValidate onSubmit={submit}>
       <div className="fg-checkout-merchant"><span className="fg-checkout-lock"><LockIcon /></span><span><strong>Northstar Store</strong><span>Secure payment</span></span></div>
+      <div className="fg-checkout-body" data-paid={phase === 'success' || undefined}>
       <div className="fg-checkout-total"><span>Order total</span><strong>€48.00</strong></div>
       <div className="fg-checkout-fields">
         <label className="fg-checkout-field-label" htmlFor={`${id}-card`}>Card details</label>
@@ -300,6 +303,24 @@ export function CheckoutScene() {
       </Button>
       <div className="fg-checkout-demo" id={`${id}-demo`}><span>Demo · no charge</span><span>Try <button type="button" disabled={locked} onClick={() => useTestCard('visa')}>Visa</button> / <button type="button" disabled={locked} onClick={() => useTestCard('mastercard')}>Mastercard</button></span></div>
       {error && <span className="fg-checkout-sr fg-checkout-error" id={`${id}-error`} role="alert">{error}</span>}
+      {/* Phones and tablets: the form itself becomes the confirmation (hidden on desktop). */}
+      <div className="fg-checkout-paid" data-visible={phase === 'success'} inert={phase !== 'success'}>
+        <span className="fg-checkout-paid-badge" aria-hidden="true">
+          <span className="fg-checkout-paid-spin">
+            <svg className="fg-checkout-paid-burst" viewBox="-44 -44 88 88" fill="none">
+              <g className="fg-checkout-paid-rays"><line x1="0.0" y1="-30.0" x2="0.0" y2="-38.0" /><line x1="21.2" y1="-21.2" x2="26.9" y2="-26.9" /><line x1="30.0" y1="0.0" x2="38.0" y2="0.0" /><line x1="21.2" y1="21.2" x2="26.9" y2="26.9" /><line x1="0.0" y1="30.0" x2="0.0" y2="38.0" /><line x1="-21.2" y1="21.2" x2="-26.9" y2="26.9" /><line x1="-30.0" y1="0.0" x2="-38.0" y2="0.0" /><line x1="-21.2" y1="-21.2" x2="-26.9" y2="-26.9" /></g>
+              <g className="fg-checkout-paid-dots"><circle cx="13.0" cy="-31.4" r="1.6" /><circle cx="31.4" cy="-13.0" r="1.6" /><circle cx="31.4" cy="13.0" r="1.6" /><circle cx="13.0" cy="31.4" r="1.6" /><circle cx="-13.0" cy="31.4" r="1.6" /><circle cx="-31.4" cy="13.0" r="1.6" /><circle cx="-31.4" cy="-13.0" r="1.6" /><circle cx="-13.0" cy="-31.4" r="1.6" /></g>
+            </svg>
+            <svg className="fg-checkout-paid-orbit" viewBox="-44 -44 88 88" fill="none"><circle r="35" /></svg>
+            
+          </span>
+          <svg className="fg-checkout-check" viewBox="0 0 48 48" fill="none"><circle className="fg-checkout-check-ring" cx="24" cy="24" r="21" stroke="currentColor" strokeWidth="1.5" /><path d="m13 24 7 7 15-16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+        </span>
+        <strong role="status">Payment successful</strong>
+        <span className="fg-checkout-paid-meta">€48.00 · Order #1048</span>
+        <button className="fg-checkout-replay" type="button" ref={paidReplayRef} onClick={reset}><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 7a6 6 0 1 1 .1 6M4 3v4h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>Replay</button>
+      </div>
+      </div>
     </form>
 
     <div className="fg-checkout-confirmation" style={tuning.styles.confirmation} data-tuning={tuning.selected === 'confirmation'} data-phase={phase} data-visible={phase === 'success' || tuning.selected === 'confirmation'} inert={phase !== 'success' && tuning.selected !== 'confirmation'} role="group" aria-label="Demo payment confirmation">
